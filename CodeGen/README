@@ -1,0 +1,19 @@
+<i> what you have done so far
+
+Have CodeGen part output a sample assembly output.
+
+<ii> how other groups would use your code (i.e., the bin files) ?
+
+Just plug them into 'sources.cm'.
+
+<iii> what assumptions you have made about your current implementations ?
+
+None
+
+<iv> what desirable features you would like other groups to work on ?
+
+None
+
+<v> if you have changed more files than required, explain it here.
+
+NA
