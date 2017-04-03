@@ -1,7 +1,7 @@
 (* register.sml *)
 
 signature REGISTER =
-sig 
+sig
   include REGISTER_STD
 
   val ECX : Temp.temp
@@ -23,7 +23,7 @@ sig
 end (* signature REGISTER *)
 
 
-structure Register : REGISTER = 
+structure Register : REGISTER =
 struct
 
   type register = string
@@ -42,7 +42,10 @@ struct
   val localsBaseOffset : int = 0 (* change this to the proper value *)
   val paramBaseOffset : int = 0  (* change this to the proper value *)
 
-  val specialregs : (Temp.temp * register) list = []
+  val specialregs : (Temp.temp * register) list = [
+    (RV, "r??"),
+    (FP, "r??"),
+    (SP, "r??")]
   val argregs : (Temp.temp * register) list = []
   val calleesaves : register list = []
   val truecallersaves : register list = []
