@@ -123,12 +123,16 @@ struct
         let
           val paramSize = 4 * length(args)
         in
+          (* Push caller saves *)
+          map (fn reg =>
+                  emit(A.OPER{assem="push %" ^ reg ^ "\n",
+                              src=[], dst=[], jump=NONE})) R.truecallersaves;
           munchArgs(rev(args));
           emit(A.OPER{assem="call " ^ Symbol.name lab ^ "\n",
                       src=[],
                       dst=[R.RV, R.RA, R.ZERO],
                       jump=NONE});
-          emit(A.OPER{assem="add $" ^ Int.toString paramSize ^ ", %esp",
+          emit(A.OPER{assem="add $" ^ Int.toString paramSize ^ ", %esp\n",
                       src=[], dst=[], jump=NONE})
         end
 
@@ -284,7 +288,7 @@ struct
                      formals : Temp.temp list,
                      frame : Frame.frame}) =
     let
-      val localVarSize = 4 * Frame.nLocals frame
+      val localVarSize = 4 * !(#locals frame)
       (*
         /* Subroutine Prologue */
         push %ebp      /* Save the old base pointer value. */
@@ -295,9 +299,9 @@ struct
         /* (no need to save EBX, EBP, or ESP) */
       *)
       val prologue = [
-        A.OPER({assem="push %ebp", src=[],dst=[],jump=NONE}),
-        A.OPER({assem="mov %esp, %ebp", src=[],dst=[],jump=NONE}),
-        A.OPER({assem="sub $" ^ Int.toString localVarSize ^ ", %esp",
+        A.OPER({assem="push %ebp\n", src=[],dst=[],jump=NONE}),
+        A.OPER({assem="mov %esp, %ebp\n", src=[],dst=[],jump=NONE}),
+        A.OPER({assem="sub $" ^ Int.toString localVarSize ^ ", %esp\n",
                 src=[],dst=[],jump=NONE})
       ] @ map
             (fn reg => A.OPER({assem="push %" ^ reg, src=[],dst=[],jump=NONE}))
@@ -313,12 +317,12 @@ struct
       *)
       val epilogue =
         map
-          (fn reg => A.OPER({assem="pop %" ^ reg, src=[],dst=[],jump=NONE}))
+          (fn reg => A.OPER({assem="pop %" ^ reg ^ "\n", src=[],dst=[],jump=NONE}))
           R.calleesaves @
         [
-          A.OPER({assem="mov %ebp %esp", src=[],dst=[],jump=NONE}),
-          A.OPER({assem="pop %ebp", src=[],dst=[],jump=NONE}),
-          A.OPER({assem="ret", src=[],dst=[],jump=NONE})
+          A.OPER({assem="mov %ebp %esp\n", src=[],dst=[],jump=NONE}),
+          A.OPER({assem="pop %ebp\n", src=[],dst=[],jump=NONE}),
+          A.OPER({assem="ret\n", src=[],dst=[],jump=NONE})
         ]
 
       val newBody = prologue @ map (#1) body @ epilogue

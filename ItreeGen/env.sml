@@ -1,7 +1,8 @@
-(* env.sml *)
-(* Christopher Chute *)
-(* April 3, 2017 *)
-(* CPSC 421 - Zhong Shao *)
+(*
+ * Assignment 6
+ * CS 521 Spring 2017
+ * Wolf Honore
+ *)
 
 signature ENV =
 sig
@@ -10,9 +11,13 @@ sig
   type label
   type ty
 
-  datatype enventry 
-    = VARentry of {access: access, ty: ty, isMutable: bool}
-    | FUNentry of {level: level, label: label, formals: ty list, result: ty}
+  datatype rw
+    = RW
+    | RO
+
+  datatype enventry
+    = VARentry of {access : access, ty : ty, rw : rw}
+    | FUNentry of {level : level, label : label, formals : ty list, result : ty}
 
   type tenv = ty Symbol.table
   type env = enventry Symbol.table
@@ -21,68 +26,48 @@ sig
   val base_env : env
 end
 
-functor EnvGen(Translate: TRANSLATE): ENV = 
+functor EnvGen (Translate : TRANSLATE) : ENV =
 struct
-
   structure S = Symbol
-  structure T = Types
+  structure Ty = Types
   structure Tr = Translate
+  structure T = Temp
 
   type access = Tr.access
   type level = Tr.level
-  type label = Temp.label
-  type ty = T.ty
+  type label = T.label
+  type ty = Ty.ty
 
-  datatype enventry 
-    = VARentry of {access: access, ty: ty, isMutable: bool}
-    | FUNentry of {level: level, label: label, formals: ty list, result: ty}
+  datatype rw
+    = RW
+    | RO
+
+  datatype enventry
+    = VARentry of {access : access, ty : ty, rw : rw}
+    | FUNentry of {level : level, label : label, formals : ty list, result : ty}
 
   type tenv = ty S.table
-
   type env = enventry S.table
 
-  (* Primitive Types: Base types environment consists of INT and STRING *)
-  val base_tenv: tenv = let val t = S.enter(S.empty, S.symbol("int"), T.INT)
-                        in S.enter(t, S.symbol("string"), T.STRING) end;
+  (* Helper function to put a key-value pair in the table *)
+  fun enter ((name, ty), tbl) = S.enter (tbl, S.symbol name, ty)
 
-  (**
-   * Primitive Library Functions (Appendix A.4 in Appel)
-   * ---------------------------
-   * function chr(i: int) : string
-   * function concat (s1: string, s2: string) : string
-   * function exit(i: int)
-   * function flush()
-   * function getchar() : string
-   * function not(i: int) : int
-   * function ord(s: string) : int
-   * function print(s: string)
-   * function size(s: string) : int
-   * function substring(s: string, first: int, n: int) : string
-   *)
-  val base_env =
-    let 
-      (* Construct a function entry with the given name, formals, and result. *)
-      fun funentry(name, fs, r) =
-        FUNentry({
-          level=Tr.outermost,
-          label=Temp.namedlabel(name),
-          formals=fs,
-          result=r
-        })
-      val e = S.enter(S.empty, S.symbol "chr", funentry("chr", T.INT :: nil, T.STRING))
-      val concatFmls = T.STRING :: (T.STRING :: nil)
-      val e = S.enter(e, S.symbol "concat", funentry("concat", concatFmls, T.STRING))
-      val e = S.enter(e, S.symbol "exit", funentry("exit", T.INT :: nil, T.UNIT))
-      val e = S.enter(e, S.symbol "flush", funentry("flush", nil, T.UNIT))
-      val e = S.enter(e, S.symbol "getchar", funentry("getchar", nil, T.STRING))
-      val e = S.enter(e, S.symbol "not", funentry("not", T.INT :: nil, T.INT))
-      val e = S.enter(e, S.symbol "ord", funentry("ord", T.STRING :: nil, T.INT))
-      val e = S.enter(e, S.symbol "print", funentry("print", T.STRING :: nil, T.UNIT))
-      val e = S.enter(e, S.symbol "size", funentry("size", T.STRING :: nil, T.INT))
-      val substringFmls = (T.STRING :: (T.INT :: (T.INT :: nil)))
-      val e = S.enter(e, S.symbol "substring", funentry("substring", substringFmls, T.STRING))
-    in
-      e
-    end;
-end  (* structure Env *)
-  
+  (* Helper function to make a FUNentry *)
+  fun fentry (name, forms, res) =
+      (name, FUNentry {level=Tr.outermost, label=T.namedlabel name,
+                       formals=forms, result=res})
+
+  val base_tenv = foldr enter S.empty [("int", Ty.INT), ("string", Ty.STRING)]
+
+  val base_env = foldr enter S.empty
+    [fentry ("print", [Ty.STRING], Ty.UNIT),
+     fentry ("flush", [], Ty.UNIT),
+     fentry ("getchar", [], Ty.STRING),
+     fentry ("ord", [Ty.STRING], Ty.INT),
+     fentry ("chr", [Ty.INT], Ty.STRING),
+     fentry ("size", [Ty.STRING], Ty.INT),
+     fentry ("substring", [Ty.STRING, Ty.INT, Ty.INT], Ty.STRING),
+     fentry ("concat", [Ty.STRING, Ty.STRING], Ty.STRING),
+     fentry ("not", [Ty.INT], Ty.INT),
+     fentry ("exit", [Ty.INT], Ty.UNIT)]
+end

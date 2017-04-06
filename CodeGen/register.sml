@@ -45,18 +45,18 @@ struct
 
   (* of course, none of the following should be empty list *)
 
-  val NPSEUDOREGS = 0 (* change this to the proper value *)
-  val localsBaseOffset : int = 0 (* change this to the proper value *)
+  val NPSEUDOREGS = 5 (* change this to the proper value *)
+  val localsBaseOffset : int = ~4 (* change this to the proper value *)
   val paramBaseOffset : int = 0  (* change this to the proper value *)
 
   val specialregs : (Temp.temp * register) list = [
-    (RV, "r??"),
-    (FP, "r??"),
-    (SP, "r??"),
+    (RV, "f0"),
+    (FP, "f1"),
+    (SP, "f2"),
     (ECX, "ecx"),
     (EDX, "edx"),
-    (RA, ""),
-    (ZERO, "")]
+    (RA, "f3"),
+    (ZERO, "f4")]
   val argregs : (Temp.temp * register) list = []
   val calleesaves : register list = ["ebx", "edi", "esi"]
   val truecallersaves : register list = ["eax", "ecx", "edx"]

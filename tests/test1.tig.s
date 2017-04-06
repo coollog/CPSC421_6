@@ -1,2 +1,0 @@
-EXP(
- CONST 0)
