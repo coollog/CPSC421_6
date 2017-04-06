@@ -4,25 +4,23 @@ signature REGISTER =
 sig
   include REGISTER_STD
 
+  val EBX : Temp.temp
   val ECX : Temp.temp
   val EDX : Temp.temp
-
-  val ZERO : Temp.temp
-  val RA : Temp.temp
+  val ESI : Temp.temp
+  val EDI : Temp.temp
 
  (* we maintain a separate list here of true callersaves, so that
   * CodeGen will not emit code to "save" the pseudo-registers, since
   * they already live on the stack.
   *)
   val truecallersaves : register list (* CodeGen use only! *)
-  val argregs : (Temp.temp * register) list
 
   (* number of pseudo-registers: *)
   val NPSEUDOREGS : int  (* CodeGen use only! *)
 
   (* if you like, you can add other stuff here *)
-
-  (* ... *)
+  val registers : register list
 
 end (* signature REGISTER *)
 
@@ -37,33 +35,35 @@ struct
 
   val SP = Temp.newtemp()
 
+  val EBX = Temp.newtemp()
   val ECX = Temp.newtemp()
   val EDX = Temp.newtemp()
-
-  val ZERO = Temp.newtemp()
-  val RA = Temp.newtemp()
+  val ESI = Temp.newtemp()
+  val EDI = Temp.newtemp()
 
   (* of course, none of the following should be empty list *)
 
   val NPSEUDOREGS = 5 (* change this to the proper value *)
-  val localsBaseOffset : int = ~4 (* change this to the proper value *)
+  val localsBaseOffset : int = ~4 * (1 + NPSEUDOREGS) (* change this to the proper value *)
   val paramBaseOffset : int = 0  (* change this to the proper value *)
 
   val specialregs : (Temp.temp * register) list = [
-    (RV, "f0"),
-    (FP, "f1"),
-    (SP, "f2"),
+    (RV, "eax"),
+    (FP, "ebp"),
+    (SP, "esp"),
+    (EBX, "ebx"),
     (ECX, "ecx"),
     (EDX, "edx"),
-    (RA, "f3"),
-    (ZERO, "f4")]
-  val argregs : (Temp.temp * register) list = []
+    (ESI, "esi"),
+    (EDI, "edi")]
   val calleesaves : register list = ["ebx", "edi", "esi"]
   val truecallersaves : register list = ["eax", "ecx", "edx"]
   val callersaves : register list = ["eax", "ecx", "edx"]
 
-  (* ... other stuff ... *)
+  val pseudoregs: register list =
+    List.tabulate(NPSEUDOREGS, fn i => "f" ^ Int.toString i)
 
+  val registers: register list = calleesaves @ pseudoregs
 
 end (* structure Register *)
 

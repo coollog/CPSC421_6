@@ -60,7 +60,7 @@ struct
             val allocation = RegAlloc.color{
               interference=igraph,
               initial=initial,
-              registers=[]
+              registers=Register.registers
             }
 
             val instrs = C.procEntryExit({

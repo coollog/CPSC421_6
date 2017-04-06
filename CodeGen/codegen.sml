@@ -130,10 +130,16 @@ struct
           munchArgs(rev(args));
           emit(A.OPER{assem="call " ^ Symbol.name lab ^ "\n",
                       src=[],
-                      dst=[R.RV, R.RA, R.ZERO],
+                      dst=[R.RV, R.ECX, R.EDX],
                       jump=NONE});
           emit(A.OPER{assem="add $" ^ Int.toString paramSize ^ ", %esp\n",
-                      src=[], dst=[], jump=NONE})
+                      src=[], dst=[], jump=NONE});
+          (* Pop caller saves *)
+          map (fn reg =>
+                  emit(A.OPER{assem="pop %" ^ reg ^ "\n",
+                              src=[], dst=[], jump=NONE}))
+              (rev R.truecallersaves);
+          ()
         end
 
       | munchStm(T.EXP e) = (munchExp e; ())
@@ -162,8 +168,8 @@ struct
       (* LOAD MEM[i] *)
       | munchExp(T.MEM(T.CONST i, s2)) =
           result(fn r => emit(A.OPER
-                {assem="lea " ^ Int.toString i ^ "(%`s0), %`d0\n",
-                 src=[R.ZERO], dst=[r], jump=NONE}))
+                {assem="lea $" ^ Int.toString i ^ ", %`d0\n",
+                 src=[], dst=[r], jump=NONE}))
       | munchExp(T.MEM(e1, s1)) =
           result(fn r => emit(A.OPER
                 {assem="lea (%`s0), %`d0\n",
@@ -288,7 +294,7 @@ struct
                      formals : Temp.temp list,
                      frame : Frame.frame}) =
     let
-      val localVarSize = 4 * !(#locals frame)
+      val localVarSize = 4 * (!(#locals frame) + R.NPSEUDOREGS)
       (*
         /* Subroutine Prologue */
         push %ebp      /* Save the old base pointer value. */
