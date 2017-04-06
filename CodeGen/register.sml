@@ -7,11 +7,15 @@ sig
   val ECX : Temp.temp
   val EDX : Temp.temp
 
+  val ZERO : Temp.temp
+  val RA : Temp.temp
+
  (* we maintain a separate list here of true callersaves, so that
   * CodeGen will not emit code to "save" the pseudo-registers, since
   * they already live on the stack.
   *)
   val truecallersaves : register list (* CodeGen use only! *)
+  val argregs : (Temp.temp * register) list
 
   (* number of pseudo-registers: *)
   val NPSEUDOREGS : int  (* CodeGen use only! *)
@@ -36,6 +40,9 @@ struct
   val ECX = Temp.newtemp()
   val EDX = Temp.newtemp()
 
+  val ZERO = Temp.newtemp()
+  val RA = Temp.newtemp()
+
   (* of course, none of the following should be empty list *)
 
   val NPSEUDOREGS = 0 (* change this to the proper value *)
@@ -45,11 +52,15 @@ struct
   val specialregs : (Temp.temp * register) list = [
     (RV, "r??"),
     (FP, "r??"),
-    (SP, "r??")]
+    (SP, "r??"),
+    (ECX, "ecx"),
+    (EDX, "edx"),
+    (RA, ""),
+    (ZERO, "")]
   val argregs : (Temp.temp * register) list = []
-  val calleesaves : register list = []
-  val truecallersaves : register list = []
-  val callersaves : register list = []
+  val calleesaves : register list = ["ebx", "edi", "esi"]
+  val truecallersaves : register list = ["eax", "ecx", "edx"]
+  val callersaves : register list = ["eax", "ecx", "edx"]
 
   (* ... other stuff ... *)
 

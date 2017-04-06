@@ -8,7 +8,7 @@ datatype stm = SEQ of stm * stm
              | LABEL of Temp.label
              | JUMP of exp * Temp.label list
              | CJUMP of test * Temp.label * Temp.label
-	     | MOVE of exp * exp
+             | MOVE of exp * exp
              | EXP of exp
 
      and exp = BINOP of binop * exp * exp
@@ -19,7 +19,7 @@ datatype stm = SEQ of stm * stm
              | NAME of Temp.label
              | CONST of int
              | CONSTF of real
-	     | CALL of exp * exp list
+	           | CALL of exp * exp list
 
      and test = TEST of relop * exp * exp
 

@@ -28,101 +28,303 @@ end (* signature CODEGEN *)
 structure Codegen : CODEGEN =
 struct
 
- structure T = Tree
- structure A = Assem
- structure Er = ErrorMsg
- structure F = Frame
- structure R = Register
-
- (* fun munchStm ... *)
- (* and munchExp ... *)
+  structure T = Tree
+  structure A = Assem
+  structure Er = ErrorMsg
+  structure F = Frame
+  structure R = Register
 
   (* currently just a sample output *)
-  fun codegen (frame) (stm: T.stm) : A.instr list =
+  fun codegen(stm: T.stm) : A.instr list =
   let val ilist = ref (nil: A.instr list)
     fun emit x = ilist := x :: !ilist
     fun result(gen) = let val t = Temp.newtemp() in gen t; t end
 
     fun munchStm(T.SEQ(a,b)) = (munchStm a; munchStm b)
-      | munchStm(T.MOVE(T.MEM(T.BINOP(T.PLUS,e1,T.CONST i)),e2)) =
-          emit(A.OPER{assem="STORE M['s0+" ^ int i ^ "] <- 's1\n",
-                      src=[munchExp e1, munchExp e2],
-                      dst=[],jump=NONE})
-      | munchStm(T.MOVE(T.MEM(T.BINOP(T.PLUS,T.CONST i,e1)),e2)) =
-          emit(A.OPER{assem="STORE M['s0+" ^ int i ^ "] <- 's1\n",
-                      src=[munchExp e1, munchExp e2],
-                      dst=[],jump=NONE})
-      | munchStm(T.MOVE(T.MEM(e1),T.MEM(e2))) =
-          emit(A.OPER{assem="MOVE M['s0] <- M['s1]\n",
-                      src=[munchExp e1, munchExp e2],
-                      dst=[],jump=NONE})
-      | munchStm(T.MOVE(T.MEM(T.CONST i),e2)) =
-          emit(A.OPER{assem="STORE M[r0+" ^ int i ^ "] <- 's0\n",
-                      src=[munchExp e2],
-                      dst=[],jump=NONE})
-      | munchStm(T.MOVE(T.MEM(e1),e2)) =
-          emit(A.OPER{assem="STORE M['s0] <- 's1\n",
-                      src=[munchExp e1, munchExp e2],
-                      dst=[],jump=NONE})
-      | munchStm(T.MOVE(T.TEMP i, e2)) =
-          emit(A.OPER{assem="ADD 'd0 <- 's0 + r0\n",
-                      src=[munchExp e1, munchExp e2],
-                      dst=[],jump=NONE})
-      | munchStm(T.LABEL lab) =
-          emit(A.LABEL{assem=lab ^ ":\n", lab=lab})
 
-    and munchExp(T.MEM(T.BINOP(T.PLUS,e1,T.CONST i))) =
+      (* label *)
+      | munchStm(T.LABEL lab) =
+          emit(A.LABEL{assem=Symbol.name lab ^ ":\n", lab=lab})
+
+      (* jump *)
+      | munchStm(T.JUMP(T.NAME lab, _)) =
+          emit(A.OPER{assem="jmp `j0\n", src=[], dst=[], jump=SOME[lab]})
+
+      | munchStm(T.JUMP(e, labels)) =
+          emit(A.OPER{assem="jmp %`s0\n", src=[munchExp e], dst=[],
+                      jump=SOME labels})
+
+      (* cjump *)
+      | munchStm(T.CJUMP(T.TEST(relop, e1, e2), lab1, lab2)) =
+          let
+            val jumpInstr = case relop of
+              T.EQ => "je"
+            | T.NE => "jne"
+            | T.GT => "jg"
+            | T.GE => "jge"
+            | T.LT => "jl"
+            | T.LE => "jle"
+            | _ => ErrorMsg.impossible "CodeGen: INVALID CJUMP"
+          in
+            emit(A.OPER{assem="cmp %`s0, %`s1\n",
+                        src=[munchExp e1, munchExp e2],
+                        dst=[], jump=NONE});
+            emit(A.OPER{assem=jumpInstr ^ " " ^ Symbol.name lab1 ^ "\n",
+                        src=[], dst=[], jump=SOME[lab1]});
+            emit(A.OPER{assem="jmp `j0\n", src=[], dst=[], jump=SOME[lab2]})
+          end
+
+      (* MOVE MEM[e1 + i] e2 *)
+      | munchStm(T.MOVE(T.MEM(T.BINOP(T.PLUS,e1,T.CONST i), s1),e2)) =
+          emit(A.OPER{assem="mov " ^ Int.toString i ^ "(%`s0), %`s1\n",
+                      src=[munchExp e1, munchExp e2],
+                      dst=[],jump=NONE})
+
+      (* MOVE MEM[i + e1] e2 *)
+      | munchStm(T.MOVE(T.MEM(T.BINOP(T.PLUS,T.CONST i,e1), s1),e2)) =
+          emit(A.OPER{assem="mov " ^ Int.toString i ^ "(%`s0), %`s1\n",
+                      src=[munchExp e1, munchExp e2],
+                      dst=[],jump=NONE})
+
+      (* MOVE MEM[e1] MEM[e2} *)
+      | munchStm(T.MOVE(T.MEM(e1, s1),T.MEM(e2, s2))) =
+          let
+            val t = Temp.newtemp()
+          in
+            emit(A.OPER{assem="mov (%`s0), %`d0\n",
+                        src=[munchExp e1],
+                        dst=[t],jump=NONE});
+            emit(A.OPER{assem="mov %`s0, (%`d0)\n",
+                        src=[t],
+                        dst=[munchExp e2],jump=NONE})
+          end
+
+      (* MOVE MEM[i] e2 *)
+      | munchStm(T.MOVE(T.MEM(T.CONST i, s1),e2)) =
+          emit(A.OPER{assem="mov ($" ^ Int.toString i ^ "), %`d0\n",
+                      src=[],
+                      dst=[munchExp e2],jump=NONE})
+
+      (* MOVE MEM[e1] e2 *)
+      | munchStm(T.MOVE(T.MEM(e1, s1),e2)) =
+          emit(A.OPER{assem="mov (%`s0), %`d0\n",
+                      src=[munchExp e1],
+                      dst=[munchExp e2],jump=NONE})
+
+      (* MOVE reg e1 *)
+      | munchStm(T.MOVE(T.TEMP i, e1)) =
+          emit(A.MOVE{assem="mov %`s0, %`d0\n", src=i, dst=munchExp e1})
+
+      | munchStm(T.MOVE _) =
+          ErrorMsg.impossible "CodeGen: INVALID MOV"
+
+      (* Call *)
+      | munchStm(T.EXP(T.CALL(T.NAME lab, args))) =
+        let
+          val paramSize = 4 * length(args)
+        in
+          munchArgs(rev(args));
+          emit(A.OPER{assem="call " ^ Symbol.name lab ^ "\n",
+                      src=[],
+                      dst=[R.RV, R.RA, R.ZERO],
+                      jump=NONE});
+          emit(A.OPER{assem="add $" ^ Int.toString paramSize ^ ", %esp",
+                      src=[], dst=[], jump=NONE})
+        end
+
+      | munchStm(T.EXP e) = (munchExp e; ())
+
+    (* Push args onto stack. *)
+    and munchArgs(arg::args) =
+        (
+          emit(A.OPER{assem="push %`s0\n",
+                      src=[munchExp arg], dst=[], jump=NONE});
+          munchArgs(args)
+        )
+      | munchArgs([]) = ()
+
+      (* LOAD MEM[e1 + i] *)
+    and munchExp(T.MEM(T.BINOP(T.PLUS,e1,T.CONST i), s1)) =
           result(fn r => emit(A.OPER
-                {assem="LOAD 'd0 <- M['s0+" ^ int i ^ "]\n",
+                {assem="lea " ^ Int.toString i ^ "(%`s0), %`d0\n",
                  src=[munchExp e1], dst=[r], jump=NONE}))
-      | munchExp(T.MEM(T.BINOP(T.PLUS,T.CONST i,e1))) =
+
+      (* LOAD MEM[i + e1] *)
+      | munchExp(T.MEM(T.BINOP(T.PLUS,T.CONST i,e1), s1)) =
           result(fn r => emit(A.OPER
-                {assem="LOAD 'd0 <- M['s0+" ^ int i ^ "]\n",
+                {assem="lea " ^ Int.toString i ^ "(%`s0), %`d0\n",
                  src=[munchExp e1], dst=[r], jump=NONE}))
-      | munchExp(T.MEM(T.CONST i)) =
+
+      (* LOAD MEM[i] *)
+      | munchExp(T.MEM(T.CONST i, s2)) =
           result(fn r => emit(A.OPER
-                {assem="LOAD 'd0 <- M[r0+" ^ int i ^ "]\n",
-                 src=[], dst=[r], jump=NONE}))
-      | munchExp(T.MEM(e1)) =
+                {assem="lea " ^ Int.toString i ^ "(%`s0), %`d0\n",
+                 src=[R.ZERO], dst=[r], jump=NONE}))
+      | munchExp(T.MEM(e1, s1)) =
           result(fn r => emit(A.OPER
-                {assem="LOAD 'd0 <- M['s0+0]\n",
+                {assem="lea (%`s0), %`d0\n",
                  src=[munchExp e1], dst=[r], jump=NONE}))
+
+      (* ADD *)
       | munchExp(T.BINOP(T.PLUS,e1,T.CONST i)) =
           result(fn r => emit(A.OPER
-                {assem="ADDI 'd0 <- 's0+" ^ int i ^ "\n",
+                {assem="add $" ^ Int.toString i ^ ", %`s0\n",
                  src=[munchExp e1], dst=[r], jump=NONE}))
       | munchExp(T.BINOP(T.PLUS,T.CONST i,e1)) =
           result(fn r => emit(A.OPER
-                {assem="ADDI 'd0 <- 's0+" ^ int i ^ "\n",
+                {assem="add $" ^ Int.toString i ^ ", %`s0\n",
                  src=[munchExp e1], dst=[r], jump=NONE}))
-      | munchExp(T.CONST i) =
-          result(fn r => emit(A.OPER
-                {assem="ADDI 'd0 <- r0+" ^ int i ^ "\n",
-                 src=[], dst=[r], jump=NONE}))
       | munchExp(T.BINOP(T.PLUS,e1,e2)) =
           result(fn r => emit(A.OPER
-                {assem="ADD 'd0 <- 's0+'s1\n",
-                 src=[munchExp e1, munchExp e2], dst=[r],
-                 jump=NONE}))
+                {assem="add %`s0, %`s1\n",
+                 src=[munchExp e1, munchExp e2], dst=[r], jump=NONE}))
+
+      (* SUB *)
+      | munchExp(T.BINOP(T.MINUS,e1,T.CONST i)) =
+          result(fn r => emit(A.OPER
+                {assem="add $" ^ Int.toString(~i) ^ ", %`s0\n",
+                 src=[munchExp e1], dst=[r], jump=NONE}))
+      | munchExp(T.BINOP(T.MINUS,T.CONST i,e1)) =
+          result(fn r => emit(A.OPER
+                {assem="add $" ^ Int.toString i ^ ", %`d0\n",
+                 src=[munchExp(T.BINOP(T.MINUS,T.CONST 0,e1))],
+                 dst=[r], jump=NONE}))
+      | munchExp(T.BINOP(T.MINUS,e1,e2)) =
+          result(fn r => emit(A.OPER
+                {assem="sub %`s0, %`s1\n",
+                 src=[munchExp e1, munchExp e2], dst=[r], jump=NONE}))
+
+      (* IMUL *)
+      | munchExp(T.BINOP(T.MUL,e1,e2)) =
+          result(fn r => emit(A.OPER
+                {assem="imul %`s0, %`s1",
+                 src=[munchExp e1, munchExp e2], dst=[r], jump=NONE}))
+
+      (* IDIV *)
+      | munchExp(T.BINOP(T.DIV,e1,e2)) =
+          result(fn r => emit(A.OPER
+                {assem="idiv %`s0, %`s1",
+                 src=[munchExp e1, munchExp e2], dst=[r], jump=NONE}))
+
+      (* AND *)
+      | munchExp(T.BINOP(T.AND,e1,T.CONST i)) =
+          result(fn r => emit(A.OPER
+                {assem="and $" ^ Int.toString i ^ ", %`s0\n",
+                 src=[munchExp e1], dst=[r], jump=NONE}))
+      | munchExp(T.BINOP(T.AND,T.CONST i,e1)) =
+          result(fn r => emit(A.OPER
+                {assem="and $" ^ Int.toString i ^ ", %`s0\n",
+                 src=[munchExp e1], dst=[r], jump=NONE}))
+      | munchExp(T.BINOP(T.AND,e1,e2)) =
+          result(fn r => emit(A.OPER
+                {assem="and %`s0, %`s1\n",
+                 src=[munchExp e1, munchExp e2], dst=[r], jump=NONE}))
+
+      (* OR *)
+      | munchExp(T.BINOP(T.OR,e1,T.CONST i)) =
+          result(fn r => emit(A.OPER
+                {assem="or $" ^ Int.toString i ^ ", %`s0\n",
+                 src=[munchExp e1], dst=[r], jump=NONE}))
+      | munchExp(T.BINOP(T.OR,T.CONST i,e1)) =
+          result(fn r => emit(A.OPER
+                {assem="or $" ^ Int.toString i ^ ", %`s0\n",
+                 src=[munchExp e1], dst=[r], jump=NONE}))
+      | munchExp(T.BINOP(T.OR,e1,e2)) =
+          result(fn r => emit(A.OPER
+                {assem="or %`s0, %`s1\n",
+                 src=[munchExp e1, munchExp e2], dst=[r], jump=NONE}))
+
+      | munchExp(T.BINOP(_)) =
+          ErrorMsg.impossible "CodeGen: INVALID BINOP"
+
+      (* CONST *)
+      | munchExp(T.CONST i) =
+          result(fn r => emit(A.OPER
+                {assem="mov $" ^ Int.toString i ^ ", %`d0\n",
+                 src=[], dst=[r], jump=NONE}))
+
+      | munchExp(T.CONSTF _) =
+          ErrorMsg.impossible "CodeGen: INVALID CONSTF"
+
       | munchExp(T.TEMP t) = t
+
+      | munchExp(T.NAME label) =
+          result(fn r => emit(A.OPER
+                {assem="add " ^ Symbol.name label ^ ", %`d0\n",
+                 src=[], dst=[r], jump=NONE}))
+
+      | munchExp(T.ESEQ _ | T.CVTOP _ | T.CALL _) =
+          ErrorMsg.impossible "CodeGen: INVALID ITREE EXP"
 
   in munchStm stm;
      rev(!ilist)
   end
 
-  fun string(label, s) = S.name label ^ ": .ascii \"" ^ s ^ "\"\n"
+  fun string(label, s) = Symbol.name label ^ ": .ascii \"" ^ s ^ "\"\n"
 
   (* procEntryExit sequence + function calling sequence tune-up
    * + mapping pseudo-registers to memory load/store instructions
    * and actual registers.
    * This is a post-pass, to be done after register allocation.
    *)
-  fun procEntryExit(frame, body) =
+
+  (*fun procEntryExit2(frame, body) =
     body @
     [A.OPER{assem="",
-            src=[ZERO,RA,SP]@calleesaves,
-            dst=[],jump=SOME[]}]
+            src=[R.ZERO,R.RA,R.SP]@R.calleesaves,
+            dst=[],jump=SOME[]}]*)
+  (*fun procEntryExit3(FRAME(name, params, locals), body) =
+    (prolog = "PROCEDURE " ^ Symbol.name name ^ "\n",
+     body = body,
+     epilog = "END " ^ Symbol.name name ^ "\n")*)
 
+  fun procEntryExit({name : Temp.label,
+                     body : (Assem.instr * Temp.temp list) list,
+                     allocation : R.register Temp.Table.table,
+                     formals : Temp.temp list,
+                     frame : Frame.frame}) =
+    let
+      val localVarSize = 4 * Frame.nLocals frame
+      (*
+        /* Subroutine Prologue */
+        push %ebp      /* Save the old base pointer value. */
+        mov %esp, %ebp /* Set the new base pointer value. */
+        sub $4, %esp   /* Make room for one 4-byte local variable. */
+        push %edi      /* Save the values of registers that the function */
+        push %esi      /* will modify. This function uses EDI and ESI. */
+        /* (no need to save EBX, EBP, or ESP) */
+      *)
+      val prologue = [
+        A.OPER({assem="push %ebp", src=[],dst=[],jump=NONE}),
+        A.OPER({assem="mov %esp, %ebp", src=[],dst=[],jump=NONE}),
+        A.OPER({assem="sub $" ^ Int.toString localVarSize ^ ", %esp",
+                src=[],dst=[],jump=NONE})
+      ] @ map
+            (fn reg => A.OPER({assem="push %" ^ reg, src=[],dst=[],jump=NONE}))
+            R.calleesaves
+
+      (*
+        /* Subroutine Epilogue */
+        pop %esi       /* Recover register values. */
+        pop %edi
+        mov %ebp, %esp /* Deallocate the local variable. */
+        pop %ebp       /* Restore the caller's base pointer value. */
+        ret
+      *)
+      val epilogue =
+        map
+          (fn reg => A.OPER({assem="pop %" ^ reg, src=[],dst=[],jump=NONE}))
+          R.calleesaves @
+        [
+          A.OPER({assem="mov %ebp %esp", src=[],dst=[],jump=NONE}),
+          A.OPER({assem="pop %ebp", src=[],dst=[],jump=NONE}),
+          A.OPER({assem="ret", src=[],dst=[],jump=NONE})
+        ]
+
+      val newBody = prologue @ map (#1) body @ epilogue
+    in
+      genSpills(newBody, fn t => "t" ^ Temp.makestring t)
+    end
 
 (************************************************************
   The following is an example implementation of mapping pseudo-registers
@@ -137,7 +339,7 @@ struct
   in EAX, and the remainder, in EDX regardless where the original divisor was!
   So be careful that a divide instruction does not trash something useful
   in EDX, and that you retrieve the correct resulut from the divide instruction.
-
+***************************************************)
 
   (* regname -- produce an assembly language name for the given machine
    * register or psuedo-register.
@@ -145,73 +347,73 @@ struct
    * location in stack frame.
    *)
   (* regname : R.register -> string *)
-  fun regname reg =
-      if (String.isPrefix "f" reg) then
-	  (* it's a psuedo-register *)
-	  let
-	      val (SOME prNum) = Int.fromString (String.extract(reg,1,NONE));
-	      val offset = (prNum + 1) * 4
-	  in
-	      "-" ^ Int.toString(offset) ^ "(%ebp)"
-	  end
-      else
-	  reg
+  and regname reg =
+    if (String.isPrefix "f" reg) then
+  	  (* it's a psuedo-register *)
+  	  let
+  	      val (SOME prNum) = Int.fromString (String.extract(reg,1,NONE));
+  	      val offset = (prNum + 1) * 4
+  	  in
+  	      "-" ^ Int.toString(offset) ^ "(%ebp)"
+  	  end
+    else
+	   reg
 
-
- (* genSpills -- do our "poor man's spilling".  Maps all pseudo-register
-  * references to actual registers, by inserting instructions to load/store
-  * the pseudo-register to/from a real register
-  *)
- fun genSpills (insns,saytemp) =
-     let
+  (* genSpills -- do our "poor man's spilling".  Maps all pseudo-register
+   * references to actual registers, by inserting instructions to load/store
+   * the pseudo-register to/from a real register
+   *)
+  and genSpills (insns,saytemp) =
+    let
 	  (* doload() -- given name of a source register src, and a true
 	   * machine register mreg, will return a load instruction (if needed)
 	   * and a machine register.
 	   *)
 	  (* loadit: Temp.temp * Temp.temp -> string * Temp.temp *)
 	  fun loadit (src,mreg) =
-	      let
-		  val srcnm = (saytemp src)
-	      in
-		  if (String.isPrefix "f" srcnm) then
+      let
+		    val srcnm = (saytemp src)
+	    in
+		    if (String.isPrefix "f" srcnm) then
 		      (* it's a fake register: *)
 		      let
-			  val _ = print ("loadit(): mapping pseudo-register `" ^ srcnm ^ "' to machine reg. `" ^ (saytemp mreg) ^"'\n");
-			  val loadInsn = "\tmovl\t" ^ (R.regname srcnm) ^ ", " ^ (saytemp mreg) ^ " # load pseudo-register\n"
+			      val _ = print ("loadit(): mapping pseudo-register `" ^ srcnm ^ "' to machine reg. `" ^ (saytemp mreg) ^"'\n");
+			      val loadInsn = "\tmovl\t" ^ (regname srcnm) ^ ", " ^ (saytemp mreg) ^ " # load pseudo-register\n"
 		      in
-			  (loadInsn, mreg)
+			      (loadInsn, mreg)
 		      end
-		  else
+		    else
 		      (* no mapping needed *)
 		      ("", src)
-	      end
+	     end
 	  (* mapsrcs : produce a sequence of instructions to load
 	   * pseudo-registers into real registers, and produce a list
 	   * of sources which reflects the real registers.
 	   *)
 	  (* mapsrcs : Temp.temp list * Temp.temp list -> string * Temp.temp list *)
 	  fun mapsrcs ([],_) = ("",[])
+      | mapsrcs (_,[]) = ("",[])
 	    | mapsrcs (src::srcs,mreg::mregs) =
-              let
-                  val (loadInsn, src') = loadit(src,mreg)
-                  val (loadRest, srcs') = mapsrcs(srcs,mregs)
-              in
-                  (loadInsn ^ loadRest, src'::srcs')
-              end
+        let
+          val (loadInsn, src') = loadit(src,mreg)
+          val (loadRest, srcs') = mapsrcs(srcs,mregs)
+        in
+          (loadInsn ^ loadRest, src'::srcs')
+        end
 	  (* findit -- like List.find, but returns SOME i, where i is index
 	   * of element, if found
 	   *)
-          fun findit f l =
-	      let
-		  fun dosrch([],f,_) = NONE
-		    | dosrch(el::els,f,idx) =
-		      if f(el) then
-			  SOME idx
-		      else
-			  dosrch(els,f,idx+1)
-	      in
-		  dosrch(l,f,0)
-	      end
+    fun findit f l =
+	    let
+		    fun dosrch([],f,_) = NONE
+		      | dosrch(el::els,f,idx) =
+		        if f(el) then
+			        SOME idx
+		        else
+			        dosrch(els,f,idx+1)
+	    in
+		    dosrch(l,f,0)
+	    end
 
 	  (* mapdsts -- after we have mapped sources to real machine
 	   * registers, iterate through dsts.
@@ -223,61 +425,59 @@ struct
 	   *         map dst to its own machine register (just use %ecx)
 	   *    generate a store insn for dst to save result
 	   *)
-          (* mapdsts : Temp.temp list * Temp.temp list * Temp.temp list ->
+    (* mapdsts : Temp.temp list * Temp.temp list * Temp.temp list ->
 	   *           string * Temp.temp list
 	   *)
-          (* N.B.!  This only works for dst of length 0 or 1 !! *)
-          (* pre: length(dsts) <= 1 *)
+    (* N.B.!  This only works for dst of length 0 or 1 !! *)
+    (* pre: length(dsts) <= 1 *)
 	  fun mapdsts([],_,_) = ("",[])
 	    | mapdsts(dst::dsts,srcs,newsrcs) =
 	      let
-		  val found = findit (fn e => e=dst) srcs
-		  val dstnm = (saytemp dst)
+		      val found = findit (fn e => e=dst) srcs
+		      val dstnm = (saytemp dst)
 	      in
-		  if (isSome(found)) then
-		      (* this dst is also a source *)
-		      let
-			  val idx=valOf(found)
-			  val src=List.nth (srcs,idx)
-			  val mreg=List.nth (newsrcs,idx)
-		      in
-			  if (src <> mreg) then
-			      ("\tmovl\t`d0, " ^ (R.regname dstnm) ^ " # save pseudo-register\n", mreg::dsts)
-			  else
-			      (* no mapping *)
-			      ("", dst::dsts)
-		      end
-		  else
-		      (* this dst isn't a source, but it might be a pseudo-register *)
-                      if (String.isPrefix "f" dstnm) then
-                          (* it's a fake register: *)
-                          (* we can safely just replace this destination with
-                           * %ecx, and then write out %ecx to the pseudo-register
-                           * location.  Even if %ecx was used to hold a different
-                           * source pseudo-register, we won't end up clobbering
-                           * it until after the source has been used...
-                           *)
-                          ("\tmovl\t`d0, " ^ (R.regname dstnm) ^ " # save pseudo-register\n", R.ECX::dsts)
-                      else
-                          (* no mapping *)
-                          ("", dst::dsts)
-	      end
+		      if (isSome(found)) then
+  		      (* this dst is also a source *)
+  		      let
+      			  val idx=valOf(found)
+      			  val src=List.nth (srcs,idx)
+      			  val mreg=List.nth (newsrcs,idx)
+		        in
+			        if (src <> mreg) then
+			          ("\tmovl\t`d0, " ^ (regname dstnm) ^ " # save pseudo-register\n", mreg::dsts)
+			        else
+    			      (* no mapping *)
+    			      ("", dst::dsts)
+		          end
+		      else
+		        (* this dst isn't a source, but it might be a pseudo-register *)
+            if (String.isPrefix "f" dstnm) then
+              (* it's a fake register: *)
+              (* we can safely just replace this destination with
+               * %ecx, and then write out %ecx to the pseudo-register
+               * location.  Even if %ecx was used to hold a different
+               * source pseudo-register, we won't end up clobbering
+               * it until after the source has been used...
+               *)
+              ("\tmovl\t`d0, " ^ (regname dstnm) ^ " # save pseudo-register\n", R.ECX::dsts)
+            else
+              (* no mapping *)
+              ("", dst::dsts)
+	        end
 
 	  fun mapInstr(A.OPER{assem=insn, dst=dsts, src=srcs, jump=jmp}) =
-	      let
-		  val (loadinsns, newsrcs) = mapsrcs(srcs, [R.ECX, R.EDX]);
-                      val (storeinsns, newdsts) = mapdsts(dsts, srcs, newsrcs);
-	      in
-		  A.OPER{assem=loadinsns ^ insn ^ storeinsns,
-			 dst=newdsts, src=newsrcs, jump=jmp}
-	      end
+	    let
+		    val (loadinsns, newsrcs) = mapsrcs(srcs, [R.ECX, R.EDX]);
+        val (storeinsns, newdsts) = mapdsts(dsts, srcs, newsrcs);
+	    in
+		    A.OPER{assem=loadinsns ^ insn ^ storeinsns,
+			         dst=newdsts, src=newsrcs, jump=jmp}
+	    end
 	    | mapInstr(instr as A.LABEL _) = instr
 	    | mapInstr(instr) =
 	      (* we never generate these! *)
-              ErrorMsg.impossible ("CodeGen: unexpected instruction type in mapInstr!")
-     in
-         map mapInstr insns
-     end
-
-  ***************************************************)
+        ErrorMsg.impossible ("CodeGen: unexpected instruction type in mapInstr!")
+  in
+    map mapInstr insns
+  end
 end (* structure Codegen *)
