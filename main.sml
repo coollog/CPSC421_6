@@ -25,6 +25,8 @@ struct
 
             val instrs = List.concat(map C.codegen stms')
 
+            (* IG1 and RA6 *)
+
             (*
              * Once the RegAlloc module is ready, you can get
              * (1) a new list of body instrs together with its live
