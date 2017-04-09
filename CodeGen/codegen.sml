@@ -74,46 +74,14 @@ struct
             emit(A.OPER{assem="jmp `j0\n", src=[], dst=[], jump=SOME[lab2]})
           end
 
-      (* MOVE MEM[e1 + i] e2 *)
-      | munchStm(T.MOVE(T.MEM(T.BINOP(T.PLUS,e1,T.CONST i), s1),e2)) =
-          emit(A.OPER{assem="mov " ^ Int.toString i ^ "(%`s0), %`s1\n",
-                      src=[munchExp e1, munchExp e2],
-                      dst=[],jump=NONE})
-
-      (* MOVE MEM[i + e1] e2 *)
-      | munchStm(T.MOVE(T.MEM(T.BINOP(T.PLUS,T.CONST i,e1), s1),e2)) =
-          emit(A.OPER{assem="mov " ^ Int.toString i ^ "(%`s0), %`s1\n",
-                      src=[munchExp e1, munchExp e2],
-                      dst=[],jump=NONE})
-
-      (* MOVE MEM[e1] MEM[e2} *)
-      | munchStm(T.MOVE(T.MEM(e1, s1),T.MEM(e2, s2))) =
-          let
-            val t = Temp.newtemp()
-          in
-            emit(A.OPER{assem="mov (%`s0), %`d0\n",
-                        src=[munchExp e1],
-                        dst=[t],jump=NONE});
-            emit(A.OPER{assem="mov %`s0, (%`d0)\n",
-                        src=[t],
-                        dst=[munchExp e2],jump=NONE})
-          end
-
-      (* MOVE MEM[i] e2 *)
-      | munchStm(T.MOVE(T.MEM(T.CONST i, s1),e2)) =
-          emit(A.OPER{assem="mov ($" ^ Int.toString i ^ "), %`d0\n",
-                      src=[],
-                      dst=[munchExp e2],jump=NONE})
-
-      (* MOVE MEM[e1] e2 *)
-      | munchStm(T.MOVE(T.MEM(e1, s1),e2)) =
-          emit(A.OPER{assem="mov (%`s0), %`d0\n",
-                      src=[munchExp e1],
-                      dst=[munchExp e2],jump=NONE})
-
       (* MOVE reg e1 *)
       | munchStm(T.MOVE(T.TEMP i, e1)) =
           emit(A.MOVE{assem="mov %`s0, %`d0\n", src=munchExp e1, dst=i})
+
+      (* MOVE MEM[e1] e2 *)
+      | munchStm(T.MOVE(T.MEM(e1, s1),e2)) =
+          emit(A.MOVE{assem="mov %`s0, (%`d0)\n",
+                      dst=munchExp e1, src=munchExp e2})
 
       | munchStm(T.MOVE _) =
           ErrorMsg.impossible "CodeGen: INVALID MOV"
