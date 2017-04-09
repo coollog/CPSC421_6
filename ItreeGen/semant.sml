@@ -4,12 +4,6 @@
  * Wolf Honore
  *)
 
-(* TODO:
- * All variables assumed to escape and be in frame
- * Function decs
- * Some frame and translate details
-*)
-
 signature SEMANT =
 sig
   type ir_code
@@ -516,8 +510,10 @@ struct
                          (case S.look (tenv, rtyname) of
                             NONE => (errNoType rpos rtyname; T.UNIT)
                           | SOME rty' => rty'))
-                  val fescapes = map (fn _ => true) params (* TODO *)
-                  val (flevel, _) = Tr.newLevel {parent=level, formals=fescapes} (* TODO *)
+                  (* TODO: all params escape? *)
+                  val fescapes = map (fn _ => true) params
+                  (* TODO: what is the 2nd value for? *)
+                  val (flevel, _) = Tr.newLevel {parent=level, formals=fescapes}
                   val entry = E.FUNentry {level=flevel, label=Temp.newlabel (),
                                           formals=formtys, result=rty}
                 in
@@ -539,8 +535,9 @@ struct
             | enterParams _ _ _ _ = ErrorMsg.impossible "enterParams"
             (* Safe to ignore other cases, lists have same len by construction *)
 
-          (* transFuns : E.env -> A.fundec list -> unit *)
-          fun transFuns _ ([] : A.fundec list) = ()
+          (* transFuns : E.env -> A.fundec list
+             -> Temp.label * ir_code * Tr.level list *)
+          fun transFuns _ ([] : A.fundec list) = []
             | transFuns env ({name, params, result, body, pos} :: decs) =
                 (case S.look (env, name) of
                    (* Safe to ignore NONE, name added in transFunHeads *)
@@ -549,19 +546,20 @@ struct
                        (* Add parameters to the enviroment within the body *)
                        val names = map #name (map #var params)
                        val env' = enterParams env names formals flevel
-                       val bdy = transExp env' tenv 0 flevel done body
+                       val trBdy = transExp env' tenv 0 flevel done body
                      in
                        (* Reset loop level to 0 within function body *)
-                       checkTyCompat result (#ty bdy) pos;
-                       transFuns env decs
+                       checkTyCompat result (#ty trBdy) pos;
+                       (label, (#exp trBdy), flevel) :: transFuns env decs
                      end
                  | _ => ErrorMsg.impossible "transFun")
 
           val env' = transFunHeads env decs
-          val _ = transFuns env' decs
+          val fs = transFuns env' decs
         in
           checkNoDup (map #name decs) (map #pos decs);
-          (env', tenv, NONE) (* TODO *)
+          map (fn (f, bdy, lvl) => Tr.funFrag f bdy lvl) fs;
+          (env', tenv, NONE)
         end
     | transDec env tenv loopLvl level done (A.TypeDec decs) =
         let
@@ -610,8 +608,9 @@ struct
     let
       val (lvl, _) = Tr.newLevel {parent=Tr.outermost, formals=[]}
       val done = Temp.newlabel ()
+      val trProg = (Tr.reset (); (* TODO: delete when done testing *)
+                    transExp E.base_env E.base_tenv 0 lvl done prog)
     in
-      (transExp E.base_env E.base_tenv 0 lvl done prog;
-       Tr.getResult ())
+       Tr.getResult (#exp trProg)
     end
 end

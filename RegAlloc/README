@@ -1,0 +1,49 @@
+<i> What have you done so far?
+
+The full implementation of RegAlloc is within this directory. The implementation 
+compiles, but is not tested yet. The implementation follows the outline provided 
+by prof. Shao and does not change any of the other files. That is, the changed 
+files are:
+
+makegraph.sml, liveness.sml, regalloc.sml
+
+All of the files contain a lot of comments to help you guide through the code. 
+The usage of the files is exactly as described by prof. Shao within the files.
+To give a short synopsis:
+
+	1. MakeGraph.instrs2graph: Assem.instr list -> Flow.flowgraph * Flow.Graph.node list
+				-- take a list of assembly instructions and constructs the flowgraph. 
+	 
+	2. Liveness.interferenceGraph: 
+			Flow.flowgraph -> igraph * (Flow.Graph.node -> Temp.temp list) 
+	 			-- Takes in the flow graph from before and constructs Interference graph 
+						with some more information mostly for debugging purposes
+	 
+	3. RegAlloc.color:
+	{ 
+		interference: Liveness.igraph, 		(* This is the igraph from before*)
+		initial: R.register Temp.Table.table,   (* special regsconstraints map *)
+		registers: R.register Temp.Table.table  (* all registers to temps map*)
+	} -> R.register Temp.Table.table (* The allocation of temps to registers *)
+
+<ii> How other groups would use your code
+
+Pretty much as described within the main.sml file. The only iffy part is the usage
+of register.sml file and the according lists of registers. However, as discussed 
+in class today, you should likely coordinate with the CodeGen groups to figure
+that out. 
+
+<iii> What assumptions you have made about your current implementations?
+
+None that have not been explicitly stated within the book. To be specific I assume:
+
+1) There is no register spilling (20+ pseudo registers available at least)
+2) Any error in input will result in an exception being thrown
+
+<iv> What desirable features you would like other groups to work on?
+
+CodeGen and ITreeGen? I'm not entirely sure what I'm supposed to be writing here :-P
+
+<v> If you have changed more files than required, explain it here.
+
+Nope.

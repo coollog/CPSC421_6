@@ -17,11 +17,20 @@ struct
                       (*** should really be output(out,C.string(lab,s)) ***)
 
     | emitproc out (F.PROC{name, body, frame}) =
-        let val _ = print ("Emit " ^ Symbol.name name ^ "\n")
-            val _ = Printtree.printtree(out,body);
+        let (*val _ = print ("Emit " ^ Symbol.name name ^ "\n")
+            val _ = Printtree.printtree(out,body);*)
 
             val stms = Canon.linearize body
             val stms' = Canon.traceSchedule(Canon.basicBlocks stms)
+
+            val _ =
+              let
+                fun printstms(stm::stms) =
+                      (Printtree.printtree(out, stm); printstms(stms))
+                  | printstms([]) = ()
+              in
+                printstms(stms')
+              end
 
             val instrs = List.concat(map C.codegen stms')
 
@@ -40,7 +49,7 @@ struct
              *
              *)
 
-            (* convert assembly instructions to flowgraph and list of nodes *)
+            (*(* convert assembly instructions to flowgraph and list of nodes *)
             val (flowgraph, nodes) = MakeGraph.instrs2graph(instrs)
 
             (* convert flowgraph to interference graph and liveout mapping *)
@@ -65,18 +74,18 @@ struct
               registers=Register.registers
             }
 
-            val instrs = C.procEntryExit({
+            val instrs' = C.procEntryExit({
               name=name,
               body=map (fn instr => (instr, [])) instrs,
               allocation=initial,
               formals=[],
               frame=frame
-            })
+            })*)
 
             val format0 = Assem.format (fn t => "t" ^ Temp.makestring t)
-            val format1 = Assem.format(fn t => (valOf(Temp.Table.look(allocation, t))))
+            (*val format1 = Assem.format(fn t => (valOf(Temp.Table.look(allocation, t))))*)
 
-         in app (fn i => TextIO.output(out,format1 i)) instrs
+         in app (fn i => TextIO.output(out,format0 i)) instrs
         end
 
   fun withOpenFile fname f =

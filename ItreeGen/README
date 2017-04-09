@@ -1,19 +1,13 @@
-Assignment 6b
+Assignment 6c
 CS 521 Spring 2017
 Wolf Honore
 
-1. I have finished implementing and calling the functions to generate the
-   Translate gexps except for function declarations. Other than that, I
-   need to fix/fill in some details in Frame.
+What works:
+Reasonable looking ITree's are successfully generated for all test cases in
+the tests/ directory.
 
-2. Other groups would use my code by either copying my ITreeGen files into
-   their own code, or by changing sources.cm to point to my files. After
-   creating a struct Semant = SemantGen(REGISTER structure here), the function
-   Semant.transprog prog will generate a list of Frame.frags.
-
-3. My current implementation does not properly generate function declarations.
-   It also assumes all variables escape and are stored in the frame.
-
-4. I would like other groups to make their parts work.
-
-5. N/A
+What doesn't work:
+There are almost certainly some bugs with the internal details of Frame.
+This includes static link placement and following, parameter offsets, and
+local variable offsets. I have marked areas that I suspect may be wrong
+with TODO.

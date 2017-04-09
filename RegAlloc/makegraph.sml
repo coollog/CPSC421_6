@@ -145,7 +145,7 @@ struct
                | SOME(Assem.OPER{assem, dst, src, jump = SOME(z::zs)}) =>
                 (List.map (addEdgeFromLabel x) (z::zs); ())
                | SOME(_) =>
-                ErrorMsg.impossible("MakeGraph::addEdges: last elt not OPER!")
+                   ()
           end
         | addEdges(node::nextNode::xs) = (* Your regular recursive step *)
           (addEdge(node, nextNode); addEdges(nextNode::xs))

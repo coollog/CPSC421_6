@@ -113,34 +113,10 @@ struct
 
       (* MOVE reg e1 *)
       | munchStm(T.MOVE(T.TEMP i, e1)) =
-          emit(A.MOVE{assem="mov %`s0, %`d0\n", src=i, dst=munchExp e1})
+          emit(A.MOVE{assem="mov %`s0, %`d0\n", src=munchExp e1, dst=i})
 
       | munchStm(T.MOVE _) =
           ErrorMsg.impossible "CodeGen: INVALID MOV"
-
-      (* Call *)
-      | munchStm(T.EXP(T.CALL(T.NAME lab, args))) =
-        let
-          val paramSize = 4 * length(args)
-        in
-          (* Push caller saves *)
-          map (fn reg =>
-                  emit(A.OPER{assem="push %" ^ reg ^ "\n",
-                              src=[], dst=[], jump=NONE})) R.truecallersaves;
-          munchArgs(rev(args));
-          emit(A.OPER{assem="call " ^ Symbol.name lab ^ "\n",
-                      src=[],
-                      dst=[R.RV, R.ECX, R.EDX],
-                      jump=NONE});
-          emit(A.OPER{assem="add $" ^ Int.toString paramSize ^ ", %esp\n",
-                      src=[], dst=[], jump=NONE});
-          (* Pop caller saves *)
-          map (fn reg =>
-                  emit(A.OPER{assem="pop %" ^ reg ^ "\n",
-                              src=[], dst=[], jump=NONE}))
-              (rev R.truecallersaves);
-          ()
-        end
 
       | munchStm(T.EXP e) = (munchExp e; ())
 
@@ -176,73 +152,52 @@ struct
                  src=[munchExp e1], dst=[r], jump=NONE}))
 
       (* ADD *)
-      | munchExp(T.BINOP(T.PLUS,e1,T.CONST i)) =
-          result(fn r => emit(A.OPER
-                {assem="add $" ^ Int.toString i ^ ", %`s0\n",
-                 src=[munchExp e1], dst=[r], jump=NONE}))
-      | munchExp(T.BINOP(T.PLUS,T.CONST i,e1)) =
-          result(fn r => emit(A.OPER
-                {assem="add $" ^ Int.toString i ^ ", %`s0\n",
-                 src=[munchExp e1], dst=[r], jump=NONE}))
       | munchExp(T.BINOP(T.PLUS,e1,e2)) =
           result(fn r => emit(A.OPER
-                {assem="add %`s0, %`s1\n",
-                 src=[munchExp e1, munchExp e2], dst=[r], jump=NONE}))
+                {assem="mov %`s0, %`d0\n" ^
+                       "add %`s1, %`d0\n",
+                 src=[munchExp e1, munchExp e2],
+                 dst=[r], jump=NONE}))
 
       (* SUB *)
-      | munchExp(T.BINOP(T.MINUS,e1,T.CONST i)) =
-          result(fn r => emit(A.OPER
-                {assem="add $" ^ Int.toString(~i) ^ ", %`s0\n",
-                 src=[munchExp e1], dst=[r], jump=NONE}))
-      | munchExp(T.BINOP(T.MINUS,T.CONST i,e1)) =
-          result(fn r => emit(A.OPER
-                {assem="add $" ^ Int.toString i ^ ", %`d0\n",
-                 src=[munchExp(T.BINOP(T.MINUS,T.CONST 0,e1))],
-                 dst=[r], jump=NONE}))
       | munchExp(T.BINOP(T.MINUS,e1,e2)) =
           result(fn r => emit(A.OPER
-                {assem="sub %`s0, %`s1\n",
-                 src=[munchExp e1, munchExp e2], dst=[r], jump=NONE}))
+                {assem="mov %`s0, %`d0\n" ^
+                       "sub %`s1, %`d0\n",
+                 src=[munchExp e1, munchExp e2],
+                 dst=[r], jump=NONE}))
 
       (* IMUL *)
       | munchExp(T.BINOP(T.MUL,e1,e2)) =
           result(fn r => emit(A.OPER
-                {assem="imul %`s0, %`s1",
-                 src=[munchExp e1, munchExp e2], dst=[r], jump=NONE}))
+                {assem="mov %`s0, %`d0\n" ^
+                       "imul %`s1, %`d0\n",
+                 src=[munchExp e1, munchExp e2],
+                 dst=[r], jump=NONE}))
 
-      (* IDIV *)
+      (* IDIV - TODO: FIX THIS *)
       | munchExp(T.BINOP(T.DIV,e1,e2)) =
           result(fn r => emit(A.OPER
-                {assem="idiv %`s0, %`s1",
-                 src=[munchExp e1, munchExp e2], dst=[r], jump=NONE}))
+                {assem="mov %`s0, %`d0\n" ^
+                       "idiv %`s1, %`d0\n",
+                 src=[munchExp e1, munchExp e2],
+                 dst=[r], jump=NONE}))
 
       (* AND *)
-      | munchExp(T.BINOP(T.AND,e1,T.CONST i)) =
-          result(fn r => emit(A.OPER
-                {assem="and $" ^ Int.toString i ^ ", %`s0\n",
-                 src=[munchExp e1], dst=[r], jump=NONE}))
-      | munchExp(T.BINOP(T.AND,T.CONST i,e1)) =
-          result(fn r => emit(A.OPER
-                {assem="and $" ^ Int.toString i ^ ", %`s0\n",
-                 src=[munchExp e1], dst=[r], jump=NONE}))
       | munchExp(T.BINOP(T.AND,e1,e2)) =
           result(fn r => emit(A.OPER
-                {assem="and %`s0, %`s1\n",
-                 src=[munchExp e1, munchExp e2], dst=[r], jump=NONE}))
+                {assem="mov %`s0, %`d0\n" ^
+                       "and %`s1, %`d0\n",
+                 src=[munchExp e1, munchExp e2],
+                 dst=[r], jump=NONE}))
 
       (* OR *)
-      | munchExp(T.BINOP(T.OR,e1,T.CONST i)) =
-          result(fn r => emit(A.OPER
-                {assem="or $" ^ Int.toString i ^ ", %`s0\n",
-                 src=[munchExp e1], dst=[r], jump=NONE}))
-      | munchExp(T.BINOP(T.OR,T.CONST i,e1)) =
-          result(fn r => emit(A.OPER
-                {assem="or $" ^ Int.toString i ^ ", %`s0\n",
-                 src=[munchExp e1], dst=[r], jump=NONE}))
       | munchExp(T.BINOP(T.OR,e1,e2)) =
           result(fn r => emit(A.OPER
-                {assem="or %`s0, %`s1\n",
-                 src=[munchExp e1, munchExp e2], dst=[r], jump=NONE}))
+                {assem="mov %`s0, %`d0\n" ^
+                       "or %`s1, %`d0\n",
+                 src=[munchExp e1, munchExp e2],
+                 dst=[r], jump=NONE}))
 
       | munchExp(T.BINOP(_)) =
           ErrorMsg.impossible "CodeGen: INVALID BINOP"
@@ -262,6 +217,30 @@ struct
           result(fn r => emit(A.OPER
                 {assem="add " ^ Symbol.name label ^ ", %`d0\n",
                  src=[], dst=[r], jump=NONE}))
+
+      (* CALL *)
+      | munchExp(T.CALL(T.NAME lab, args)) =
+        let
+          val paramSize = 4 * length(args)
+        in
+          (* Push caller saves *)
+          map (fn reg =>
+                  emit(A.OPER{assem="push %" ^ reg ^ "\n",
+                              src=[], dst=[], jump=NONE})) R.truecallersaves;
+          munchArgs(rev(args));
+          emit(A.OPER{assem="call " ^ Symbol.name lab ^ "\n",
+                      src=[],
+                      dst=[R.RV, R.ECX, R.EDX],
+                      jump=NONE});
+          emit(A.OPER{assem="add $" ^ Int.toString paramSize ^ ", %esp\n",
+                      src=[], dst=[], jump=NONE});
+          (* Pop caller saves *)
+          map (fn reg =>
+                  emit(A.OPER{assem="pop %" ^ reg ^ "\n",
+                              src=[], dst=[], jump=NONE}))
+              (rev R.truecallersaves);
+          R.RV
+        end
 
       | munchExp(T.ESEQ _ | T.CVTOP _ | T.CALL _) =
           ErrorMsg.impossible "CodeGen: INVALID ITREE EXP"

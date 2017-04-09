@@ -16,8 +16,6 @@ sig
   val allocInFrame : level -> access
   val allocInRegister : unit -> access
 
-  val getResult : unit -> frag list
-
   type gexp
 
   (* ITree generation *)
@@ -42,6 +40,13 @@ sig
   val breakExp : Temp.label -> gexp
   val letExp : gexp list -> gexp -> gexp
   val arrExp : gexp -> gexp -> gexp
+
+  val funFrag : Temp.label -> gexp -> level -> unit
+
+  val getResult : gexp -> frag list
+
+  (* TODO: Delete when done testing *)
+  val reset : unit -> unit
 end
 
 functor TranslateGen (Register : REGISTER_STD) : TRANSLATE =
@@ -63,7 +68,7 @@ struct
 
   fun newLevel {parent, formals} =
     let
-      val (newFrame, _) = F.newFrame (length formals + 1)
+      val (newFrame, _) = F.newFrame (length formals + 1) R.paramBaseOffset
       val newLvl = LEVEL ({frame=newFrame,
                            sl_offset=0, (* TODO: should we assume this? *)
                            parent=parent}, ref ())
@@ -73,14 +78,14 @@ struct
 
   fun allocInFrame lvl =
     (case lvl of
-       LEVEL ({frame, sl_offset, parent}, u) => (lvl, F.allocInFrame frame)
+       LEVEL ({frame, sl_offset, parent}, u) =>
+         (lvl, F.allocInFrame frame R.localsBaseOffset)
      | _ => Er.impossible "allocInFrame")
 
   (* Not currently supported *)
   fun allocInRegister () = Er.impossible "allocInRegister"
 
   val fragmentlist = ref ([] : frag list)
-  fun getResult () = !fragmentlist
 
   datatype gexp = Ex of Tr.exp
                 | Nx of Tr.stm
@@ -91,10 +96,12 @@ struct
   fun memOff l r =
     Tr.MEM (Tr.BINOP (Tr.PLUS, l, r), F.wordSize)
 
+  (* TODO: Can we just use R.FP here or does it need to be passed as
+           as argument like in the book (pg 156) *)
   fun followSl (LEVEL ({frame, sl_offset, parent}, u')) u off =
-    if u = u'
-      then memOff (Tr.TEMP R.FP) (Tr.CONST off)
-      else memOff (Tr.CONST sl_offset) (followSl parent u off)
+        if u = u'
+          then memOff (Tr.TEMP R.FP) (Tr.CONST off)
+          else memOff (Tr.CONST sl_offset) (followSl parent u off)
     | followSl _ _ _ = Er.impossible "followSl"
 
   (* seq : Tr.stm list -> Tr.stm *)
@@ -173,20 +180,22 @@ struct
       val lab = T.newlabel ()
       val frag = F.DATA {lab=lab, s=s}
     in
-      fragmentlist := frag :: (!fragmentlist);
+      fragmentlist := frag :: !fragmentlist;
       Ex (Tr.NAME lab)
     end
 
   (* Follow the levels to find the static link of the level where
      f is defined *)
-  fun appExp (LEVEL ({sl_offset, ...}, u)) lvl f args =
+  fun appExp (LEVEL ({sl_offset, parent=LEVEL (_, u), ...}, _)) lvl f args =
         let
           val sl = followSl lvl u sl_offset
           val args' = sl :: map unEx args
         in
           Ex (Tr.CALL (Tr.NAME f, args'))
         end
-    | appExp _ _ _ _ = Er.impossible "appExp" (* TODO: shouldn't be error *)
+    | appExp TOP _ f args =
+        Ex (F.externalCall (Symbol.name f) (map unEx args))
+    | appExp _ _ _ _ = Er.impossible "appExp"
 
   fun arithExp oper ge1 ge2 =
     let
@@ -215,15 +224,15 @@ struct
     end
 
   fun strCompExp Absyn.LtOp ge1 ge2 =
-        Ex (F.externalCall ("stringLessThan", [unEx ge1, unEx ge2]))
+        Ex (F.externalCall "stringLessThan" [unEx ge1, unEx ge2])
     | strCompExp Absyn.LeOp ge1 ge2 =
-        Ex (F.externalCall ("not", [unEx (strCompExp Absyn.GtOp ge1 ge2)]))
+        Ex (F.externalCall "not" [unEx (strCompExp Absyn.GtOp ge1 ge2)])
     | strCompExp Absyn.GtOp ge1 ge2 = strCompExp Absyn.LtOp ge2 ge1
     | strCompExp Absyn.GeOp ge1 ge2 = strCompExp Absyn.LeOp ge2 ge1
     | strCompExp Absyn.EqOp ge1 ge2 =
-        Ex (F.externalCall ("stringEqual", [unEx ge1, unEx ge2]))
+        Ex (F.externalCall "stringEqual" [unEx ge1, unEx ge2])
     | strCompExp Absyn.NeqOp ge1 ge2 =
-        Ex (F.externalCall ("not", [unEx (strCompExp Absyn.EqOp ge1 ge2)]))
+        Ex (F.externalCall "not" [unEx (strCompExp Absyn.EqOp ge1 ge2)])
     | strCompExp _ _ _ = Er.impossible "strCompExp"
 
   fun recExp fs =
@@ -233,7 +242,7 @@ struct
     in
       Ex (Tr.ESEQ
         (Tr.SEQ
-          (Tr.MOVE (Tr.TEMP r, F.externalCall ("allocRecord", [Tr.CONST sz])),
+          (Tr.MOVE (Tr.TEMP r, F.externalCall "allocRecord" [Tr.CONST sz]),
            seq (initFields r fs 0)),
          Tr.TEMP r))
     end
@@ -320,7 +329,30 @@ struct
       val r = T.newtemp ()
     in
       Ex (Tr.ESEQ
-        (Tr.MOVE (Tr.TEMP r, F.externalCall ("initArray", [unEx sz, unEx init])),
+        (Tr.MOVE (Tr.TEMP r, F.externalCall "initArray" [unEx sz, unEx init]),
          Tr.TEMP r))
     end
+
+  fun funFrag f bdy (LEVEL ({frame, ...}, _)) =
+        let
+          val frag = F.PROC {name=f, body=unNx bdy, frame=frame}
+        in
+          fragmentlist := frag :: !fragmentlist
+        end
+    | funFrag _ _ _ = Er.impossible "funFrag"
+
+  (* Wrap the whole program in a PROC frag *)
+  fun getResult prog =
+    let
+      val (frm, _) = F.newFrame 0 R.paramBaseOffset
+      val frag = F.PROC {name=Temp.namedlabel "tigermain",
+                         body=unNx prog,
+                         frame=frm}
+    in
+      fragmentlist := frag :: !fragmentlist;
+      !fragmentlist
+    end
+
+  (* TODO: Delete when done testing *)
+  fun reset () = fragmentlist := []
 end
