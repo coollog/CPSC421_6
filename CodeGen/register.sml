@@ -43,22 +43,22 @@ struct
 
   (* of course, none of the following should be empty list *)
 
-  val NPSEUDOREGS = 100 (* change this to the proper value *)
+  val NPSEUDOREGS = 25 (* change this to the proper value *)
   val localsBaseOffset : int = ~4 * (1 + NPSEUDOREGS) (* change this to the proper value *)
   val paramBaseOffset : int = 8  (* change this to the proper value *)
 
   val specialregs : (Temp.temp * register) list = [
-    (RV, "eax"),
-    (FP, "ebp"),
-    (SP, "esp"),
-    (EBX, "ebx"),
-    (ECX, "ecx"),
-    (EDX, "edx"),
-    (ESI, "esi"),
-    (EDI, "edi")]
-  val calleesaves : register list = ["ebx", "edi", "esi"]
-  val truecallersaves : register list = ["eax", "ecx", "edx"]
-  val callersaves : register list = ["eax", "ecx", "edx"]
+    (RV, "%eax"),
+    (FP, "%ebp"),
+    (SP, "%esp"),
+    (EBX, "%ebx"),
+    (ECX, "%ecx"),
+    (EDX, "%edx"),
+    (ESI, "%esi"),
+    (EDI, "%edi")]
+  val calleesaves : register list = ["%ebx", "%edi", "%esi"]
+  val truecallersaves : register list = ["%eax", "%ecx", "%edx"]
+  val callersaves : register list = ["%eax", "%ecx", "%edx"]
 
   val pseudoregs: register list =
     List.tabulate(NPSEUDOREGS, fn i => "f" ^ Int.toString i)

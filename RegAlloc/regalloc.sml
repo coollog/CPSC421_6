@@ -27,203 +27,164 @@ struct
       Just do the "simplify" and then do the "select".
     *)
 
-   (* The following few functions are just utility functions meant to 
-    * make code more readable and easier to follow.
-    *)
+    structure G = Graph
+    structure L = Liveness
 
-  (*
-   *  listContains -> returns true if "list" contains "elt" and false
-   *  otherwise
-   *)
-   fun listContains(list, elt) =
-     List.exists (fn(e) => (e = elt)) list
+    (* a set of nodes *)
+    type nodeset = unit Graph.Table.table * Graph.node list
 
-   (*
-    * Returns true if table[key] exists and false otherwise
-    *)
-   fun tempTableContains(table, key) =
-     let
-       val value = Temp.Table.look(table, key)
-     in
-       case value 
-         of SOME (x) => true
-          | NONE => false
-     end
+    (* a modified graph : we store which nodes are "in" the graph *)
+    datatype rgraph = RGRAPH of {graph:Graph.graph, nodes:nodeset}
 
-   (*
-    * Returns table[key] or raises  exception if that does not exist
-    *) 
-   fun getFromGraphTable(table, key) =
-     let
-       val value = Graph.Table.look(table, key)
-     in
-       case value
-         of SOME (x) => x
-          | NONE =>
-              ErrorMsg.impossible ("node not found in table")
-     end
+    (* is a node currently "in" the graph *)
+    fun member (node, RGRAPH{graph=_, nodes=(t, _)}) = (
+      case G.Table.look(t, node)
+        of SOME(_) => true
+         | _ => false
+    )
 
-   (*
-    * Returns table[key] or raises  exception if that does not exist
-    *) 
-   fun getFromTempTable(table, key) =
-     let
-       val value = Temp.Table.look(table, key)
-     in
-       case value
-         of SOME (x) => x
-          | NONE =>
-              ErrorMsg.impossible ("temp not found in table")
-     end
-
-   fun color {
-     interference = Liveness.IGRAPH{graph, tnode, gtemp, moves}, 
-     initial,
-     registers } = 
+    (* remove a node from the graph by reconstructing the set + lst
+    * nodeset, albeit simple, does not provide O(1) delete, so this take O(n),
+    * where n is the number of nodes *)
+    fun remove (node, RGRAPH{graph, nodes=(t, lst)}) =
     let
-      (* Syntactic sugar to make it easier to get the number of registers *)
-      val regNum = length(registers)  
-      (* A mapping providing the current degree of the tmpNode. Notice that
-      * those values change as we simplify nodes. *)
-      val nodeOrderMap = 
-        foldr 
-        (fn(n, map) => Graph.Table.enter(map, n, length(Graph.adj(n))))
-        Graph.Table.empty
-        (Graph.nodes(graph))
-
-      (* A node may be simplified if it is not a part of the pre-allocation
-      * and if it has low enough degree (insignificant degree) *)
-      fun nodeMayBeSimplified(tempNode) =
-        not(
-          tempTableContains(initial, getFromGraphTable(gtemp, tempNode)))
-        andalso
-          getFromGraphTable(nodeOrderMap, tempNode) < regNum
-
-      (* Simplification of a node means decrease in the degree of all 
-      * its neighbors. This function does the decreasing. *)
-      fun simplifyNode(tempNode) = 
-        let
-          fun decrementForNode (adjNode) =
-            let
-              val currVal = getFromGraphTable(nodeOrderMap, adjNode)
-            in
-              Graph.Table.enter(nodeOrderMap, adjNode, currVal - 1)
-            end
-        in
-          map decrementForNode (Graph.adj(tempNode))
-        end
-
-      (* simplifyRound simplifies a node within a round. A round of
-       * simplification is just the foldr of this function across
-       * the pair (leftNodes, simplifiedNodes)
-       *)
-      fun simplifyRound(tempNode, (leftNodes, simplifiedNodes)) =
-        if 
-          nodeMayBeSimplified(tempNode)
-        then
-          (simplifyNode(tempNode);
-           (leftNodes, tempNode :: simplifiedNodes))
-        else
-          (tempNode::leftNodes, simplifiedNodes)
-        
-      (* Applies simplifyRound to nodes within simplified until
-      * all of the nodes have been simplified. Notice that some
-      * nodes MAY be marked for "spilling," even though we don't support
-      * spilling. When actual spilling in the select phase happens 
-      * we raise an exception 
-      *
-      * NOTE: the unsimplified array SHOULD NOT contain nodes that 
-      * have been assigned a register (are within initial). That is because
-      * it does not make sense to attempt to assign a new register to them.
-      * *)
-      fun simplify(unsimplified, simplified) =
-        let
-          val (unsimplified, simplified) = 
-            foldr
-              simplifyRound
-              ([], [])
-              unsimplified
-
-          fun existsUnsimplifiedLeft (tempNodes) =
-            List.exists 
-              (fn(node) => nodeMayBeSimplified(node)) 
-              tempNodes
-        in
-          (* Continue until there are no nodes that may be simplified
-          * without "picking for spillin"*)
-          if existsUnsimplifiedLeft (unsimplified)
-          then
-            simplify(unsimplified, simplified)
-          else 
-            (* We pick for spilling if we have something to pick from *)
-            if (length(unsimplified) > 0)
-            then
-              (simplifyNode(hd(unsimplified));
-               simplify(tl(unsimplified), hd(unsimplified)::simplified))
-            else
-              (* Otherwise we are done *)
-              (unsimplified, simplified)
-        end
-    
-      (* Get an unused color to color a node *)
-      fun getUnusedColor(tempNode, assignment) =
-        let
-          val adjNodes = Graph.adj(tempNode)
-          fun removeFromList(list, elt) = 
-            List.filter (fn(n) => elt <> n) list
-
-          val unusedColors = 
-            foldr
-              (fn(node, remColors) =>
-                let
-                  val temp = getFromGraphTable(gtemp, node)
-                in
-                  if tempTableContains(assignment, temp)
-                  then
-                    removeFromList(
-                      remColors, 
-                      getFromTempTable(assignment, temp))
-                  else
-                    remColors
-                end)
-              registers
-              adjNodes
-
-        in
-          if length(unusedColors) < 1
-          then
-            ErrorMsg.impossible("Not enough colors!")
-          else
-            List.nth(unusedColors, 0)
-        end
-
-      (* The select part is simple: assign colors one by one until 
-      * all nodes have been colored.*)
-      fun select(nodesToColor) =
-        let
-          fun colorNode(node, assignment) =
-            let
-              val colorToUse = getUnusedColor(node, assignment)
-              val temp = getFromGraphTable(gtemp, node)
-              val assignment = Temp.Table.enter(assignment, temp, colorToUse) 
-            in
-              assignment
-            end
-        in
-          foldr colorNode initial nodesToColor
-        end
-
-      (* Nodes to consider are those NOT within the initial mapping. *)
-      val nodesToConsider = 
+      (* filter out other nodes *)
+      val lst' = (
         List.filter
-          (fn(node) => 
-            (tempTableContains(
-              initial, getFromGraphTable(gtemp, node)))) 
-          (Graph.nodes(graph))
+        (fn (x) => not(G.eq(x, node)))
+        lst
+      )
 
-      val (_, simplified) = simplify([], nodesToConsider)
+      (* re-construct the table *)
+      val t' = List.foldr (fn (x, t) => G.Table.enter(t, x, ())) G.Table.empty lst'
     in
-      select(simplified)
+      (* construct the new RGRAPH *)
+      RGRAPH{
+        graph=graph,
+        nodes=(t', lst')
+      }
     end
+
+  (* degree of a node within a given graph *)
+   fun degree (node, rgraph) = List.length(
+
+     (* find nodes that are adjacent AND in the rgraph *)
+     List.filter
+     (fn (x) => member(x, rgraph))
+     (G.adj(node))
+   )
+
+   (* argmin of f(x) applied to a list of elements *)
+   fun argmin f lst = #1 (
+    List.foldl
+    (fn (elem, (min_elem, min_val)) =>
+      let 
+        (* apply function to element *)
+        val x = f(elem)
+      in
+        (* new min found *)
+        if x < min_val then (elem, x)
+
+        (* keep old min *)
+        else (min_elem, min_val)
+      end
+    )
+    (* start at the head of the list *)
+    ((List.hd lst), f (List.hd lst))
+    lst
+   )
+
+   (* node with lowest degree in a graph *)
+   fun lowest_degree (rgraph) =
+   let 
+     val RGRAPH{graph, nodes=(t, lst)} = rgraph
+   in 
+     argmin (fn (x) => degree(x, rgraph)) lst
+   end
+
+   (* simplify *)
+   fun simplify (RGRAPH{graph, nodes=(t, [])}, k, stack) = stack
+     | simplify (rgraph, k, stack) =
+     let
+       (* find the node with the lowest degree *)
+         val node = lowest_degree(rgraph)
+     in
+         (* it better have degree less than k for this to work *)
+         if (degree(node, rgraph) < k)
+         then (
+           (* push onto stack and recursively simplify *)
+           simplify (
+              remove(node, rgraph),
+              k,
+              node :: stack
+           )
+         ) else (
+           (* simplify - select algorithm fails in this case *)
+           ErrorMsg.impossible "failed to color interference graph";
+           []
+         )
+     end
+
+   (* find temporary corresponding to a graph node *)
+   fun find_temp (gtemp, node) = (
+      case G.Table.look(gtemp, node)
+        of SOME(temp) => temp
+         | _ => (ErrorMsg.impossible ("table lookup failed"); Temp.newtemp())
+   )
+
+   fun find_color (gtemp, node, alloc, registers) =
+   let
+     (* which registers are taken *)
+     val taken = (
+       List.mapPartial
+       (fn (adj_node) => Temp.Table.look(alloc, find_temp(gtemp, adj_node)))
+       (G.adj(node))
+     )
+
+     (* O(N) search -- is this register taken? *)
+     fun istaken (register, taken) = (
+       case (List.find (fn (t) => (t = register)) taken)
+         of SOME(_) => true
+          | _ => false
+     )
+   in
+     (* make sure we succeeded to find a color *)
+     case (List.find (fn (r) => not(istaken(r, taken))) registers)
+       of SOME(register) => register
+        | _ => ErrorMsg.impossible ("failed to find color for register")
+   end
+
+   fun color {interference=L.IGRAPH{graph, tnode, gtemp, moves}, initial, registers} = 
+     let
+
+       (* k = # of registers *)
+       val k = List.length registers
+
+       (* create table of nodes ( used as set ) *)
+       val nodes = List.foldr (fn (x, t) => G.Table.enter(t, x, ())) G.Table.empty (G.nodes(graph))
+
+       (* simplify *)
+       val stack = simplify(RGRAPH{graph=graph, nodes=(nodes, G.nodes(graph))}, k, [])
+
+       (* select *)
+       fun select ([], alloc) = alloc
+         | select (node :: stack, alloc) =
+           let
+             
+             (* find a color for this register *)
+             val register = find_color(gtemp, node, alloc, registers)
+
+             (* find the corresponding temporary *)
+             val temp = find_temp(gtemp, node)
+
+             (* update allocation table *)
+             val alloc' = Temp.Table.enter(alloc, temp, register)
+           in
+             (* assign registers in the rest of the stack *)
+             select(stack, alloc')
+           end
+     in
+       select(stack, initial)
+     end
 
 end (* functor RegAllocGen *)

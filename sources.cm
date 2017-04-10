@@ -1,4 +1,4 @@
-Group is 
+Group is
 
 (* -- The Library -- *)
 $/smlnj-lib.cm
@@ -51,3 +51,5 @@ RegAlloc/flowgraph.sml
 RegAlloc/makegraph.sml
 RegAlloc/liveness.sml
 RegAlloc/regalloc.sml
+
+RegAlloc/liveset.sml

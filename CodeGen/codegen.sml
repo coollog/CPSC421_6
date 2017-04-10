@@ -51,7 +51,7 @@ struct
           emit(A.OPER{assem="jmp `j0\n", src=[], dst=[], jump=SOME[lab]})
 
       | munchStm(T.JUMP(e, labels)) =
-          emit(A.OPER{assem="jmp %`s0\n", src=[munchExp e], dst=[],
+          emit(A.OPER{assem="jmp `s0\n", src=[munchExp e], dst=[],
                       jump=SOME labels})
 
       (* cjump *)
@@ -66,7 +66,7 @@ struct
             | T.LE => "jle"
             | _ => ErrorMsg.impossible "CodeGen: INVALID CJUMP"
           in
-            emit(A.OPER{assem="cmp %`s0, %`s1\n",
+            emit(A.OPER{assem="cmp `s0, `s1\n",
                         src=[munchExp e1, munchExp e2],
                         dst=[], jump=NONE});
             emit(A.OPER{assem=jumpInstr ^ " " ^ Symbol.name lab1 ^ "\n",
@@ -76,12 +76,16 @@ struct
 
       (* MOVE reg e1 *)
       | munchStm(T.MOVE(T.TEMP i, e1)) =
-          emit(A.MOVE{assem="mov %`s0, %`d0\n", src=munchExp e1, dst=i})
+          emit(A.OPER{assem="mov `s0, `d0\n",
+                      src=[munchExp e1], dst=[i], jump=NONE})
+          (*emit(A.MOVE{assem="mov `s0, `d0\n", src=munchExp e1, dst=i})*)
 
       (* MOVE MEM[e1] e2 *)
       | munchStm(T.MOVE(T.MEM(e1, s1),e2)) =
-          emit(A.MOVE{assem="mov %`s0, (%`d0)\n",
-                      dst=munchExp e1, src=munchExp e2})
+          emit(A.OPER{assem="mov `s0, (`d0)\n",
+                      dst=[munchExp e1], src=[munchExp e2], jump=NONE})
+          (*emit(A.MOVE{assem="mov `s0, (`d0)\n",
+                      dst=munchExp e1, src=munchExp e2})*)
 
       | munchStm(T.MOVE _) =
           ErrorMsg.impossible "CodeGen: INVALID MOV"
@@ -91,79 +95,73 @@ struct
     (* Push args onto stack. *)
     and munchArgs(arg::args) =
         (
-          emit(A.OPER{assem="push %`s0\n",
+          emit(A.OPER{assem="push `s0\n",
                       src=[munchExp arg], dst=[], jump=NONE});
           munchArgs(args)
         )
       | munchArgs([]) = ()
 
       (* LOAD MEM[e1 + i] *)
-    and munchExp(T.MEM(T.BINOP(T.PLUS,e1,T.CONST i), s1)) =
-          result(fn r => emit(A.OPER
-                {assem="lea " ^ Int.toString i ^ "(%`s0), %`d0\n",
-                 src=[munchExp e1], dst=[r], jump=NONE}))
-
-      (* LOAD MEM[i + e1] *)
-      | munchExp(T.MEM(T.BINOP(T.PLUS,T.CONST i,e1), s1)) =
-          result(fn r => emit(A.OPER
-                {assem="lea " ^ Int.toString i ^ "(%`s0), %`d0\n",
-                 src=[munchExp e1], dst=[r], jump=NONE}))
-
-      (* LOAD MEM[i] *)
-      | munchExp(T.MEM(T.CONST i, s2)) =
-          result(fn r => emit(A.OPER
-                {assem="lea $" ^ Int.toString i ^ ", %`d0\n",
-                 src=[], dst=[r], jump=NONE}))
-      | munchExp(T.MEM(e1, s1)) =
-          result(fn r => emit(A.OPER
-                {assem="lea (%`s0), %`d0\n",
-                 src=[munchExp e1], dst=[r], jump=NONE}))
+    and
+      (* FETCH MEM[i] *)
+      munchExp(T.MEM(e1, s1)) =
+          let
+            val sizePrefix = case s1 of
+              1 => "b"
+            | 2 => "w"
+            | 4 => "l"
+            | _ => ErrorMsg.impossible "CodeGen: INVALID MEM SIZE"
+          in
+            result(fn r => emit(A.OPER
+                  {assem="mov" ^ sizePrefix ^ " (`s0), `d0\n",
+                   src=[munchExp e1], dst=[r], jump=NONE}))
+          end
 
       (* ADD *)
       | munchExp(T.BINOP(T.PLUS,e1,e2)) =
           result(fn r => emit(A.OPER
-                {assem="mov %`s0, %`d0\n" ^
-                       "add %`s1, %`d0\n",
+                {assem="mov `s0, `d0\n" ^
+                       "add `s1, `d0\n",
                  src=[munchExp e1, munchExp e2],
                  dst=[r], jump=NONE}))
 
       (* SUB *)
       | munchExp(T.BINOP(T.MINUS,e1,e2)) =
           result(fn r => emit(A.OPER
-                {assem="mov %`s0, %`d0\n" ^
-                       "sub %`s1, %`d0\n",
+                {assem="mov `s0, `d0\n" ^
+                       "sub `s1, `d0\n",
                  src=[munchExp e1, munchExp e2],
                  dst=[r], jump=NONE}))
 
       (* IMUL *)
       | munchExp(T.BINOP(T.MUL,e1,e2)) =
           result(fn r => emit(A.OPER
-                {assem="mov %`s0, %`d0\n" ^
-                       "imul %`s1, %`d0\n",
+                {assem="mov `s0, `d0\n" ^
+                       "imul `s1, `d0\n",
                  src=[munchExp e1, munchExp e2],
                  dst=[r], jump=NONE}))
 
       (* IDIV - TODO: FIX THIS *)
       | munchExp(T.BINOP(T.DIV,e1,e2)) =
           result(fn r => emit(A.OPER
-                {assem="mov %`s0, %`d0\n" ^
-                       "idiv %`s1, %`d0\n",
+                {assem="mov `s0, `d0\n" ^
+                       "idiv `s1\n",
                  src=[munchExp e1, munchExp e2],
-                 dst=[r], jump=NONE}))
+                 dst=[R.RV], jump=NONE}))
 
       (* AND *)
       | munchExp(T.BINOP(T.AND,e1,e2)) =
           result(fn r => emit(A.OPER
-                {assem="mov %`s0, %`d0\n" ^
-                       "and %`s1, %`d0\n",
+                {assem="mov `s0, `d0\n" ^
+                       "and `s1, `d0\n",
                  src=[munchExp e1, munchExp e2],
                  dst=[r], jump=NONE}))
 
       (* OR *)
       | munchExp(T.BINOP(T.OR,e1,e2)) =
           result(fn r => emit(A.OPER
-                {assem="mov %`s0, %`d0\n" ^
-                       "or %`s1, %`d0\n",
+                {assem="mov `s0, `d0\n" ^
+                       "or `s1, `d0\n",
                  src=[munchExp e1, munchExp e2],
                  dst=[r], jump=NONE}))
 
@@ -173,7 +171,7 @@ struct
       (* CONST *)
       | munchExp(T.CONST i) =
           result(fn r => emit(A.OPER
-                {assem="mov $" ^ Int.toString i ^ ", %`d0\n",
+                {assem="mov $" ^ Int.toString i ^ ", `d0\n",
                  src=[], dst=[r], jump=NONE}))
 
       | munchExp(T.CONSTF _) =
@@ -183,7 +181,7 @@ struct
 
       | munchExp(T.NAME label) =
           result(fn r => emit(A.OPER
-                {assem="add " ^ Symbol.name label ^ ", %`d0\n",
+                {assem="lea " ^ Symbol.name label ^ "(,1), `d0\n",
                  src=[], dst=[r], jump=NONE}))
 
       (* CALL *)
@@ -193,18 +191,18 @@ struct
         in
           (* Push caller saves *)
           map (fn reg =>
-                  emit(A.OPER{assem="push %" ^ reg ^ "\n",
+                  emit(A.OPER{assem="push " ^ reg ^ "\n",
                               src=[], dst=[], jump=NONE})) R.truecallersaves;
           munchArgs(rev(args));
           emit(A.OPER{assem="call " ^ Symbol.name lab ^ "\n",
                       src=[],
-                      dst=[R.RV, R.ECX, R.EDX],
+                      dst=[R.RV, R.ECX, R.EDX], (* caller-saves *)
                       jump=NONE});
           emit(A.OPER{assem="add $" ^ Int.toString paramSize ^ ", %esp\n",
                       src=[], dst=[], jump=NONE});
           (* Pop caller saves *)
           map (fn reg =>
-                  emit(A.OPER{assem="pop %" ^ reg ^ "\n",
+                  emit(A.OPER{assem="pop " ^ reg ^ "\n",
                               src=[], dst=[], jump=NONE}))
               (rev R.truecallersaves);
           R.RV
@@ -252,12 +250,12 @@ struct
         /* (no need to save EBX, EBP, or ESP) */
       *)
       val prologue = [
-        A.OPER({assem="push %ebp\n", src=[],dst=[],jump=NONE}),
-        A.OPER({assem="mov %esp, %ebp\n", src=[],dst=[],jump=NONE}),
-        A.OPER({assem="sub $" ^ Int.toString localVarSize ^ ", %esp\n",
+        A.OPER({assem="push %ebp\n" ^
+                      "mov %esp, %ebp\n" ^
+                      "sub $" ^ Int.toString localVarSize ^ ", %esp\n",
                 src=[],dst=[],jump=NONE})
       ] @ map
-            (fn reg => A.OPER({assem="push %" ^ reg, src=[],dst=[],jump=NONE}))
+            (fn reg => A.OPER({assem="push " ^ reg ^ "\n", src=[],dst=[],jump=NONE}))
             R.calleesaves
 
       (*
@@ -270,17 +268,18 @@ struct
       *)
       val epilogue =
         map
-          (fn reg => A.OPER({assem="pop %" ^ reg ^ "\n", src=[],dst=[],jump=NONE}))
+          (fn reg => A.OPER({assem="pop " ^ reg ^ "\n", src=[],dst=[],jump=NONE}))
           R.calleesaves @
         [
-          A.OPER({assem="mov %ebp %esp\n", src=[],dst=[],jump=NONE}),
-          A.OPER({assem="pop %ebp\n", src=[],dst=[],jump=NONE}),
-          A.OPER({assem="ret\n", src=[],dst=[],jump=NONE})
+          A.OPER({assem="mov %ebp %esp\n" ^
+                        "add $" ^ Int.toString localVarSize ^ ", %esp\n" ^
+                        "pop %ebp\n" ^
+                        "ret\n", src=[],dst=[],jump=NONE})
         ]
 
       val newBody = prologue @ map (#1) body @ epilogue
     in
-      genSpills(newBody, fn t => "t" ^ Temp.makestring t)
+      genSpills(newBody, fn t => valOf(Temp.Table.look(allocation, t)))
     end
 
 (************************************************************

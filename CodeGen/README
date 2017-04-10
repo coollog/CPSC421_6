@@ -1,13 +1,13 @@
 <i> what you have done so far
 
-I have written all the parts of CodeGen but have not tested anything. Hopefully,
-but most likely not, it does what it should do.
+I have written all the parts of CodeGen and tested minimally with IG1 and RA1.
+Hopefully, it does what it should do.
 
 <ii> how other groups would use your code (i.e., the bin files) ?
 
 Just plug the code into 'sources.cm', or copy it into your CodeGen folder.
-In main.sml, you will need to call procEntryExit using the RegAlloc part. I do
-not know how this works yet either.
+In main.sml, you will need to call procEntryExit using the RegAlloc part. I am
+not completely sure how this works yet either.
 
 <iii> what assumptions you have made about your current implementations ?
 

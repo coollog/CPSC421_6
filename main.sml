@@ -13,28 +13,27 @@ struct
   structure C = Codegen
   structure F = C.F
 
-  fun emitproc out (F.DATA {lab, s}) = TextIO.output(out,s)
-                      (*** should really be output(out,C.string(lab,s)) ***)
+  fun emitproc out (F.DATA {lab, s}) = TextIO.output(out, C.string(lab,s))
 
     | emitproc out (F.PROC{name, body, frame}) =
-        let (*val _ = print ("Emit " ^ Symbol.name name ^ "\n")
-            val _ = Printtree.printtree(out,body);*)
+        let (*val _ = print ("Emit " ^ Symbol.name name ^ "\n\n")*)
+            (*val _ = Printtree.printtree(out,body);*)
 
             val stms = Canon.linearize body
             val stms' = Canon.traceSchedule(Canon.basicBlocks stms)
 
-            val _ =
+            (*val _ =
               let
                 fun printstms(stm::stms) =
                       (Printtree.printtree(out, stm); printstms(stms))
                   | printstms([]) = ()
               in
                 printstms(stms')
-              end
+              end*)
 
             val instrs = List.concat(map C.codegen stms')
 
-            (* IG1 and RA6 *)
+            (* IG1 and RA1 *)
 
             (*
              * Once the RegAlloc module is ready, you can get
@@ -49,7 +48,7 @@ struct
              *
              *)
 
-            (*(* convert assembly instructions to flowgraph and list of nodes *)
+            (* convert assembly instructions to flowgraph and list of nodes *)
             val (flowgraph, nodes) = MakeGraph.instrs2graph(instrs)
 
             (* convert flowgraph to interference graph and liveout mapping *)
@@ -77,15 +76,15 @@ struct
             val instrs' = C.procEntryExit({
               name=name,
               body=map (fn instr => (instr, [])) instrs,
-              allocation=initial,
+              allocation=allocation,
               formals=[],
               frame=frame
-            })*)
+            })
 
             val format0 = Assem.format (fn t => "t" ^ Temp.makestring t)
-            (*val format1 = Assem.format(fn t => (valOf(Temp.Table.look(allocation, t))))*)
+            val format1 = Assem.format(fn t => (valOf(Temp.Table.look(allocation, t))))
 
-         in app (fn i => TextIO.output(out,format0 i)) instrs
+         in app (fn i => TextIO.output(out,format1 i)) instrs'
         end
 
   fun withOpenFile fname f =
