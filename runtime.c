@@ -1,5 +1,6 @@
 /* #undef __STDC__ */
 #include <stdio.h>
+#include <stdlib.h>
 
 
 int *initArray(int size, int init)
@@ -29,7 +30,7 @@ int stringEqual(struct string *s, struct string *t)
 
 int stringLessThan (struct string *s, struct string *t)
 {int i,lt=1;
- if (s->length>=t->length) 
+ if (s->length>=t->length)
    { struct string *temp=s; s=t; t=temp;
      lt=!lt;}
  for(i=0;i<s->length;i++)
@@ -68,13 +69,13 @@ int ord(struct string *s)
 
 struct string *chr(int i)
 {
- if (i<0 || i>=256) 
+ if (i<0 || i>=256)
    {printf("chr(%d) out of range\n",i); exit(1);}
  return consts+i;
 }
 
 int size(struct string *s)
-{ 
+{
  return s->length;
 }
 

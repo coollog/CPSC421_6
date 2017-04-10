@@ -1,10 +1,12 @@
+.globl tigermain
+tigermain:
 push %ebp
 mov %esp, %ebp
 sub $100, %esp
 push %ebx
 push %edi
 push %esi
-L86:
+L5:
 mov $~104, %ebx
 	movl	-4(%ebp), %edi # load pseudo-register
 mov %edi, %ebx
@@ -29,12 +31,12 @@ mov $~104, %ebx
 mov %edi, %ebx
 add %ebx, %ebx
 movl (%ebx), %ebx
-jmp L85
-L85:
+jmp L4
+L4:
 pop %ebx
 pop %edi
 pop %esi
-mov %ebp %esp
+mov %ebp, %esp
 add $100, %esp
 pop %ebp
 ret

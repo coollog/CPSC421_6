@@ -250,7 +250,10 @@ struct
         /* (no need to save EBX, EBP, or ESP) */
       *)
       val prologue = [
-        A.OPER({assem="push %ebp\n" ^
+        A.OPER({assem=".globl " ^ Symbol.name name ^ "\n" ^
+                      ".type " ^ Symbol.name name ^ ", @function\n" ^
+                      Symbol.name name ^ ":\n" ^
+                      "push %ebp\n" ^
                       "mov %esp, %ebp\n" ^
                       "sub $" ^ Int.toString localVarSize ^ ", %esp\n",
                 src=[],dst=[],jump=NONE})
@@ -271,7 +274,7 @@ struct
           (fn reg => A.OPER({assem="pop " ^ reg ^ "\n", src=[],dst=[],jump=NONE}))
           R.calleesaves @
         [
-          A.OPER({assem="mov %ebp %esp\n" ^
+          A.OPER({assem="mov %ebp, %esp\n" ^
                         "add $" ^ Int.toString localVarSize ^ ", %esp\n" ^
                         "pop %ebp\n" ^
                         "ret\n", src=[],dst=[],jump=NONE})
