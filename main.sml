@@ -22,14 +22,14 @@ struct
             val stms = Canon.linearize body
             val stms' = Canon.traceSchedule(Canon.basicBlocks stms)
 
-            (*val _ =
+            val _ =
               let
                 fun printstms(stm::stms) =
                       (Printtree.printtree(out, stm); printstms(stms))
                   | printstms([]) = ()
               in
                 printstms(stms')
-              end*)
+              end
 
             val instrs = List.concat(map C.codegen stms')
 
@@ -73,18 +73,18 @@ struct
               registers=Register.registers
             }
 
-            val instrs' = C.procEntryExit({
+            (*val instrs' = C.procEntryExit({
               name=name,
               body=map (fn instr => (instr, [])) instrs,
               allocation=allocation,
               formals=[],
               frame=frame
-            })
+            })*)
 
             val format0 = Assem.format (fn t => "t" ^ Temp.makestring t)
             val format1 = Assem.format(fn t => (valOf(Temp.Table.look(allocation, t))))
 
-         in app (fn i => TextIO.output(out,format1 i)) instrs'
+         in app (fn i => TextIO.output(out,format1 i)) instrs
         end
 
   fun withOpenFile fname f =
