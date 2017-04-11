@@ -76,16 +76,12 @@ struct
 
       (* MOVE reg e1 *)
       | munchStm(T.MOVE(T.TEMP i, e1)) =
-          emit(A.OPER{assem="mov `s0, `d0\n",
-                      src=[munchExp e1], dst=[i], jump=NONE})
-          (*emit(A.MOVE{assem="mov `s0, `d0\n", src=munchExp e1, dst=i})*)
+          emit(A.MOVE{assem="mov `s0, `d0\n", src=munchExp e1, dst=i})
 
       (* MOVE MEM[e1] e2 *)
       | munchStm(T.MOVE(T.MEM(e1, s1),e2)) =
-          emit(A.OPER{assem="mov `s0, (`d0)\n",
-                      dst=[munchExp e1], src=[munchExp e2], jump=NONE})
-          (*emit(A.MOVE{assem="mov `s0, (`d0)\n",
-                      dst=munchExp e1, src=munchExp e2})*)
+          emit(A.MOVE{assem="mov `s0, (`d0)\n",
+                      dst=munchExp e1, src=munchExp e2})
 
       | munchStm(T.MOVE _) =
           ErrorMsg.impossible "CodeGen: INVALID MOV"
@@ -432,17 +428,18 @@ struct
 	        end
 
 	  fun mapInstr(A.OPER{assem=insn, dst=dsts, src=srcs, jump=jmp}) =
-	    let
-		    val (loadinsns, newsrcs) = mapsrcs(srcs, [R.ECX, R.EDX]);
-        val (storeinsns, newdsts) = mapdsts(dsts, srcs, newsrcs);
-	    in
-		    A.OPER{assem=loadinsns ^ insn ^ storeinsns,
-			         dst=newdsts, src=newsrcs, jump=jmp}
-	    end
+	        mapInstrInternal(insn, srcs, dsts, jmp)
 	    | mapInstr(instr as A.LABEL _) = instr
-	    | mapInstr(instr) =
-	      (* we never generate these! *)
-        ErrorMsg.impossible ("CodeGen: unexpected instruction type in mapInstr!")
+	    | mapInstr(A.MOVE{assem=insn, dst=dst, src=src}) =
+          mapInstrInternal(insn, [src], [dst], NONE)
+    and mapInstrInternal(insn, srcs, dsts, jmp) =
+      let
+        val (loadinsns, newsrcs) = mapsrcs(srcs, [R.ECX, R.EDX]);
+        val (storeinsns, newdsts) = mapdsts(dsts, srcs, newsrcs);
+      in
+        A.OPER{assem=loadinsns ^ insn ^ storeinsns,
+               dst=newdsts, src=newsrcs, jump=jmp}
+      end
   in
     map mapInstr insns
   end
