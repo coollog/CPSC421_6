@@ -144,10 +144,15 @@ struct
       (* IDIV - TODO: FIX THIS *)
       | munchExp(T.BINOP(T.DIV,e1,e2)) =
           result(fn r => emit(A.OPER
-                {assem="mov `s0, `d0\n" ^
-                       "idiv `s1\n",
-                 src=[munchExp e1, munchExp e2],
-                 dst=[R.RV], jump=NONE}))
+                {assem="mov `s0, `d0 # save %eax\n" ^
+                       "mov `s1, `d1 # save %edx\n" ^
+                       "mov `s2, `s0 # put divisor in %eax\n" ^
+                       "idiv `s3\n" ^
+                       "mov `s3, `d0 # put quotient in result reg\n" ^
+                       "mov `d0, `s0 # restore %eax\n" ^
+                       "mov `d1, `s1 # restore %edx\n",
+                 src=[R.RV, R.EDX, munchExp e1, munchExp e2],
+                 dst=[r, Temp.newtemp()], jump=NONE}))
 
       (* AND *)
       | munchExp(T.BINOP(T.AND,e1,e2)) =
@@ -186,27 +191,30 @@ struct
 
       (* CALL *)
       | munchExp(T.CALL(T.NAME lab, args)) =
-        let
-          val paramSize = 4 * length(args)
-        in
-          (* Push caller saves *)
-          map (fn reg =>
-                  emit(A.OPER{assem="push " ^ reg ^ "\n",
-                              src=[], dst=[], jump=NONE})) R.truecallersaves;
-          munchArgs(rev(args));
-          emit(A.OPER{assem="call " ^ Symbol.name lab ^ "\n",
-                      src=[],
-                      dst=[R.RV, R.ECX, R.EDX], (* caller-saves *)
-                      jump=NONE});
-          emit(A.OPER{assem="add $" ^ Int.toString paramSize ^ ", %esp\n",
-                      src=[], dst=[], jump=NONE});
-          (* Pop caller saves *)
-          map (fn reg =>
-                  emit(A.OPER{assem="pop " ^ reg ^ "\n",
-                              src=[], dst=[], jump=NONE}))
-              (rev R.truecallersaves);
-          R.RV
-        end
+        result(fn r =>
+          let
+            val paramSize = 4 * length(args)
+          in
+            (* Push caller saves *)
+            map (fn reg =>
+                    emit(A.OPER{assem="push " ^ reg ^ "\n",
+                                src=[], dst=[], jump=NONE})) R.truecallersaves;
+            munchArgs(rev(args));
+            emit(A.OPER{assem="call " ^ Symbol.name lab ^ "\n",
+                        src=[],
+                        dst=[R.RV, R.ECX, R.EDX], (* caller-saves *)
+                        jump=NONE});
+            emit(A.OPER{assem="add $" ^ Int.toString paramSize ^ ", %esp\n",
+                        src=[], dst=[], jump=NONE});
+            emit(A.OPER{assem="mov %eax, `d0\n",
+                        src=[], dst=[r], jump=NONE});
+            (* Pop caller saves *)
+            map (fn reg =>
+                    emit(A.OPER{assem="pop " ^ reg ^ "\n",
+                                src=[], dst=[], jump=NONE}))
+                (rev R.truecallersaves);
+            r
+          end)
 
       | munchExp(T.ESEQ _ | T.CVTOP _ | T.CALL _) =
           ErrorMsg.impossible "CodeGen: INVALID ITREE EXP"
@@ -272,10 +280,9 @@ struct
       val epilogue =
         map
           (fn reg => A.OPER({assem="pop " ^ reg ^ "\n", src=[],dst=[],jump=NONE}))
-          R.calleesaves @
+          (rev(R.calleesaves)) @
         [
           A.OPER({assem="mov %ebp, %esp\n" ^
-                        "add $" ^ Int.toString localVarSize ^ ", %esp\n" ^
                         "pop %ebp\n" ^
                         "ret\n", src=[],dst=[],jump=NONE})
         ]
