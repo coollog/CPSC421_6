@@ -33,183 +33,164 @@ struct
   structure Er = ErrorMsg
   structure F = Frame
   structure R = Register
+  structure S = Symbol
 
-  (* currently just a sample output *)
   fun codegen(stm: T.stm) : A.instr list =
   let val ilist = ref (nil: A.instr list)
     fun emit x = ilist := x :: !ilist
     fun result(gen) = let val t = Temp.newtemp() in gen t; t end
 
+    (* Some functions to make munch code more organized. *)
+    fun emitLABEL(lab) = emit(A.LABEL{assem=assLABEL(lab), lab=lab})
+    and emitOPER(assem, src, dst, jump) =
+      emit(A.OPER{assem=assem,src=src,dst=dst,jump=jump})
+    and emitMOVE(assem, src, dst) =
+      emit(A.MOVE{assem=assem,src=src,dst=dst})
+
+    and resultOPER(assem, src, dst, jump) =
+      result(fn r => emitOPER(assem, src, r::dst, jump))
+
+    and explain(comment) = "\t\t\t\t\t\t\t# " ^ comment ^ "\n"
+
+    and assLABEL(lab) = S.name lab ^ ":\n"
+    and assJMP(lab) = "jmp `j0" ^ explain("jump to " ^ S.name lab)
+    and assJMPexp() = "jmp `s0" ^ explain("jump to somewhere")
+    and assCMP(relop, lab1, lab2) =
+      let
+        val jumpInstr = case relop of
+          T.EQ => "je"
+        | T.NE => "jne"
+        | T.GT => "jg"
+        | T.GE => "jge"
+        | T.LT => "jl"
+        | T.LE => "jle"
+        | _ => ErrorMsg.impossible "CodeGen: INVALID CJUMP"
+      in
+        "cmpl `s0, `s1" ^ explain("compare for jump...") ^
+        jumpInstr ^ " `j0" ^ explain("if true: jump to " ^ S.name lab1) ^
+        "jmp `j1" ^ explain("if false: jump to " ^ S.name lab2)
+      end
+    and assMOVreg() = "movl `s0, `d0" ^ explain("move to register")
+    and assMOVmem() = "movl `s0, (`d0)" ^ explain("move to memory")
+    and assMOVfetch() = "movl (`s0), `d0" ^ explain("fetch from memory")
+    and assMOVconst(i) = "movl $" ^ Int.toString i ^ ", `d0" ^
+                         explain("move constant to register")
+    and assADD() = "addl `s1, `d0" ^ explain("add two registers")
+    and assSUB() = "subl `s1, `d0" ^ explain("subtract two registers")
+    and assIMUL() = "imull `s1, `d0" ^ explain("multiply two registers")
+    and assIDIV() = "movl `s0, `d0\t# save %eax\n" ^
+                    "movl `s1, `d1\t# save %edx\n" ^
+                    "movl `s2, `s0\t# put divisor in %eax\n" ^
+                    "idiv `s3\t# divide by register\n" ^
+                    "movl `s3, `d0\t# put quotient in result register\n" ^
+                    "movl `d0, `s0\t# restore %eax\n" ^
+                    "movl `d1, `s1\t# restore %edx\n"
+    and assAND() = "andl `s1, `d0" ^ explain("bitwise and two registers")
+    and assOR() = "orl `s1, `d0" ^ explain("bitwise or two registers")
+    and assLEA(lab) = "lea " ^ S.name lab ^ "(,1), `d0\n"
+
     fun munchStm(T.SEQ(a,b)) = (munchStm a; munchStm b)
 
       (* label *)
-      | munchStm(T.LABEL lab) =
-          emit(A.LABEL{assem=Symbol.name lab ^ ":\n", lab=lab})
+      | munchStm(T.LABEL lab) = emitLABEL(lab)
 
       (* jump *)
       | munchStm(T.JUMP(T.NAME lab, _)) =
-          emit(A.OPER{assem="jmp `j0\n", src=[], dst=[], jump=SOME[lab]})
+          emitOPER(assJMP lab, [], [], SOME[lab])
 
       | munchStm(T.JUMP(e, labels)) =
-          emit(A.OPER{assem="jmp `s0\n", src=[munchExp e], dst=[],
-                      jump=SOME labels})
+          emitOPER(assJMPexp(), [munchExp e], [], SOME labels)
 
       (* cjump *)
       | munchStm(T.CJUMP(T.TEST(relop, e1, e2), lab1, lab2)) =
-          let
-            val jumpInstr = case relop of
-              T.EQ => "je"
-            | T.NE => "jne"
-            | T.GT => "jg"
-            | T.GE => "jge"
-            | T.LT => "jl"
-            | T.LE => "jle"
-            | _ => ErrorMsg.impossible "CodeGen: INVALID CJUMP"
-          in
-            emit(A.OPER{assem="cmpl `s0, `s1\n",
-                        src=[munchExp e1, munchExp e2],
-                        dst=[], jump=NONE});
-            emit(A.OPER{assem=jumpInstr ^ " " ^ Symbol.name lab1 ^ "\n",
-                        src=[], dst=[], jump=SOME[lab1]});
-            emit(A.OPER{assem="jmp `j0\n", src=[], dst=[], jump=SOME[lab2]})
-          end
+          emitOPER(assCMP(relop, lab1, lab2),
+                   [munchExp e1, munchExp e2], [], SOME[lab1, lab2])
 
       (* MOVE reg e1 *)
-      | munchStm(T.MOVE(T.TEMP i, e1)) =
-          emit(A.MOVE{assem="movl `s0, `d0\n", src=munchExp e1, dst=i})
+      | munchStm(T.MOVE(T.TEMP t, e1)) =
+          emitMOVE(assMOVreg(), munchExp e1, t)
 
       (* MOVE MEM[e1] e2 *)
       | munchStm(T.MOVE(T.MEM(e1, s1),e2)) =
-          emit(A.MOVE{assem="movl `s0, (`d0)\n",
-                      dst=munchExp e1, src=munchExp e2})
+          let val dst=munchExp e1 val src=munchExp e2 in
+            emitMOVE(assMOVmem(), src, dst) end
 
-      | munchStm(T.MOVE _) =
-          ErrorMsg.impossible "CodeGen: INVALID MOV"
+      | munchStm(T.MOVE _) = ErrorMsg.impossible "CodeGen: INVALID MOV"
 
       | munchStm(T.EXP e) = (munchExp e; ())
 
-    (* Pushl args onto stack. *)
-    and munchArgs(arg::args) =
-        (
-          emit(A.OPER{assem="pushl `s0\n",
-                      src=[munchExp arg], dst=[], jump=NONE});
-          munchArgs(args)
-        )
-      | munchArgs([]) = ()
-
-      (* LOAD MEM[e1 + i] *)
     and
       (* FETCH MEM[i] *)
       munchExp(T.MEM(e1, s1)) =
-          let
-            val sizePrefix = case s1 of
-              1 => "b"
-            | 2 => "w"
-            | 4 => "l"
-            | _ => ErrorMsg.impossible "CodeGen: INVALID MEM SIZE"
-          in
-            result(fn r => emit(A.OPER
-                  {assem="mov" ^ sizePrefix ^ " (`s0), `d0\n",
-                   src=[munchExp e1], dst=[r], jump=NONE}))
-          end
+          resultOPER(assMOVfetch(), [munchExp e1], [], NONE)
 
       (* ADD *)
       | munchExp(T.BINOP(T.PLUS,e1,e2)) =
-          result(fn r => emit(A.OPER
-                {assem="movl `s0, `d0\n" ^
-                       "addl `s1, `d0\n",
-                 src=[munchExp e1, munchExp e2],
-                 dst=[r], jump=NONE}))
+          resultOPER(assMOVreg() ^ assADD(),
+                     [munchExp e1, munchExp e2], [], NONE)
 
       (* SUB *)
       | munchExp(T.BINOP(T.MINUS,e1,e2)) =
-          result(fn r => emit(A.OPER
-                {assem="movl `s0, `d0\n" ^
-                       "subl `s1, `d0\n",
-                 src=[munchExp e1, munchExp e2],
-                 dst=[r], jump=NONE}))
+          resultOPER(assMOVreg() ^ assSUB(),
+                     [munchExp e1, munchExp e2], [], NONE)
 
       (* IMUL *)
       | munchExp(T.BINOP(T.MUL,e1,e2)) =
-          result(fn r => emit(A.OPER
-                {assem="movl `s0, `d0\n" ^
-                       "imull `s1, `d0\n",
-                 src=[munchExp e1, munchExp e2],
-                 dst=[r], jump=NONE}))
+          resultOPER(assMOVreg() ^ assIMUL(),
+                     [munchExp e1, munchExp e2], [], NONE)
 
-      (* IDIV - TODO: FIX THIS *)
+      (* IDIV *)
       | munchExp(T.BINOP(T.DIV,e1,e2)) =
-          result(fn r => emit(A.OPER
-                {assem="movl `s0, `d0 # save %eax\n" ^
-                       "movl `s1, `d1 # save %edx\n" ^
-                       "movl `s2, `s0 # put divisor in %eax\n" ^
-                       "idiv `s3\n" ^
-                       "movl `s3, `d0 # put quotient in result reg\n" ^
-                       "movl `d0, `s0 # restore %eax\n" ^
-                       "movl `d1, `s1 # restore %edx\n",
-                 src=[R.RV, R.EDX, munchExp e1, munchExp e2],
-                 dst=[r, Temp.newtemp()], jump=NONE}))
+          resultOPER(assIDIV(),
+                     [R.RV, R.EDX, munchExp e1, munchExp e2],
+                     [Temp.newtemp()], NONE)
 
       (* AND *)
       | munchExp(T.BINOP(T.AND,e1,e2)) =
-          result(fn r => emit(A.OPER
-                {assem="movl `s0, `d0\n" ^
-                       "andl `s1, `d0\n",
-                 src=[munchExp e1, munchExp e2],
-                 dst=[r], jump=NONE}))
+          resultOPER(assMOVreg() ^ assAND(),
+                     [munchExp e1, munchExp e2], [], NONE)
 
       (* OR *)
       | munchExp(T.BINOP(T.OR,e1,e2)) =
-          result(fn r => emit(A.OPER
-                {assem="movl `s0, `d0\n" ^
-                       "orl `s1, `d0\n",
-                 src=[munchExp e1, munchExp e2],
-                 dst=[r], jump=NONE}))
+          resultOPER(assMOVreg() ^ assOR(),
+                     [munchExp e1, munchExp e2], [], NONE)
 
-      | munchExp(T.BINOP(_)) =
-          ErrorMsg.impossible "CodeGen: INVALID BINOP"
+      | munchExp(T.BINOP(_)) = ErrorMsg.impossible "CodeGen: INVALID BINOP"
 
       (* CONST *)
-      | munchExp(T.CONST i) =
-          result(fn r => emit(A.OPER
-                {assem="movl $" ^ Int.toString i ^ ", `d0\n",
-                 src=[], dst=[r], jump=NONE}))
+      | munchExp(T.CONST i) = resultOPER(assMOVconst(i), [], [], NONE)
 
-      | munchExp(T.CONSTF _) =
-          ErrorMsg.impossible "CodeGen: INVALID CONSTF"
+      | munchExp(T.CONSTF _) = ErrorMsg.impossible "CodeGen: INVALID CONSTF"
 
       | munchExp(T.TEMP t) = t
 
-      | munchExp(T.NAME label) =
-          result(fn r => emit(A.OPER
-                {assem="lea " ^ Symbol.name label ^ "(,1), `d0\n",
-                 src=[], dst=[r], jump=NONE}))
+      | munchExp(T.NAME label) = resultOPER(assLEA(label), [], [], NONE)
 
       (* CALL *)
       | munchExp(T.CALL(T.NAME lab, args)) =
         result(fn r =>
           let
             val paramSize = 4 * length(args)
+            val pushTrueCallerSaves = String.concat(
+              map (fn reg => "pushl " ^ reg ^ "\n") R.truecallersaves)
+            (* Pushl args onto stack. *)
+            val revArgs = rev(args)
+            fun pushArgs(args) = app (fn arg => emit(A.OPER{
+                  assem="pushl `s0\n",
+                  src=[munchExp arg], dst=[], jump=NONE})) revArgs
+            val revTrueCallerSaves = rev(R.truecallersaves)
+            val popTrueCallerSaves = String.concat(
+              map (fn reg => "popl " ^ reg ^ "\n") revTrueCallerSaves)
           in
             (* Pushl caller saves *)
-            map (fn reg =>
-                    emit(A.OPER{assem="pushl " ^ reg ^ "\n",
-                                src=[], dst=[], jump=NONE})) R.truecallersaves;
-            munchArgs(rev(args));
-            emit(A.OPER{assem="call " ^ Symbol.name lab ^ "\n",
-                        src=[],
-                        dst=[R.RV, R.ECX, R.EDX], (* caller-saves *)
-                        jump=NONE});
-            emit(A.OPER{assem="addl $" ^ Int.toString paramSize ^ ", %esp\n",
-                        src=[], dst=[], jump=NONE});
-            emit(A.OPER{assem="movl %eax, `d0\n",
+            emit(A.OPER{assem=pushTrueCallerSaves, src=[], dst=[], jump=NONE});
+            pushArgs(args);
+            emit(A.OPER{assem="call " ^ Symbol.name lab ^ "\n" ^
+                              "addl $" ^ Int.toString paramSize ^ ", %esp\n" ^
+                              "movl %eax, `d0\n",
                         src=[], dst=[r], jump=NONE});
             (* Popl caller saves *)
-            map (fn reg =>
-                    emit(A.OPER{assem="popl " ^ reg ^ "\n",
-                                src=[], dst=[], jump=NONE}))
-                (rev R.truecallersaves);
-            r
+            emit(A.OPER{assem=popTrueCallerSaves, src=[], dst=[], jump=NONE})
           end)
 
       | munchExp(T.ESEQ _ | T.CVTOP _ | T.CALL _) =

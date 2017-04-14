@@ -13,6 +13,7 @@ struct
   structure A = Assem
   structure C = Codegen
   structure F = C.F
+  structure R = Register
 
   fun emitproc out (F.DATA {lab, s}) = TextIO.output(out, C.string(lab,s))
 
@@ -23,14 +24,14 @@ struct
             val stms = Canon.linearize body
             val stms' = Canon.traceSchedule(Canon.basicBlocks stms)
 
-            (*val _ =
+            val _ =
               let
                 fun printstms(stm::stms) =
                       (Printtree.printtree(out, stm); printstms(stms))
                   | printstms([]) = ()
               in
                 printstms(stms')
-              end*)
+              end
 
             val instrs = List.concat(map C.codegen stms')
 
@@ -71,7 +72,7 @@ struct
             val allocation = RegAlloc.color{
               interference=igraph,
               initial=initial,
-              registers=Register.registers
+              registers=R.calleesaves@R.truecallersaves@R.callersaves
             }
 
             val body =
