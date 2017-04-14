@@ -1,73 +1,47 @@
-(*
- * Assignment 6
- * CS 521 Spring 2017
- * Wolf Honore
- *)
-
-signature ENV =
-sig
+signature ENV = sig
   type access
   type level
   type label
   type ty
-
-  datatype rw
-    = RW
-    | RO
-
   datatype enventry
-    = VARentry of {access : access, ty : ty, rw : rw}
-    | FUNentry of {level : level, label : label, formals : ty list, result : ty}
-
+    = VARentry of {access: access, ty: ty, readonly: bool}
+    | FUNentry of {level: level, label: label, formals: ty list, result: ty}
   type tenv = ty Symbol.table
   type env = enventry Symbol.table
-
   val base_tenv : tenv
   val base_env : env
 end
 
-functor EnvGen (Translate : TRANSLATE) : ENV =
-struct
+functor EnvGen (Translate: TRANSLATE) : ENV = struct
   structure S = Symbol
-  structure Ty = Types
-  structure Tr = Translate
-  structure T = Temp
-
-  type access = Tr.access
-  type level = Tr.level
-  type label = T.label
-  type ty = Ty.ty
-
-  datatype rw
-    = RW
-    | RO
-
+  structure T = Types
+  type access = Translate.access
+  type level = Translate.level
+  type label = Temp.label
+  type ty = T.ty
   datatype enventry
-    = VARentry of {access : access, ty : ty, rw : rw}
-    | FUNentry of {level : level, label : label, formals : ty list, result : ty}
-
-  type tenv = ty S.table
-  type env = enventry S.table
-
-  (* Helper function to put a key-value pair in the table *)
-  fun enter ((name, ty), tbl) = S.enter (tbl, S.symbol name, ty)
-
-  (* Helper function to make a FUNentry *)
-  fun fentry (name, forms, res) =
-      (name, FUNentry {level=Tr.outermost, label=T.namedlabel name,
-                       formals=forms, result=res})
-
-  val base_tenv = foldr enter S.empty [("int", Ty.INT), ("string", Ty.STRING)]
-
-  val base_env = foldr enter S.empty
-    [fentry ("print", [Ty.STRING], Ty.UNIT),
-     fentry ("flush", [], Ty.UNIT),
-     fentry ("getchar", [], Ty.STRING),
-     fentry ("ord", [Ty.STRING], Ty.INT),
-     fentry ("chr", [Ty.INT], Ty.STRING),
-     fentry ("size", [Ty.STRING], Ty.INT),
-     fentry ("substring", [Ty.STRING, Ty.INT, Ty.INT], Ty.STRING),
-     fentry ("concat", [Ty.STRING, Ty.STRING], Ty.STRING),
-     fentry ("not", [Ty.INT], Ty.INT),
-     fentry ("exit", [Ty.INT], Ty.UNIT)]
+    = VARentry of {access: access, ty: ty, readonly: bool}
+    | FUNentry of {level: level, label: label, formals: ty list, result: ty}
+  type tenv = ty Symbol.table
+  type env = enventry Symbol.table
+  fun enter ((name, binding), env) = S.enter (env, S.symbol name, binding)
+  fun mkFn label formals result =
+    let fun mkFml (name, ty) = T.NAME (S.symbol name, ref (SOME ty))
+     in FUNentry {level = Translate.outermost, label = label,
+                  formals = map mkFml formals, result = result}
+    end
+  val base_tenv = foldl enter S.empty [("int", T.INT), ("string", T.STRING)]
+  val base_env = foldl enter S.empty
+    [("print", mkFn (Temp.namedlabel "print") [("s", T.STRING)] T.UNIT),
+     ("flush", mkFn (Temp.namedlabel "flush") [] T.UNIT),
+     ("getchar", mkFn (Temp.namedlabel "getch") [] T.STRING),
+     ("ord", mkFn (Temp.namedlabel "ord") [("s", T.STRING)] T.INT),
+     ("chr", mkFn (Temp.namedlabel "chr") [("i", T.INT)] T.STRING),
+     ("size", mkFn (Temp.namedlabel "size") [("s", T.STRING)] T.INT),
+     ("substring", mkFn (Temp.namedlabel "substring")
+                   [("s", T.STRING), ("first", T.INT), ("n", T.INT)] T.STRING),
+     ("concat", mkFn (Temp.namedlabel "concat")
+                [("s1", T.STRING), ("s2", T.STRING)] T.STRING),
+     ("not", mkFn (Temp.namedlabel "not") [("i", T.INT)] T.INT),
+     ("exit", mkFn (Temp.namedlabel "exit") [("i", T.INT)] T.INT)]
 end

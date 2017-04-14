@@ -1,54 +1,49 @@
-RegAlloc 6c
+<i> What have you done so far?
 
-Charles Proctor, crp43
-04/10/2017
+The full implementation of RegAlloc is within this directory. The implementation 
+compiles, but is not tested yet. The implementation follows the outline provided 
+by prof. Shao and does not change any of the other files. That is, the changed 
+files are:
 
-<i> I have implemented a compiling, and *slightly* tested version of the RegAlloc module. That includes:
+makegraph.sml, liveness.sml, regalloc.sml
 
-    - makegraph.sml : builds a control flow graph
-    - liveness.sml : builds the interference graph
-    - liveset.sml : used by liveness.sml to maintain a set of live temporaries
-    - regalloc.sml : performs the graph-coloring register allocation (only simplify + select)
+All of the files contain a lot of comments to help you guide through the code. 
+The usage of the files is exactly as described by prof. Shao within the files.
+To give a short synopsis:
 
-I have tested register allocation on a simple case, namely the example on Appel pp212. For those that would like to reproduce, I have submitted the following files:
+	1. MakeGraph.instrs2graph: Assem.instr list -> Flow.flowgraph * Flow.Graph.node list
+				-- take a list of assembly instructions and constructs the flowgraph. 
+	 
+	2. Liveness.interferenceGraph: 
+			Flow.flowgraph -> igraph * (Flow.Graph.node -> Temp.temp list) 
+	 			-- Takes in the flow graph from before and constructs Interference graph 
+						with some more information mostly for debugging purposes
+	 
+	3. RegAlloc.color:
+	{ 
+		interference: Liveness.igraph, 		(* This is the igraph from before*)
+		initial: R.register Temp.Table.table,   (* special regsconstraints map *)
+		registers: R.register Temp.Table.table  (* all registers to temps map*)
+	} -> R.register Temp.Table.table (* The allocation of temps to registers *)
 
-    - codegen.sml : The codegen() function outputs a list of instructions modeled after Appel pp212. It also prints human-readable temporary names.
-    - main.sml : The emitproc function glues everything together. To help in the debugging / testing, I print out the full register allocation within this function call. I also dump the interference graph to igraph.gv in DOT format.
+<ii> How other groups would use your code
 
-I used one of the ItreeGen modules to provide a dummy sample to CodeGen...
+Pretty much as described within the main.sml file. The only iffy part is the usage
+of register.sml file and the according lists of registers. However, as discussed 
+in class today, you should likely coordinate with the CodeGen groups to figure
+that out. 
 
-<ii> To use my RegAlloc module, copy the four files listed above into RegAlloc/ and update the sources.cm as described in <v>. In main.sml, you'll have to add at least the following lines of code...
+<iii> What assumptions you have made about your current implementations?
 
-```
-(* convert assembly instructions to flowgraph and list of nodes *)
-val (flowgraph, nodes) = MakeGraph.instrs2graph(instrs)
+None that have not been explicitly stated within the book. To be specific I assume:
 
-(* convert flowgraph to interference graph and liveout mapping *)
-val (igraph, liveout_mapping) = Liveness.interferenceGraph(flowgraph)
+1) There is no register spilling (20+ pseudo registers available at least)
+2) Any error in input will result in an exception being thrown
 
-(* graph coloring to allocate registers for all temporaries *)
-val allocation = RegAlloc.color{
-    interference=igraph,
-    initial=initial,
-    registers=registers
-}
-```
+<iv> What desirable features you would like other groups to work on?
 
-where
-- instrs is the list of assembly instructions
-- initial is a mapping of pre-allocated registers
-- registers is the list of registers available
+CodeGen and ITreeGen? I'm not entirely sure what I'm supposed to be writing here :-P
 
-and allocation is a mapping from temporaries to registers.
+<v> If you have changed more files than required, explain it here.
 
-<iii> As before, I assume that there are enough registers for all temporaries... ie, that no spilling is necessary. No other major assumptions come to mind.
-
-<iv> I would like the CodeGen group to work on
-
-1. defining the list registers that are available
-1. generating more complex instruction sequences, so that I can better test my register allocation scheme
-2. the procEntryExit function, so everything can be hooked together.
-
-<v> I added liveset.sml to maintain a LiveSet data structure. The updated sources.cm is in this directory, created by simply adding
-
-    RegAlloc/liveset.sml
+Nope.
