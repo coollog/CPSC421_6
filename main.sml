@@ -77,9 +77,9 @@ struct
               let
                 fun pairWithTemps(instr) =
                   case instr of
-                    A.OPER{dst, src, ...} = (instr, dst @ src)
+                    A.OPER{dst, src, ...} => (instr, dst @ src)
                   | A.LABEL _ => (instr, [])
-                  | A.MOVE{dst, src, ...} = (instr, [dst, src])
+                  | A.MOVE{dst, src, ...} => (instr, [dst, src])
               in
                 map pairWithTemps instrs
               end
