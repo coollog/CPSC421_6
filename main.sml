@@ -87,7 +87,7 @@ struct
 
             val instrs' = C.procEntryExit({
               name=name,
-              body=pairWithTemps instrs,
+              body=body,
               allocation=allocation,
               formals=[],
               frame=frame
