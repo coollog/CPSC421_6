@@ -10,6 +10,7 @@ struct
   structure Semant = SemantGen(Register)
   structure RegAlloc = RegAllocGen(Register)
 
+  structure A = Assem
   structure C = Codegen
   structure F = C.F
 
