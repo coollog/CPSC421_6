@@ -53,8 +53,8 @@ struct
     and explain(comment) = "\t\t\t\t\t\t\t# " ^ comment ^ "\n"
 
     and assLABEL(lab) = S.name lab ^ ":\n"
-    and assJMP(lab) = "jmp `j0" ^ explain("jump to " ^ S.name lab)
-    and assJMPexp() = "jmp `s0" ^ explain("jump to somewhere")
+    and assJMP(lab) = "\tjmp `j0" ^ explain("jump to " ^ S.name lab)
+    and assJMPexp() = "\tjmp `s0" ^ explain("jump to somewhere")
     and assCMP(relop, lab1, lab2) =
       let
         val jumpInstr = case relop of
@@ -66,28 +66,28 @@ struct
         | T.LE => "jle"
         | _ => ErrorMsg.impossible "CodeGen: INVALID CJUMP"
       in
-        "cmpl `s0, `s1" ^ explain("compare for jump...") ^
+        "\tcmpl `s0, `s1" ^ explain("compare for jump...") ^
         jumpInstr ^ " `j0" ^ explain("if true: jump to " ^ S.name lab1) ^
-        "jmp `j1" ^ explain("if false: jump to " ^ S.name lab2)
+        "\tjmp `j1" ^ explain("if false: jump to " ^ S.name lab2)
       end
-    and assMOVreg() = "movl `s0, `d0" ^ explain("move to register")
-    and assMOVmem() = "movl `s0, (`d0)" ^ explain("move to memory")
-    and assMOVfetch() = "movl (`s0), `d0" ^ explain("fetch from memory")
-    and assMOVconst(i) = "movl $" ^ Int.toString i ^ ", `d0" ^
+    and assMOVreg() = "\tmovl `s0, `d0" ^ explain("move to register")
+    and assMOVmem() = "\tmovl `s0, (`d0)" ^ explain("move to memory")
+    and assMOVfetch() = "\tmovl (`s0), `d0" ^ explain("fetch from memory")
+    and assMOVconst(i) = "\tmovl $" ^ Int.toString i ^ ", `d0" ^
                          explain("move constant to register")
-    and assMOVlabel(lab) = "mov $" ^ S.name lab ^ ", `d0\n"
-    and assADD() = "addl `s1, `d0" ^ explain("add two registers")
-    and assSUB() = "subl `s1, `d0" ^ explain("subtract two registers")
-    and assIMUL() = "imull `s1, `d0" ^ explain("multiply two registers")
-    and assIDIV() = "movl `s0, `d0\t# save %eax\n" ^
-                    "movl `s1, `d1\t# save %edx\n" ^
-                    "movl `s2, `s0\t# put divisor in %eax\n" ^
-                    "idiv `s3\t# divide by register\n" ^
-                    "movl `s3, `d0\t# put quotient in result register\n" ^
-                    "movl `d0, `s0\t# restore %eax\n" ^
-                    "movl `d1, `s1\t# restore %edx\n"
-    and assAND() = "andl `s1, `d0" ^ explain("bitwise and two registers")
-    and assOR() = "orl `s1, `d0" ^ explain("bitwise or two registers")
+    and assMOVlabel(lab) = "\tmov $" ^ S.name lab ^ ", `d0\n"
+    and assADD() = "\taddl `s1, `d0" ^ explain("add two registers")
+    and assSUB() = "\tsubl `s1, `d0" ^ explain("subtract two registers")
+    and assIMUL() = "\timull `s1, `d0" ^ explain("multiply two registers")
+    and assIDIV() = "\tmovl `s0, `d0\t# save %eax\n" ^
+                    "\tmovl `s1, `d1\t# save %edx\n" ^
+                    "\tmovl `s2, `s0\t# put divisor in %eax\n" ^
+                    "\tidiv `s3\t# divide by register\n" ^
+                    "\tmovl `s3, `d0\t# put quotient in result register\n" ^
+                    "\tmovl `d0, `s0\t# restore %eax\n" ^
+                    "\tmovl `d1, `s1\t# restore %edx\n"
+    and assAND() = "\tandl `s1, `d0" ^ explain("bitwise and two registers")
+    and assOR() = "\torl `s1, `d0" ^ explain("bitwise or two registers")
 
     fun munchStm(T.SEQ(a,b)) = (munchStm a; munchStm b)
 
@@ -172,22 +172,22 @@ struct
           let
             val paramSize = 4 * length(args)
             val pushTrueCallerSaves = String.concat(
-              map (fn reg => "pushl " ^ reg ^ "\n") R.truecallersaves)
+              map (fn reg => "\tpushl " ^ reg ^ "\n") R.truecallersaves)
             (* Pushl args onto stack. *)
             val revArgs = rev(args)
             fun pushArgs(args) = app (fn arg => emit(A.OPER{
-                  assem="pushl `s0\n",
+                  assem="\tpushl `s0\n",
                   src=[munchExp arg], dst=[], jump=NONE})) revArgs
             val revTrueCallerSaves = rev(R.truecallersaves)
             val popTrueCallerSaves = String.concat(
-              map (fn reg => "popl " ^ reg ^ "\n") revTrueCallerSaves)
+              map (fn reg => "\tpopl " ^ reg ^ "\n") revTrueCallerSaves)
           in
             (* Pushl caller saves *)
             emit(A.OPER{assem=pushTrueCallerSaves, src=[], dst=[], jump=NONE});
             pushArgs(args);
-            emit(A.OPER{assem="call " ^ Symbol.name lab ^ "\n" ^
-                              "addl $" ^ Int.toString paramSize ^ ", %esp\n" ^
-                              "movl %eax, `d0\n",
+            emit(A.OPER{assem="\tcall " ^ Symbol.name lab ^ "\n" ^
+                              "\taddl $" ^ Int.toString paramSize ^ ", %esp\n" ^
+                              "\tmovl %eax, `d0\n",
                         src=[], dst=[r], jump=NONE});
             (* Popl caller saves *)
             emit(A.OPER{assem=popTrueCallerSaves, src=[], dst=[], jump=NONE})
@@ -247,12 +247,12 @@ struct
         A.OPER({assem=".globl " ^ Symbol.name name ^ "\n" ^
                       ".type " ^ Symbol.name name ^ ", @function\n" ^
                       Symbol.name name ^ ":\n" ^
-                      "pushl %ebp\n" ^
-                      "movl %esp, %ebp\n" ^
-                      "subl $" ^ Int.toString localVarSize ^ ", %esp\n",
+                      "\tpushl %ebp\n" ^
+                      "\tmovl %esp, %ebp\n" ^
+                      "\tsubl $" ^ Int.toString localVarSize ^ ", %esp\n",
                 src=[],dst=[],jump=NONE})
       ] @ map
-            (fn reg => A.OPER({assem="pushl " ^ reg ^ "\n", src=[],dst=[],jump=NONE}))
+            (fn reg => A.OPER({assem="\tpushl " ^ reg ^ "\n", src=[],dst=[],jump=NONE}))
             R.calleesaves
 
       (*
@@ -265,12 +265,12 @@ struct
       *)
       val epilogue =
         map
-          (fn reg => A.OPER({assem="popl " ^ reg ^ "\n", src=[],dst=[],jump=NONE}))
+          (fn reg => A.OPER({assem="\tpopl " ^ reg ^ "\n", src=[],dst=[],jump=NONE}))
           (rev(R.calleesaves)) @
         [
-          A.OPER({assem="movl %ebp, %esp\n" ^
-                        "popl %ebp\n" ^
-                        "ret\n", src=[],dst=[],jump=NONE})
+          A.OPER({assem="\tmovl %ebp, %esp\n" ^
+                        "\tpopl %ebp\n" ^
+                        "\tret\n", src=[],dst=[],jump=NONE})
         ]
 
       val newBody = prologue @ map (#1) body @ epilogue
@@ -330,7 +330,7 @@ struct
 		      (* it's a fake register: *)
 		      let
 			      val _ = print ("loadit(): mapping pseudo-register `" ^ srcnm ^ "' to machine reg. `" ^ (saytemp mreg) ^"'\n");
-			      val loadInsn = "\tmovl\t" ^ (regname srcnm) ^ ", " ^ (saytemp mreg) ^ " # load pseudo-register\n"
+			      val loadInsn = "\tmovl\t" ^ (regname srcnm) ^ ", " ^ (saytemp mreg) ^ explain("load pseudo-register")
 		      in
 			      (loadInsn, mreg)
 		      end
@@ -396,7 +396,7 @@ struct
       			  val mreg=List.nth (newsrcs,idx)
 		        in
 			        if (src <> mreg) then
-			          ("\tmovl\t`d0, " ^ (regname dstnm) ^ " # save pseudo-register\n", mreg::dsts)
+			          ("\tmovl\t`d0, " ^ (regname dstnm) ^ explain("save pseudo-register"), mreg::dsts)
 			        else
     			      (* no mapping *)
     			      ("", dst::dsts)
@@ -411,7 +411,7 @@ struct
                * source pseudo-register, we won't end up clobbering
                * it until after the source has been used...
                *)
-              ("\tmovl\t`d0, " ^ (regname dstnm) ^ " # save pseudo-register\n", R.ECX::dsts)
+              ("\tmovl\t`d0, " ^ (regname dstnm) ^ explain("save pseudo-register\n"), R.ECX::dsts)
             else
               (* no mapping *)
               ("", dst::dsts)
