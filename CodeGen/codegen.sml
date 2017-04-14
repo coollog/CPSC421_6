@@ -200,7 +200,10 @@ struct
      rev(!ilist)
   end
 
-  fun string(label, s) = Symbol.name label ^ ": .ascii \"" ^ s ^ "\"\n"
+  fun string(label, s) =
+    S.name label ^ ":\n" ^
+    "\t.long " ^ Int.toString(size s) ^ "\n" ^
+    "\t.string \"" ^ s ^ "\"\n"
 
   (* procEntryExit sequence + function calling sequence tune-up
    * + mapping pseudo-registers to memory load/store instructions
