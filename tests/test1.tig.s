@@ -7,7 +7,7 @@ subl $104, %esp
 pushl %ebx
 pushl %edi
 pushl %esi
-L1:
+L4:
 movl $~104, %ecx							# move constant to register
 	movl	%ecx, -4(%ebp) # save pseudo-register
 	movl	-4(%ebp), %edx # load pseudo-register
@@ -53,7 +53,7 @@ movl (%ecx), %ecx							# fetch from memory
 pushl %eax
 pushl %ecx
 pushl %edx
-movl $0, %ecx							# move constant to register
+mov $L2, %ecx
 	movl	%ecx, -4(%ebp) # save pseudo-register
 	movl	-4(%ebp), %ecx # load pseudo-register
 pushl %ecx
@@ -68,11 +68,14 @@ movl $1, %ecx							# move constant to register
 	movl	%ecx, -4(%ebp) # save pseudo-register
 	movl	-4(%ebp), %ecx # load pseudo-register
 movl %ecx, %eax							# move to register
-jmp L0							# jump to L0
-L0:
+jmp L3							# jump to L3
+L3:
 popl %esi
 popl %edi
 popl %ebx
 movl %ebp, %esp
 popl %ebp
 ret
+L2:
+	.long 3
+	.byte "98, 111, 98, "
