@@ -75,6 +75,7 @@ struct
     and assMOVfetch() = "movl (`s0), `d0" ^ explain("fetch from memory")
     and assMOVconst(i) = "movl $" ^ Int.toString i ^ ", `d0" ^
                          explain("move constant to register")
+    and assMOVlabel(lab) = "mov $" ^ S.name lab ^ ", `d0\n"
     and assADD() = "addl `s1, `d0" ^ explain("add two registers")
     and assSUB() = "subl `s1, `d0" ^ explain("subtract two registers")
     and assIMUL() = "imull `s1, `d0" ^ explain("multiply two registers")
@@ -87,7 +88,6 @@ struct
                     "movl `d1, `s1\t# restore %edx\n"
     and assAND() = "andl `s1, `d0" ^ explain("bitwise and two registers")
     and assOR() = "orl `s1, `d0" ^ explain("bitwise or two registers")
-    and assLEA(lab) = "lea " ^ S.name lab ^ "(,1), `d0\n"
 
     fun munchStm(T.SEQ(a,b)) = (munchStm a; munchStm b)
 
@@ -164,7 +164,7 @@ struct
 
       | munchExp(T.TEMP t) = t
 
-      | munchExp(T.NAME label) = resultOPER(assLEA(label), [], [], NONE)
+      | munchExp(T.NAME label) = resultOPER(assMOVlabel(label), [], [], NONE)
 
       (* CALL *)
       | munchExp(T.CALL(T.NAME lab, args)) =
