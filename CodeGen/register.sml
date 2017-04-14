@@ -43,7 +43,7 @@ struct
 
   (* of course, none of the following should be empty list *)
 
-  val NPSEUDOREGS = 25 (* change this to the proper value *)
+  val NPSEUDOREGS = 100 (* change this to the proper value *)
   val localsBaseOffset : int = ~4 * (1 + NPSEUDOREGS) (* change this to the proper value *)
   val paramBaseOffset : int = 8  (* change this to the proper value *)
 
