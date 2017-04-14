@@ -1,30 +1,3 @@
-LABEL L5
-MOVE(
- TEMP T139,
- BINOP(PLUS,
-  TEMP T120,
-  CONST ~104))
-MOVE(
- TEMP T138,
- CALL(
-  NAME initArray,
-   CONST 10,
-   CONST 0))
-MOVE(
- MEM[4](
-  TEMP T139),
- TEMP T138)
-EXP(
- MEM[4](
-  BINOP(PLUS,
-   TEMP T120,
-   CONST ~104)))
-MOVE(
- TEMP T119,
- CONST 1)
-JUMP(
- NAME L4)
-LABEL L4
 .globl tigermain
 .type tigermain, @function
 tigermain:
@@ -34,7 +7,7 @@ subl $104, %esp
 pushl %ebx
 pushl %edi
 pushl %esi
-L5:
+L1:
 movl $~104, %ecx							# move constant to register
 	movl	%ecx, -4(%ebp) # save pseudo-register
 	movl	-4(%ebp), %edx # load pseudo-register
@@ -81,8 +54,8 @@ movl $1, %ecx							# move constant to register
 	movl	%ecx, -4(%ebp) # save pseudo-register
 	movl	-4(%ebp), %ecx # load pseudo-register
 movl %ecx, %eax							# move to register
-jmp L4							# jump to L4
-L4:
+jmp L0							# jump to L0
+L0:
 popl %esi
 popl %edi
 popl %ebx
