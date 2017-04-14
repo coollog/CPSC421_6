@@ -201,9 +201,15 @@ struct
   end
 
   fun string(label, s) =
-    S.name label ^ ":\n" ^
-    "\t.long " ^ Int.toString(size s) ^ "\n" ^
-    "\t.string \"" ^ s ^ "\"\n"
+    let
+      val charList = explode(s)
+      val ordList = map (fn c => Int.toString(ord(c))) charList
+      val byteSeq = foldr (fn (s1, s2) => s1 ^ ", " ^ s2) "" ordList
+    in
+      S.name label ^ ":\n" ^
+      "\t.long " ^ Int.toString(size s) ^ "\n" ^
+      "\t.byte \"" ^ byteSeq ^ "\"\n"
+    end
 
   (* procEntryExit sequence + function calling sequence tune-up
    * + mapping pseudo-registers to memory load/store instructions
