@@ -66,7 +66,7 @@ struct
             | T.LE => "jle"
             | _ => ErrorMsg.impossible "CodeGen: INVALID CJUMP"
           in
-            emit(A.OPER{assem="cmp `s0, `s1\n",
+            emit(A.OPER{assem="cmpl `s0, `s1\n",
                         src=[munchExp e1, munchExp e2],
                         dst=[], jump=NONE});
             emit(A.OPER{assem=jumpInstr ^ " " ^ Symbol.name lab1 ^ "\n",
@@ -76,11 +76,11 @@ struct
 
       (* MOVE reg e1 *)
       | munchStm(T.MOVE(T.TEMP i, e1)) =
-          emit(A.MOVE{assem="mov `s0, `d0\n", src=munchExp e1, dst=i})
+          emit(A.MOVE{assem="movl `s0, `d0\n", src=munchExp e1, dst=i})
 
       (* MOVE MEM[e1] e2 *)
       | munchStm(T.MOVE(T.MEM(e1, s1),e2)) =
-          emit(A.MOVE{assem="mov `s0, (`d0)\n",
+          emit(A.MOVE{assem="movl `s0, (`d0)\n",
                       dst=munchExp e1, src=munchExp e2})
 
       | munchStm(T.MOVE _) =
@@ -88,10 +88,10 @@ struct
 
       | munchStm(T.EXP e) = (munchExp e; ())
 
-    (* Push args onto stack. *)
+    (* Pushl args onto stack. *)
     and munchArgs(arg::args) =
         (
-          emit(A.OPER{assem="push `s0\n",
+          emit(A.OPER{assem="pushl `s0\n",
                       src=[munchExp arg], dst=[], jump=NONE});
           munchArgs(args)
         )
@@ -116,53 +116,53 @@ struct
       (* ADD *)
       | munchExp(T.BINOP(T.PLUS,e1,e2)) =
           result(fn r => emit(A.OPER
-                {assem="mov `s0, `d0\n" ^
-                       "add `s1, `d0\n",
+                {assem="movl `s0, `d0\n" ^
+                       "addl `s1, `d0\n",
                  src=[munchExp e1, munchExp e2],
                  dst=[r], jump=NONE}))
 
       (* SUB *)
       | munchExp(T.BINOP(T.MINUS,e1,e2)) =
           result(fn r => emit(A.OPER
-                {assem="mov `s0, `d0\n" ^
-                       "sub `s1, `d0\n",
+                {assem="movl `s0, `d0\n" ^
+                       "subl `s1, `d0\n",
                  src=[munchExp e1, munchExp e2],
                  dst=[r], jump=NONE}))
 
       (* IMUL *)
       | munchExp(T.BINOP(T.MUL,e1,e2)) =
           result(fn r => emit(A.OPER
-                {assem="mov `s0, `d0\n" ^
-                       "imul `s1, `d0\n",
+                {assem="movl `s0, `d0\n" ^
+                       "imull `s1, `d0\n",
                  src=[munchExp e1, munchExp e2],
                  dst=[r], jump=NONE}))
 
       (* IDIV - TODO: FIX THIS *)
       | munchExp(T.BINOP(T.DIV,e1,e2)) =
           result(fn r => emit(A.OPER
-                {assem="mov `s0, `d0 # save %eax\n" ^
-                       "mov `s1, `d1 # save %edx\n" ^
-                       "mov `s2, `s0 # put divisor in %eax\n" ^
+                {assem="movl `s0, `d0 # save %eax\n" ^
+                       "movl `s1, `d1 # save %edx\n" ^
+                       "movl `s2, `s0 # put divisor in %eax\n" ^
                        "idiv `s3\n" ^
-                       "mov `s3, `d0 # put quotient in result reg\n" ^
-                       "mov `d0, `s0 # restore %eax\n" ^
-                       "mov `d1, `s1 # restore %edx\n",
+                       "movl `s3, `d0 # put quotient in result reg\n" ^
+                       "movl `d0, `s0 # restore %eax\n" ^
+                       "movl `d1, `s1 # restore %edx\n",
                  src=[R.RV, R.EDX, munchExp e1, munchExp e2],
                  dst=[r, Temp.newtemp()], jump=NONE}))
 
       (* AND *)
       | munchExp(T.BINOP(T.AND,e1,e2)) =
           result(fn r => emit(A.OPER
-                {assem="mov `s0, `d0\n" ^
-                       "and `s1, `d0\n",
+                {assem="movl `s0, `d0\n" ^
+                       "andl `s1, `d0\n",
                  src=[munchExp e1, munchExp e2],
                  dst=[r], jump=NONE}))
 
       (* OR *)
       | munchExp(T.BINOP(T.OR,e1,e2)) =
           result(fn r => emit(A.OPER
-                {assem="mov `s0, `d0\n" ^
-                       "or `s1, `d0\n",
+                {assem="movl `s0, `d0\n" ^
+                       "orl `s1, `d0\n",
                  src=[munchExp e1, munchExp e2],
                  dst=[r], jump=NONE}))
 
@@ -172,7 +172,7 @@ struct
       (* CONST *)
       | munchExp(T.CONST i) =
           result(fn r => emit(A.OPER
-                {assem="mov $" ^ Int.toString i ^ ", `d0\n",
+                {assem="movl $" ^ Int.toString i ^ ", `d0\n",
                  src=[], dst=[r], jump=NONE}))
 
       | munchExp(T.CONSTF _) =
@@ -191,22 +191,22 @@ struct
           let
             val paramSize = 4 * length(args)
           in
-            (* Push caller saves *)
+            (* Pushl caller saves *)
             map (fn reg =>
-                    emit(A.OPER{assem="push " ^ reg ^ "\n",
+                    emit(A.OPER{assem="pushl " ^ reg ^ "\n",
                                 src=[], dst=[], jump=NONE})) R.truecallersaves;
             munchArgs(rev(args));
             emit(A.OPER{assem="call " ^ Symbol.name lab ^ "\n",
                         src=[],
                         dst=[R.RV, R.ECX, R.EDX], (* caller-saves *)
                         jump=NONE});
-            emit(A.OPER{assem="add $" ^ Int.toString paramSize ^ ", %esp\n",
+            emit(A.OPER{assem="addl $" ^ Int.toString paramSize ^ ", %esp\n",
                         src=[], dst=[], jump=NONE});
-            emit(A.OPER{assem="mov %eax, `d0\n",
+            emit(A.OPER{assem="movl %eax, `d0\n",
                         src=[], dst=[r], jump=NONE});
-            (* Pop caller saves *)
+            (* Popl caller saves *)
             map (fn reg =>
-                    emit(A.OPER{assem="pop " ^ reg ^ "\n",
+                    emit(A.OPER{assem="popl " ^ reg ^ "\n",
                                 src=[], dst=[], jump=NONE}))
                 (rev R.truecallersaves);
             r
@@ -246,40 +246,40 @@ struct
       val localVarSize = 4 * (!(#locals frame) + R.NPSEUDOREGS)
       (*
         /* Subroutine Prologue */
-        push %ebp      /* Save the old base pointer value. */
-        mov %esp, %ebp /* Set the new base pointer value. */
-        sub $4, %esp   /* Make room for one 4-byte local variable. */
-        push %edi      /* Save the values of registers that the function */
-        push %esi      /* will modify. This function uses EDI and ESI. */
+        pushl %ebp      /* Save the old base pointer value. */
+        movl %esp, %ebp /* Set the new base pointer value. */
+        subl $4, %esp   /* Make room for one 4-byte local variable. */
+        pushl %edi      /* Save the values of registers that the function */
+        pushl %esi      /* will modify. This function uses EDI and ESI. */
         /* (no need to save EBX, EBP, or ESP) */
       *)
       val prologue = [
         A.OPER({assem=".globl " ^ Symbol.name name ^ "\n" ^
                       ".type " ^ Symbol.name name ^ ", @function\n" ^
                       Symbol.name name ^ ":\n" ^
-                      "push %ebp\n" ^
-                      "mov %esp, %ebp\n" ^
-                      "sub $" ^ Int.toString localVarSize ^ ", %esp\n",
+                      "pushl %ebp\n" ^
+                      "movl %esp, %ebp\n" ^
+                      "subl $" ^ Int.toString localVarSize ^ ", %esp\n",
                 src=[],dst=[],jump=NONE})
       ] @ map
-            (fn reg => A.OPER({assem="push " ^ reg ^ "\n", src=[],dst=[],jump=NONE}))
+            (fn reg => A.OPER({assem="pushl " ^ reg ^ "\n", src=[],dst=[],jump=NONE}))
             R.calleesaves
 
       (*
         /* Subroutine Epilogue */
-        pop %esi       /* Recover register values. */
-        pop %edi
-        mov %ebp, %esp /* Deallocate the local variable. */
-        pop %ebp       /* Restore the caller's base pointer value. */
+        popl %esi       /* Recover register values. */
+        popl %edi
+        movl %ebp, %esp /* Deallocate the local variable. */
+        popl %ebp       /* Restore the caller's base pointer value. */
         ret
       *)
       val epilogue =
         map
-          (fn reg => A.OPER({assem="pop " ^ reg ^ "\n", src=[],dst=[],jump=NONE}))
+          (fn reg => A.OPER({assem="popl " ^ reg ^ "\n", src=[],dst=[],jump=NONE}))
           (rev(R.calleesaves)) @
         [
-          A.OPER({assem="mov %ebp, %esp\n" ^
-                        "pop %ebp\n" ^
+          A.OPER({assem="movl %ebp, %esp\n" ^
+                        "popl %ebp\n" ^
                         "ret\n", src=[],dst=[],jump=NONE})
         ]
 

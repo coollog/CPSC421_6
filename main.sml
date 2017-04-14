@@ -73,9 +73,20 @@ struct
               registers=Register.registers
             }
 
+            val body =
+              let
+                fun pairWithTemps(instr) =
+                  case instr of
+                    A.OPER{dst, src, ...} = (instr, dst @ src)
+                  | A.LABEL _ => (instr, [])
+                  | A.MOVE{dst, src, ...} = (instr, [dst, src])
+              in
+                map pairWithTemps instrs
+              end
+
             val instrs' = C.procEntryExit({
               name=name,
-              body=map (fn instr => (instr, [])) instrs,
+              body=pairWithTemps instrs,
               allocation=allocation,
               formals=[],
               frame=frame
