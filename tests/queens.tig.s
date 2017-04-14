@@ -7,8 +7,8 @@ tigermain:
 	pushl %ebx
 	pushl %edi
 	pushl %esi
-L186:
-	movl $~404, %ecx							# move constant to register
+L92:
+	movl $404, %ecx							# move constant to register
 	movl	%ecx, -4(%ebp)							# save pseudo-register
 
 	movl	-4(%ebp), %edx							# load pseudo-register
@@ -23,7 +23,7 @@ L186:
 	movl %ecx, (%ecx)							# move to memory
 	movl	%ecx, -4(%ebp)							# save pseudo-register
 
-	movl $~408, %ecx							# move constant to register
+	movl $400, %ecx							# move constant to register
 	movl	%ecx, -4(%ebp)							# save pseudo-register
 
 	movl	-4(%ebp), %edx							# load pseudo-register
@@ -35,15 +35,7 @@ L186:
 	movl %ecx, %ecx							# move to register
 	movl	%ecx, -4(%ebp)							# save pseudo-register
 
-	pushl %eax
-	pushl %ecx
-	pushl %edx
-	movl $0, %ecx							# move constant to register
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	movl	-4(%ebp), %ecx							# load pseudo-register
-	pushl %ecx
-	movl $~404, %ecx							# move constant to register
+	movl $404, %ecx							# move constant to register
 	movl	%ecx, -4(%ebp)							# save pseudo-register
 
 	movl	-4(%ebp), %edx							# load pseudo-register
@@ -55,10 +47,75 @@ L186:
 	movl (%ecx), %ecx							# fetch from memory
 	movl	%ecx, -4(%ebp)							# save pseudo-register
 
+	movl $1, %ecx							# move constant to register
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl	-8(%ebp), %edx							# load pseudo-register
+	movl %ecx, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl %ecx, %ecx							# move to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl $0, %ecx							# move constant to register
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %ecx							# load pseudo-register
+	movl %ecx, %ecx							# move to register
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl $4, %ecx							# move constant to register
+	movl	%ecx, -12(%ebp)							# save pseudo-register
+
+	movl	-12(%ebp), %edx							# load pseudo-register
+	movl %esp, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -12(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %ecx							# load pseudo-register
+	movl %ecx, (%ecx)							# move to memory
+	movl	%ecx, -12(%ebp)							# save pseudo-register
+
+	movl $0, %ecx							# move constant to register
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %edx							# load pseudo-register
+	movl %esp, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl %ecx, (%ecx)							# move to memory
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	pushl %eax
+	pushl %ecx
+	pushl %edx
+	movl $0, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	pushl %ecx
+	movl $0, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	pushl %ecx
+	movl $0, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	pushl %ecx
+	movl $0, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
 	movl	-4(%ebp), %ecx							# load pseudo-register
 	pushl %ecx
 	call initArray
-	addl $8, %esp
+	addl $16, %esp
 	movl %eax, %ecx
 	movl	%ecx, -4(%ebp)							# save pseudo-register
 
@@ -69,31 +126,7 @@ L186:
 	movl %ecx, %ecx							# move to register
 	movl	%ecx, -4(%ebp)							# save pseudo-register
 
-	movl	-4(%ebp), %ecx							# load pseudo-register
-	movl %ecx, (%ecx)							# move to memory
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	movl $~412, %ecx							# move constant to register
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	movl	-4(%ebp), %edx							# load pseudo-register
-	movl %ebp, %ecx							# move to register
-	addl %edx, %ecx							# add two registers
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	movl	-4(%ebp), %ecx							# load pseudo-register
-	movl %ecx, %ecx							# move to register
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	pushl %eax
-	pushl %ecx
-	pushl %edx
-	movl $0, %ecx							# move constant to register
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	movl	-4(%ebp), %ecx							# load pseudo-register
-	pushl %ecx
-	movl $~404, %ecx							# move constant to register
+	movl $404, %ecx							# move constant to register
 	movl	%ecx, -4(%ebp)							# save pseudo-register
 
 	movl	-4(%ebp), %edx							# load pseudo-register
@@ -106,9 +139,106 @@ L186:
 	movl	%ecx, -4(%ebp)							# save pseudo-register
 
 	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl %ecx, (%ecx)							# move to memory
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl %ecx, (%ecx)							# move to memory
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl $396, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %edx							# load pseudo-register
+	movl %ebp, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl %ecx, %ecx							# move to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl $404, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %edx							# load pseudo-register
+	movl %ebp, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl (%ecx), %ecx							# fetch from memory
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl $1, %ecx							# move constant to register
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl	-8(%ebp), %edx							# load pseudo-register
+	movl %ecx, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl %ecx, %ecx							# move to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl $0, %ecx							# move constant to register
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %ecx							# load pseudo-register
+	movl %ecx, %ecx							# move to register
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl $4, %ecx							# move constant to register
+	movl	%ecx, -12(%ebp)							# save pseudo-register
+
+	movl	-12(%ebp), %edx							# load pseudo-register
+	movl %esp, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -12(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %ecx							# load pseudo-register
+	movl %ecx, (%ecx)							# move to memory
+	movl	%ecx, -12(%ebp)							# save pseudo-register
+
+	movl $0, %ecx							# move constant to register
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %edx							# load pseudo-register
+	movl %esp, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl %ecx, (%ecx)							# move to memory
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	pushl %eax
+	pushl %ecx
+	pushl %edx
+	movl $0, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	pushl %ecx
+	movl $0, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	pushl %ecx
+	movl $0, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	pushl %ecx
+	movl $0, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
 	pushl %ecx
 	call initArray
-	addl $8, %esp
+	addl $16, %esp
 	movl %eax, %ecx
 	movl	%ecx, -4(%ebp)							# save pseudo-register
 
@@ -119,31 +249,7 @@ L186:
 	movl %ecx, %ecx							# move to register
 	movl	%ecx, -4(%ebp)							# save pseudo-register
 
-	movl	-4(%ebp), %ecx							# load pseudo-register
-	movl %ecx, (%ecx)							# move to memory
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	movl $~416, %ecx							# move constant to register
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	movl	-4(%ebp), %edx							# load pseudo-register
-	movl %ebp, %ecx							# move to register
-	addl %edx, %ecx							# add two registers
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	movl	-4(%ebp), %ecx							# load pseudo-register
-	movl %ecx, %ecx							# move to register
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	pushl %eax
-	pushl %ecx
-	pushl %edx
-	movl $0, %ecx							# move constant to register
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	movl	-4(%ebp), %ecx							# load pseudo-register
-	pushl %ecx
-	movl $~404, %ecx							# move constant to register
+	movl $404, %ecx							# move constant to register
 	movl	%ecx, -4(%ebp)							# save pseudo-register
 
 	movl	-4(%ebp), %edx							# load pseudo-register
@@ -155,7 +261,157 @@ L186:
 	movl (%ecx), %ecx							# fetch from memory
 	movl	%ecx, -4(%ebp)							# save pseudo-register
 
-	movl $~404, %ecx							# move constant to register
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl %ecx, (%ecx)							# move to memory
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl %ecx, (%ecx)							# move to memory
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl $392, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %edx							# load pseudo-register
+	movl %ebp, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl %ecx, %ecx							# move to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl $404, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %edx							# load pseudo-register
+	movl %ebp, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl (%ecx), %ecx							# fetch from memory
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl $404, %ecx							# move constant to register
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %edx							# load pseudo-register
+	movl %ebp, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %ecx							# load pseudo-register
+	movl (%ecx), %ecx							# fetch from memory
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl	-8(%ebp), %edx							# load pseudo-register
+	movl %ecx, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl $1, %ecx							# move constant to register
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl	-8(%ebp), %edx							# load pseudo-register
+	movl %ecx, %ecx							# move to register
+	subl %edx, %ecx							# subtract two registers
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl $1, %ecx							# move constant to register
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl	-8(%ebp), %edx							# load pseudo-register
+	movl %ecx, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl %ecx, %ecx							# move to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl $0, %ecx							# move constant to register
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %ecx							# load pseudo-register
+	movl %ecx, %ecx							# move to register
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl $4, %ecx							# move constant to register
+	movl	%ecx, -12(%ebp)							# save pseudo-register
+
+	movl	-12(%ebp), %edx							# load pseudo-register
+	movl %esp, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -12(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %ecx							# load pseudo-register
+	movl %ecx, (%ecx)							# move to memory
+	movl	%ecx, -12(%ebp)							# save pseudo-register
+
+	movl $0, %ecx							# move constant to register
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %edx							# load pseudo-register
+	movl %esp, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl %ecx, (%ecx)							# move to memory
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	pushl %eax
+	pushl %ecx
+	pushl %edx
+	movl $0, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	pushl %ecx
+	movl $0, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	pushl %ecx
+	movl $0, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	pushl %ecx
+	movl $0, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	pushl %ecx
+	call initArray
+	addl $16, %esp
+	movl %eax, %ecx
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	popl %edx
+	popl %ecx
+	popl %eax
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl %ecx, %ecx							# move to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl $404, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %edx							# load pseudo-register
+	movl %ebp, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl (%ecx), %ecx							# fetch from memory
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl $404, %ecx							# move constant to register
 	movl	%ecx, -8(%ebp)							# save pseudo-register
 
 	movl	-8(%ebp), %edx							# load pseudo-register
@@ -183,24 +439,14 @@ L186:
 	movl	%ecx, -4(%ebp)							# save pseudo-register
 
 	movl	-4(%ebp), %ecx							# load pseudo-register
-	pushl %ecx
-	call initArray
-	addl $8, %esp
-	movl %eax, %ecx
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	popl %edx
-	popl %ecx
-	popl %eax
-	movl	-4(%ebp), %ecx							# load pseudo-register
-	movl %ecx, %ecx							# move to register
+	movl %ecx, (%ecx)							# move to memory
 	movl	%ecx, -4(%ebp)							# save pseudo-register
 
 	movl	-4(%ebp), %ecx							# load pseudo-register
 	movl %ecx, (%ecx)							# move to memory
 	movl	%ecx, -4(%ebp)							# save pseudo-register
 
-	movl $~420, %ecx							# move constant to register
+	movl $388, %ecx							# move constant to register
 	movl	%ecx, -4(%ebp)							# save pseudo-register
 
 	movl	-4(%ebp), %edx							# load pseudo-register
@@ -212,15 +458,7 @@ L186:
 	movl %ecx, %ecx							# move to register
 	movl	%ecx, -4(%ebp)							# save pseudo-register
 
-	pushl %eax
-	pushl %ecx
-	pushl %edx
-	movl $0, %ecx							# move constant to register
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	movl	-4(%ebp), %ecx							# load pseudo-register
-	pushl %ecx
-	movl $~404, %ecx							# move constant to register
+	movl $404, %ecx							# move constant to register
 	movl	%ecx, -4(%ebp)							# save pseudo-register
 
 	movl	-4(%ebp), %edx							# load pseudo-register
@@ -232,7 +470,125 @@ L186:
 	movl (%ecx), %ecx							# fetch from memory
 	movl	%ecx, -4(%ebp)							# save pseudo-register
 
-	movl $~404, %ecx							# move constant to register
+	movl $404, %ecx							# move constant to register
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %edx							# load pseudo-register
+	movl %ebp, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %ecx							# load pseudo-register
+	movl (%ecx), %ecx							# fetch from memory
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl	-8(%ebp), %edx							# load pseudo-register
+	movl %ecx, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl $1, %ecx							# move constant to register
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl	-8(%ebp), %edx							# load pseudo-register
+	movl %ecx, %ecx							# move to register
+	subl %edx, %ecx							# subtract two registers
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl $1, %ecx							# move constant to register
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl	-8(%ebp), %edx							# load pseudo-register
+	movl %ecx, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl %ecx, %ecx							# move to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl $0, %ecx							# move constant to register
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %ecx							# load pseudo-register
+	movl %ecx, %ecx							# move to register
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl $4, %ecx							# move constant to register
+	movl	%ecx, -12(%ebp)							# save pseudo-register
+
+	movl	-12(%ebp), %edx							# load pseudo-register
+	movl %esp, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -12(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %ecx							# load pseudo-register
+	movl %ecx, (%ecx)							# move to memory
+	movl	%ecx, -12(%ebp)							# save pseudo-register
+
+	movl $0, %ecx							# move constant to register
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %edx							# load pseudo-register
+	movl %esp, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl %ecx, (%ecx)							# move to memory
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	pushl %eax
+	pushl %ecx
+	pushl %edx
+	movl $0, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	pushl %ecx
+	movl $0, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	pushl %ecx
+	movl $0, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	pushl %ecx
+	movl $0, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	pushl %ecx
+	call initArray
+	addl $16, %esp
+	movl %eax, %ecx
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	popl %edx
+	popl %ecx
+	popl %eax
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl %ecx, %ecx							# move to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl $404, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %edx							# load pseudo-register
+	movl %ebp, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl (%ecx), %ecx							# fetch from memory
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl $404, %ecx							# move constant to register
 	movl	%ecx, -8(%ebp)							# save pseudo-register
 
 	movl	-8(%ebp), %edx							# load pseudo-register
@@ -260,22 +616,46 @@ L186:
 	movl	%ecx, -4(%ebp)							# save pseudo-register
 
 	movl	-4(%ebp), %ecx							# load pseudo-register
-	pushl %ecx
-	call initArray
-	addl $8, %esp
-	movl %eax, %ecx
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	popl %edx
-	popl %ecx
-	popl %eax
-	movl	-4(%ebp), %ecx							# load pseudo-register
-	movl %ecx, %ecx							# move to register
+	movl %ecx, (%ecx)							# move to memory
 	movl	%ecx, -4(%ebp)							# save pseudo-register
 
 	movl	-4(%ebp), %ecx							# load pseudo-register
 	movl %ecx, (%ecx)							# move to memory
 	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl %ebp, %ecx							# move to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl $0, %ecx							# move constant to register
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %ecx							# load pseudo-register
+	movl %ecx, %ecx							# move to register
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl $4, %ecx							# move constant to register
+	movl	%ecx, -12(%ebp)							# save pseudo-register
+
+	movl	-12(%ebp), %edx							# load pseudo-register
+	movl %esp, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -12(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %ecx							# load pseudo-register
+	movl %ecx, (%ecx)							# move to memory
+	movl	%ecx, -12(%ebp)							# save pseudo-register
+
+	movl $0, %ecx							# move constant to register
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %edx							# load pseudo-register
+	movl %esp, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl %ecx, (%ecx)							# move to memory
+	movl	%ecx, -8(%ebp)							# save pseudo-register
 
 	pushl %eax
 	pushl %ecx
@@ -285,9 +665,23 @@ L186:
 
 	movl	-4(%ebp), %ecx							# load pseudo-register
 	pushl %ecx
-	pushl %ebp
-	call L153
-	addl $8, %esp
+	movl $0, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	pushl %ecx
+	movl $0, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	pushl %ecx
+	movl $0, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	pushl %ecx
+	call L2
+	addl $16, %esp
 	movl %eax, %ecx
 	movl	%ecx, -4(%ebp)							# save pseudo-register
 
@@ -299,24 +693,24 @@ L186:
 
 	movl	-4(%ebp), %ecx							# load pseudo-register
 	movl %ecx, %eax							# move to register
-	jmp L185							# jump to L185
-L185:
+	jmp L91							# jump to L91
+L91:
 	popl %esi
 	popl %edi
 	popl %ebx
 	movl %ebp, %esp
 	popl %ebp
 	ret
-.globl L153
-.type L153, @function
-L153:
+.globl L2
+.type L2, @function
+L2:
 	pushl %ebp
 	movl %esp, %ebp
 	subl $404, %esp
 	pushl %ebx
 	pushl %edi
 	pushl %esi
-L188:
+L94:
 	movl $12, %ecx							# move constant to register
 	movl	%ecx, -4(%ebp)							# save pseudo-register
 
@@ -341,7 +735,7 @@ L188:
 	movl (%ecx), %ecx							# fetch from memory
 	movl	%ecx, -8(%ebp)							# save pseudo-register
 
-	movl $~404, %ecx							# move constant to register
+	movl $404, %ecx							# move constant to register
 	movl	%ecx, -12(%ebp)							# save pseudo-register
 
 	movl	-8(%ebp), %ecx							# load pseudo-register
@@ -357,10 +751,10 @@ L188:
 	movl	-4(%ebp), %ecx							# load pseudo-register
 	movl	-8(%ebp), %edx							# load pseudo-register
 	cmpl %ecx, %edx							# compare for jump...
-je L182							# if true: jump to L182
-	jmp L183							# if false: jump to L183
-L183:
-	movl $~404, %ecx							# move constant to register
+je L88							# if true: jump to L88
+	jmp L89							# if false: jump to L89
+L89:
+	movl $404, %ecx							# move constant to register
 	movl	%ecx, -4(%ebp)							# save pseudo-register
 
 	movl	-4(%ebp), %edx							# load pseudo-register
@@ -375,7 +769,7 @@ L183:
 	movl %ecx, (%ecx)							# move to memory
 	movl	%ecx, -4(%ebp)							# save pseudo-register
 
-	movl $~404, %ecx							# move constant to register
+	movl $404, %ecx							# move constant to register
 	movl	%ecx, -4(%ebp)							# save pseudo-register
 
 	movl	-4(%ebp), %edx							# load pseudo-register
@@ -399,7 +793,7 @@ L183:
 	movl (%ecx), %ecx							# fetch from memory
 	movl	%ecx, -8(%ebp)							# save pseudo-register
 
-	movl $~404, %ecx							# move constant to register
+	movl $404, %ecx							# move constant to register
 	movl	%ecx, -12(%ebp)							# save pseudo-register
 
 	movl	-8(%ebp), %ecx							# load pseudo-register
@@ -424,9 +818,9 @@ L183:
 	movl	-4(%ebp), %ecx							# load pseudo-register
 	movl	-8(%ebp), %edx							# load pseudo-register
 	cmpl %ecx, %edx							# compare for jump...
-jle L180							# if true: jump to L180
-	jmp L167							# if false: jump to L167
-L167:
+jle L86							# if true: jump to L86
+	jmp L22							# if false: jump to L22
+L22:
 	movl $0, %ecx							# move constant to register
 	movl	%ecx, -4(%ebp)							# save pseudo-register
 
@@ -434,14 +828,11 @@ L167:
 	movl %ecx, %ecx							# move to register
 	movl	%ecx, -4(%ebp)							# save pseudo-register
 
-L184:
+L90:
 	movl	-4(%ebp), %ecx							# load pseudo-register
 	movl %ecx, %eax							# move to register
-	jmp L187							# jump to L187
-L182:
-	pushl %eax
-	pushl %ecx
-	pushl %edx
+	jmp L93							# jump to L93
+L88:
 	movl $8, %ecx							# move constant to register
 	movl	%ecx, -4(%ebp)							# save pseudo-register
 
@@ -454,67 +845,36 @@ L182:
 	movl (%ecx), %ecx							# fetch from memory
 	movl	%ecx, -4(%ebp)							# save pseudo-register
 
-	movl	-4(%ebp), %ecx							# load pseudo-register
-	pushl %ecx
-	call L152
-	addl $4, %esp
-	movl %eax, %ecx
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	popl %edx
-	popl %ecx
-	popl %eax
 	movl	-4(%ebp), %ecx							# load pseudo-register
 	movl %ecx, %ecx							# move to register
 	movl	%ecx, -4(%ebp)							# save pseudo-register
 
-	jmp L184							# jump to L184
-L180:
-	pushl %eax
-	pushl %ecx
-	pushl %edx
-	movl $~404, %ecx							# move constant to register
-	movl	%ecx, -4(%ebp)							# save pseudo-register
+	movl $0, %ecx							# move constant to register
+	movl	%ecx, -8(%ebp)							# save pseudo-register
 
-	movl	-4(%ebp), %edx							# load pseudo-register
-	movl %ebp, %ecx							# move to register
+	movl	-8(%ebp), %edx							# load pseudo-register
+	movl %esp, %ecx							# move to register
 	addl %edx, %ecx							# add two registers
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	movl	-4(%ebp), %ecx							# load pseudo-register
-	movl (%ecx), %ecx							# fetch from memory
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	movl	-4(%ebp), %ecx							# load pseudo-register
-	pushl %ecx
-	movl $8, %ecx							# move constant to register
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	movl	-4(%ebp), %edx							# load pseudo-register
-	movl %ebp, %ecx							# move to register
-	addl %edx, %ecx							# add two registers
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	movl	-4(%ebp), %ecx							# load pseudo-register
-	movl (%ecx), %ecx							# fetch from memory
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	movl $~408, %ecx							# move constant to register
 	movl	%ecx, -8(%ebp)							# save pseudo-register
 
 	movl	-4(%ebp), %ecx							# load pseudo-register
-	movl	-8(%ebp), %edx							# load pseudo-register
-	movl %ecx, %ecx							# move to register
-	addl %edx, %ecx							# add two registers
-	movl	%ecx, -4(%ebp)							# save pseudo-register
+	movl %ecx, (%ecx)							# move to memory
+	movl	%ecx, -8(%ebp)							# save pseudo-register
 
-	movl	-4(%ebp), %ecx							# load pseudo-register
-	movl (%ecx), %ecx							# fetch from memory
+	pushl %eax
+	pushl %ecx
+	pushl %edx
+	movl $0, %ecx							# move constant to register
 	movl	%ecx, -4(%ebp)							# save pseudo-register
 
 	movl	-4(%ebp), %ecx							# load pseudo-register
 	pushl %ecx
-	call checkArrayBounds
+	movl $0, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	pushl %ecx
+	call L1
 	addl $8, %esp
 	movl %eax, %ecx
 	movl	%ecx, -4(%ebp)							# save pseudo-register
@@ -522,6 +882,114 @@ L180:
 	popl %edx
 	popl %ecx
 	popl %eax
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl %ecx, %ecx							# move to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	jmp L90							# jump to L90
+L86:
+	movl $404, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %edx							# load pseudo-register
+	movl %ebp, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl (%ecx), %ecx							# fetch from memory
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl $0, %ecx							# move constant to register
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl	-8(%ebp), %edx							# load pseudo-register
+	cmpl %ecx, %edx							# compare for jump...
+jge L24							# if true: jump to L24
+	jmp L26							# if false: jump to L26
+L26:
+	mov $L28, %ecx
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl %ecx, %ecx							# move to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl $0, %ecx							# move constant to register
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %edx							# load pseudo-register
+	movl %esp, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl %ecx, (%ecx)							# move to memory
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	pushl %eax
+	pushl %ecx
+	pushl %edx
+	movl $0, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	pushl %ecx
+	movl $0, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	pushl %ecx
+	call print
+	addl $8, %esp
+	movl %eax, %ecx
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	popl %edx
+	popl %ecx
+	popl %eax
+	movl $1, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl %ecx, %ecx							# move to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl $0, %ecx							# move constant to register
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %edx							# load pseudo-register
+	movl %esp, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl %ecx, (%ecx)							# move to memory
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	pushl %eax
+	pushl %ecx
+	pushl %edx
+	movl $0, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	pushl %ecx
+	movl $0, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	pushl %ecx
+	call exit
+	addl $8, %esp
+	movl %eax, %ecx
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	popl %edx
+	popl %ecx
+	popl %eax
+L27:
 	movl $8, %ecx							# move constant to register
 	movl	%ecx, -4(%ebp)							# save pseudo-register
 
@@ -534,7 +1002,7 @@ L180:
 	movl (%ecx), %ecx							# fetch from memory
 	movl	%ecx, -4(%ebp)							# save pseudo-register
 
-	movl $~408, %ecx							# move constant to register
+	movl $400, %ecx							# move constant to register
 	movl	%ecx, -8(%ebp)							# save pseudo-register
 
 	movl	-4(%ebp), %ecx							# load pseudo-register
@@ -547,7 +1015,7 @@ L180:
 	movl (%ecx), %ecx							# fetch from memory
 	movl	%ecx, -4(%ebp)							# save pseudo-register
 
-	movl $~404, %ecx							# move constant to register
+	movl $404, %ecx							# move constant to register
 	movl	%ecx, -8(%ebp)							# save pseudo-register
 
 	movl	-8(%ebp), %edx							# load pseudo-register
@@ -557,6 +1025,15 @@ L180:
 
 	movl	-8(%ebp), %ecx							# load pseudo-register
 	movl (%ecx), %ecx							# fetch from memory
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl $1, %ecx							# move constant to register
+	movl	%ecx, -12(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %ecx							# load pseudo-register
+	movl	-12(%ebp), %edx							# load pseudo-register
+	movl %ecx, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
 	movl	%ecx, -8(%ebp)							# save pseudo-register
 
 	movl $4, %ecx							# move constant to register
@@ -584,9 +1061,9 @@ L180:
 	movl	-4(%ebp), %ecx							# load pseudo-register
 	movl	-8(%ebp), %edx							# load pseudo-register
 	cmpl %ecx, %edx							# compare for jump...
-je L168							# if true: jump to L168
-	jmp L169							# if false: jump to L169
-L169:
+je L34							# if true: jump to L34
+	jmp L35							# if false: jump to L35
+L35:
 	movl $0, %ecx							# move constant to register
 	movl	%ecx, -4(%ebp)							# save pseudo-register
 
@@ -594,27 +1071,46 @@ L169:
 	movl %ecx, %ecx							# move to register
 	movl	%ecx, -4(%ebp)							# save pseudo-register
 
-L170:
+L36:
 	movl $0, %ecx							# move constant to register
 	movl	%ecx, -8(%ebp)							# save pseudo-register
 
 	movl	-4(%ebp), %ecx							# load pseudo-register
 	movl	-8(%ebp), %edx							# load pseudo-register
 	cmpl %ecx, %edx							# compare for jump...
-je L174							# if true: jump to L174
-	jmp L173							# if false: jump to L173
-L173:
-	movl $1, %ecx							# move constant to register
+jne L44							# if true: jump to L44
+	jmp L45							# if false: jump to L45
+L45:
+	movl $0, %ecx							# move constant to register
 	movl	%ecx, -4(%ebp)							# save pseudo-register
 
 	movl	-4(%ebp), %ecx							# load pseudo-register
 	movl %ecx, %ecx							# move to register
 	movl	%ecx, -4(%ebp)							# save pseudo-register
 
-	pushl %eax
-	pushl %ecx
-	pushl %edx
-	movl $~404, %ecx							# move constant to register
+L46:
+	movl $0, %ecx							# move constant to register
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl	-8(%ebp), %edx							# load pseudo-register
+	cmpl %ecx, %edx							# compare for jump...
+jne L84							# if true: jump to L84
+	jmp L85							# if false: jump to L85
+L85:
+	movl $404, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %edx							# load pseudo-register
+	movl %ebp, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl (%ecx), %ecx							# fetch from memory
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl $8, %ecx							# move constant to register
 	movl	%ecx, -8(%ebp)							# save pseudo-register
 
 	movl	-8(%ebp), %edx							# load pseudo-register
@@ -626,7 +1122,7 @@ L173:
 	movl (%ecx), %ecx							# fetch from memory
 	movl	%ecx, -8(%ebp)							# save pseudo-register
 
-	movl $7, %ecx							# move constant to register
+	movl $404, %ecx							# move constant to register
 	movl	%ecx, -12(%ebp)							# save pseudo-register
 
 	movl	-8(%ebp), %ecx							# load pseudo-register
@@ -634,6 +1130,128 @@ L173:
 	movl %ecx, %ecx							# move to register
 	addl %edx, %ecx							# add two registers
 	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %ecx							# load pseudo-register
+	movl (%ecx), %ecx							# fetch from memory
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl $1, %ecx							# move constant to register
+	movl	%ecx, -12(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %ecx							# load pseudo-register
+	movl	-12(%ebp), %edx							# load pseudo-register
+	movl %ecx, %ecx							# move to register
+	subl %edx, %ecx							# subtract two registers
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl	-8(%ebp), %edx							# load pseudo-register
+	cmpl %ecx, %edx							# compare for jump...
+jge L22							# if true: jump to L22
+	jmp L87							# if false: jump to L87
+L87:
+	movl $404, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %edx							# load pseudo-register
+	movl %ebp, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl $404, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %edx							# load pseudo-register
+	movl %ebp, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl (%ecx), %ecx							# fetch from memory
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl $1, %ecx							# move constant to register
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl	-8(%ebp), %edx							# load pseudo-register
+	movl %ecx, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl %ecx, (%ecx)							# move to memory
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	jmp L86							# jump to L86
+L24:
+	movl $404, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %edx							# load pseudo-register
+	movl %ebp, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl (%ecx), %ecx							# fetch from memory
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl $8, %ecx							# move constant to register
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %edx							# load pseudo-register
+	movl %ebp, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %ecx							# load pseudo-register
+	movl (%ecx), %ecx							# fetch from memory
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl $400, %ecx							# move constant to register
+	movl	%ecx, -12(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %ecx							# load pseudo-register
+	movl	-12(%ebp), %edx							# load pseudo-register
+	movl %ecx, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %ecx							# load pseudo-register
+	movl (%ecx), %ecx							# fetch from memory
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %ecx							# load pseudo-register
+	movl (%ecx), %ecx							# fetch from memory
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl	-8(%ebp), %edx							# load pseudo-register
+	cmpl %ecx, %edx							# compare for jump...
+jge L26							# if true: jump to L26
+	jmp L25							# if false: jump to L25
+L25:
+	jmp L27							# jump to L27
+L34:
+	movl $1, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl %ecx, %ecx							# move to register
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl $404, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %edx							# load pseudo-register
+	movl %ebp, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl (%ecx), %ecx							# fetch from memory
+	movl	%ecx, -4(%ebp)							# save pseudo-register
 
 	movl $12, %ecx							# move constant to register
 	movl	%ecx, -12(%ebp)							# save pseudo-register
@@ -647,75 +1265,437 @@ L173:
 	movl (%ecx), %ecx							# fetch from memory
 	movl	%ecx, -12(%ebp)							# save pseudo-register
 
-	movl	-8(%ebp), %ecx							# load pseudo-register
+	movl	-4(%ebp), %ecx							# load pseudo-register
 	movl	-12(%ebp), %edx							# load pseudo-register
 	movl %ecx, %ecx							# move to register
-	subl %edx, %ecx							# subtract two registers
-	movl	%ecx, -8(%ebp)							# save pseudo-register
-
-	movl	-8(%ebp), %ecx							# load pseudo-register
-	pushl %ecx
-	movl $8, %ecx							# move constant to register
-	movl	%ecx, -8(%ebp)							# save pseudo-register
-
-	movl	-8(%ebp), %edx							# load pseudo-register
-	movl %ebp, %ecx							# move to register
 	addl %edx, %ecx							# add two registers
-	movl	%ecx, -8(%ebp)							# save pseudo-register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
 
-	movl	-8(%ebp), %ecx							# load pseudo-register
-	movl (%ecx), %ecx							# fetch from memory
-	movl	%ecx, -8(%ebp)							# save pseudo-register
-
-	movl $~420, %ecx							# move constant to register
+	movl $0, %ecx							# move constant to register
 	movl	%ecx, -12(%ebp)							# save pseudo-register
 
-	movl	-8(%ebp), %ecx							# load pseudo-register
+	movl	-4(%ebp), %ecx							# load pseudo-register
 	movl	-12(%ebp), %edx							# load pseudo-register
+	cmpl %ecx, %edx							# compare for jump...
+jge L29							# if true: jump to L29
+	jmp L31							# if false: jump to L31
+L31:
+	mov $L33, %ecx
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
 	movl %ecx, %ecx							# move to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl $0, %ecx							# move constant to register
+	movl	%ecx, -12(%ebp)							# save pseudo-register
+
+	movl	-12(%ebp), %edx							# load pseudo-register
+	movl %esp, %ecx							# move to register
 	addl %edx, %ecx							# add two registers
-	movl	%ecx, -8(%ebp)							# save pseudo-register
+	movl	%ecx, -12(%ebp)							# save pseudo-register
 
-	movl	-8(%ebp), %ecx							# load pseudo-register
-	movl (%ecx), %ecx							# fetch from memory
-	movl	%ecx, -8(%ebp)							# save pseudo-register
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl %ecx, (%ecx)							# move to memory
+	movl	%ecx, -12(%ebp)							# save pseudo-register
 
-	movl	-8(%ebp), %ecx							# load pseudo-register
+	pushl %eax
 	pushl %ecx
-	call checkArrayBounds
+	pushl %edx
+	movl $0, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	pushl %ecx
+	movl $0, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	pushl %ecx
+	call print
 	addl $8, %esp
 	movl %eax, %ecx
-	movl	%ecx, -8(%ebp)							# save pseudo-register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
 
 	popl %edx
 	popl %ecx
 	popl %eax
-	movl $8, %ecx							# move constant to register
-	movl	%ecx, -8(%ebp)							# save pseudo-register
+	movl $1, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
 
-	movl	-8(%ebp), %edx							# load pseudo-register
-	movl %ebp, %ecx							# move to register
-	addl %edx, %ecx							# add two registers
-	movl	%ecx, -8(%ebp)							# save pseudo-register
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl %ecx, %ecx							# move to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
 
-	movl	-8(%ebp), %ecx							# load pseudo-register
-	movl (%ecx), %ecx							# fetch from memory
-	movl	%ecx, -8(%ebp)							# save pseudo-register
-
-	movl $~420, %ecx							# move constant to register
+	movl $0, %ecx							# move constant to register
 	movl	%ecx, -12(%ebp)							# save pseudo-register
 
-	movl	-8(%ebp), %ecx							# load pseudo-register
+	movl	-12(%ebp), %edx							# load pseudo-register
+	movl %esp, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -12(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl %ecx, (%ecx)							# move to memory
+	movl	%ecx, -12(%ebp)							# save pseudo-register
+
+	pushl %eax
+	pushl %ecx
+	pushl %edx
+	movl $0, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	pushl %ecx
+	movl $0, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	pushl %ecx
+	call exit
+	addl $8, %esp
+	movl %eax, %ecx
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	popl %edx
+	popl %ecx
+	popl %eax
+L32:
+	movl $8, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %edx							# load pseudo-register
+	movl %ebp, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl (%ecx), %ecx							# fetch from memory
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl $392, %ecx							# move constant to register
+	movl	%ecx, -12(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
 	movl	-12(%ebp), %edx							# load pseudo-register
 	movl %ecx, %ecx							# move to register
 	addl %edx, %ecx							# add two registers
-	movl	%ecx, -8(%ebp)							# save pseudo-register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
 
-	movl	-8(%ebp), %ecx							# load pseudo-register
+	movl	-4(%ebp), %ecx							# load pseudo-register
 	movl (%ecx), %ecx							# fetch from memory
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl $404, %ecx							# move constant to register
+	movl	%ecx, -12(%ebp)							# save pseudo-register
+
+	movl	-12(%ebp), %edx							# load pseudo-register
+	movl %ebp, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -12(%ebp)							# save pseudo-register
+
+	movl	-12(%ebp), %ecx							# load pseudo-register
+	movl (%ecx), %ecx							# fetch from memory
+	movl	%ecx, -12(%ebp)							# save pseudo-register
+
+	movl $12, %ecx							# move constant to register
+	movl	%ecx, -16(%ebp)							# save pseudo-register
+
+	movl	-16(%ebp), %edx							# load pseudo-register
+	movl %ebp, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -16(%ebp)							# save pseudo-register
+
+	movl	-16(%ebp), %ecx							# load pseudo-register
+	movl (%ecx), %ecx							# fetch from memory
+	movl	%ecx, -16(%ebp)							# save pseudo-register
+
+	movl	-12(%ebp), %ecx							# load pseudo-register
+	movl	-16(%ebp), %edx							# load pseudo-register
+	movl %ecx, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -12(%ebp)							# save pseudo-register
+
+	movl $1, %ecx							# move constant to register
+	movl	%ecx, -16(%ebp)							# save pseudo-register
+
+	movl	-12(%ebp), %ecx							# load pseudo-register
+	movl	-16(%ebp), %edx							# load pseudo-register
+	movl %ecx, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -12(%ebp)							# save pseudo-register
+
+	movl $4, %ecx							# move constant to register
+	movl	%ecx, -16(%ebp)							# save pseudo-register
+
+	movl	-12(%ebp), %ecx							# load pseudo-register
+	movl	-16(%ebp), %edx							# load pseudo-register
+	movl %ecx, %ecx							# move to register
+	imull %edx, %ecx							# multiply two registers
+	movl	%ecx, -12(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl	-12(%ebp), %edx							# load pseudo-register
+	movl %ecx, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl (%ecx), %ecx							# fetch from memory
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl $0, %ecx							# move constant to register
+	movl	%ecx, -12(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl	-12(%ebp), %edx							# load pseudo-register
+	cmpl %ecx, %edx							# compare for jump...
+je L37							# if true: jump to L37
+	jmp L38							# if false: jump to L38
+L38:
+	movl $0, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl %ecx, %ecx							# move to register
 	movl	%ecx, -8(%ebp)							# save pseudo-register
 
-	movl $~404, %ecx							# move constant to register
+L37:
+	movl	-8(%ebp), %ecx							# load pseudo-register
+	movl %ecx, %ecx							# move to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	jmp L36							# jump to L36
+L29:
+	movl $404, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %edx							# load pseudo-register
+	movl %ebp, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl (%ecx), %ecx							# fetch from memory
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl $12, %ecx							# move constant to register
+	movl	%ecx, -12(%ebp)							# save pseudo-register
+
+	movl	-12(%ebp), %edx							# load pseudo-register
+	movl %ebp, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -12(%ebp)							# save pseudo-register
+
+	movl	-12(%ebp), %ecx							# load pseudo-register
+	movl (%ecx), %ecx							# fetch from memory
+	movl	%ecx, -12(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl	-12(%ebp), %edx							# load pseudo-register
+	movl %ecx, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl $8, %ecx							# move constant to register
+	movl	%ecx, -12(%ebp)							# save pseudo-register
+
+	movl	-12(%ebp), %edx							# load pseudo-register
+	movl %ebp, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -12(%ebp)							# save pseudo-register
+
+	movl	-12(%ebp), %ecx							# load pseudo-register
+	movl (%ecx), %ecx							# fetch from memory
+	movl	%ecx, -12(%ebp)							# save pseudo-register
+
+	movl $392, %ecx							# move constant to register
+	movl	%ecx, -16(%ebp)							# save pseudo-register
+
+	movl	-12(%ebp), %ecx							# load pseudo-register
+	movl	-16(%ebp), %edx							# load pseudo-register
+	movl %ecx, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -12(%ebp)							# save pseudo-register
+
+	movl	-12(%ebp), %ecx							# load pseudo-register
+	movl (%ecx), %ecx							# fetch from memory
+	movl	%ecx, -12(%ebp)							# save pseudo-register
+
+	movl	-12(%ebp), %ecx							# load pseudo-register
+	movl (%ecx), %ecx							# fetch from memory
+	movl	%ecx, -12(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl	-12(%ebp), %edx							# load pseudo-register
+	cmpl %ecx, %edx							# compare for jump...
+jge L31							# if true: jump to L31
+	jmp L30							# if false: jump to L30
+L30:
+	jmp L32							# jump to L32
+L44:
+	movl $1, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl %ecx, %ecx							# move to register
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl $404, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %edx							# load pseudo-register
+	movl %ebp, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl (%ecx), %ecx							# fetch from memory
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl $7, %ecx							# move constant to register
+	movl	%ecx, -12(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl	-12(%ebp), %edx							# load pseudo-register
+	movl %ecx, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl $12, %ecx							# move constant to register
+	movl	%ecx, -12(%ebp)							# save pseudo-register
+
+	movl	-12(%ebp), %edx							# load pseudo-register
+	movl %ebp, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -12(%ebp)							# save pseudo-register
+
+	movl	-12(%ebp), %ecx							# load pseudo-register
+	movl (%ecx), %ecx							# fetch from memory
+	movl	%ecx, -12(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl	-12(%ebp), %edx							# load pseudo-register
+	movl %ecx, %ecx							# move to register
+	subl %edx, %ecx							# subtract two registers
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl $0, %ecx							# move constant to register
+	movl	%ecx, -12(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl	-12(%ebp), %edx							# load pseudo-register
+	cmpl %ecx, %edx							# compare for jump...
+jge L39							# if true: jump to L39
+	jmp L41							# if false: jump to L41
+L41:
+	mov $L43, %ecx
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl %ecx, %ecx							# move to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl $0, %ecx							# move constant to register
+	movl	%ecx, -12(%ebp)							# save pseudo-register
+
+	movl	-12(%ebp), %edx							# load pseudo-register
+	movl %esp, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -12(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl %ecx, (%ecx)							# move to memory
+	movl	%ecx, -12(%ebp)							# save pseudo-register
+
+	pushl %eax
+	pushl %ecx
+	pushl %edx
+	movl $0, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	pushl %ecx
+	movl $0, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	pushl %ecx
+	call print
+	addl $8, %esp
+	movl %eax, %ecx
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	popl %edx
+	popl %ecx
+	popl %eax
+	movl $1, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl %ecx, %ecx							# move to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl $0, %ecx							# move constant to register
+	movl	%ecx, -12(%ebp)							# save pseudo-register
+
+	movl	-12(%ebp), %edx							# load pseudo-register
+	movl %esp, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -12(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl %ecx, (%ecx)							# move to memory
+	movl	%ecx, -12(%ebp)							# save pseudo-register
+
+	pushl %eax
+	pushl %ecx
+	pushl %edx
+	movl $0, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	pushl %ecx
+	movl $0, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	pushl %ecx
+	call exit
+	addl $8, %esp
+	movl %eax, %ecx
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	popl %edx
+	popl %ecx
+	popl %eax
+L42:
+	movl $8, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %edx							# load pseudo-register
+	movl %ebp, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl (%ecx), %ecx							# fetch from memory
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl $388, %ecx							# move constant to register
+	movl	%ecx, -12(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl	-12(%ebp), %edx							# load pseudo-register
+	movl %ecx, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl (%ecx), %ecx							# fetch from memory
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl $404, %ecx							# move constant to register
 	movl	%ecx, -12(%ebp)							# save pseudo-register
 
 	movl	-12(%ebp), %edx							# load pseudo-register
@@ -754,6 +1734,15 @@ L173:
 	subl %edx, %ecx							# subtract two registers
 	movl	%ecx, -12(%ebp)							# save pseudo-register
 
+	movl $1, %ecx							# move constant to register
+	movl	%ecx, -16(%ebp)							# save pseudo-register
+
+	movl	-12(%ebp), %ecx							# load pseudo-register
+	movl	-16(%ebp), %edx							# load pseudo-register
+	movl %ecx, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -12(%ebp)							# save pseudo-register
+
 	movl $4, %ecx							# move constant to register
 	movl	%ecx, -16(%ebp)							# save pseudo-register
 
@@ -763,92 +1752,169 @@ L173:
 	imull %edx, %ecx							# multiply two registers
 	movl	%ecx, -12(%ebp)							# save pseudo-register
 
-	movl	-8(%ebp), %ecx							# load pseudo-register
+	movl	-4(%ebp), %ecx							# load pseudo-register
 	movl	-12(%ebp), %edx							# load pseudo-register
 	movl %ecx, %ecx							# move to register
 	addl %edx, %ecx							# add two registers
-	movl	%ecx, -8(%ebp)							# save pseudo-register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
 
-	movl	-8(%ebp), %ecx							# load pseudo-register
+	movl	-4(%ebp), %ecx							# load pseudo-register
 	movl (%ecx), %ecx							# fetch from memory
-	movl	%ecx, -8(%ebp)							# save pseudo-register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
 
 	movl $0, %ecx							# move constant to register
 	movl	%ecx, -12(%ebp)							# save pseudo-register
 
-	movl	-8(%ebp), %ecx							# load pseudo-register
+	movl	-4(%ebp), %ecx							# load pseudo-register
 	movl	-12(%ebp), %edx							# load pseudo-register
 	cmpl %ecx, %edx							# compare for jump...
-je L176							# if true: jump to L176
-	jmp L177							# if false: jump to L177
-L177:
+je L47							# if true: jump to L47
+	jmp L48							# if false: jump to L48
+L48:
 	movl $0, %ecx							# move constant to register
 	movl	%ecx, -4(%ebp)							# save pseudo-register
 
 	movl	-4(%ebp), %ecx							# load pseudo-register
 	movl %ecx, %ecx							# move to register
-	movl	%ecx, -4(%ebp)							# save pseudo-register
+	movl	%ecx, -8(%ebp)							# save pseudo-register
 
-L176:
-	movl	-4(%ebp), %ecx							# load pseudo-register
+L47:
+	movl	-8(%ebp), %ecx							# load pseudo-register
 	movl %ecx, %ecx							# move to register
 	movl	%ecx, -4(%ebp)							# save pseudo-register
 
-L175:
+	jmp L46							# jump to L46
+L39:
+	movl $404, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %edx							# load pseudo-register
+	movl %ebp, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl (%ecx), %ecx							# fetch from memory
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl $7, %ecx							# move constant to register
+	movl	%ecx, -12(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl	-12(%ebp), %edx							# load pseudo-register
+	movl %ecx, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl $12, %ecx							# move constant to register
+	movl	%ecx, -12(%ebp)							# save pseudo-register
+
+	movl	-12(%ebp), %edx							# load pseudo-register
+	movl %ebp, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -12(%ebp)							# save pseudo-register
+
+	movl	-12(%ebp), %ecx							# load pseudo-register
+	movl (%ecx), %ecx							# fetch from memory
+	movl	%ecx, -12(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl	-12(%ebp), %edx							# load pseudo-register
+	movl %ecx, %ecx							# move to register
+	subl %edx, %ecx							# subtract two registers
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl $8, %ecx							# move constant to register
+	movl	%ecx, -12(%ebp)							# save pseudo-register
+
+	movl	-12(%ebp), %edx							# load pseudo-register
+	movl %ebp, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -12(%ebp)							# save pseudo-register
+
+	movl	-12(%ebp), %ecx							# load pseudo-register
+	movl (%ecx), %ecx							# fetch from memory
+	movl	%ecx, -12(%ebp)							# save pseudo-register
+
+	movl $388, %ecx							# move constant to register
+	movl	%ecx, -16(%ebp)							# save pseudo-register
+
+	movl	-12(%ebp), %ecx							# load pseudo-register
+	movl	-16(%ebp), %edx							# load pseudo-register
+	movl %ecx, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -12(%ebp)							# save pseudo-register
+
+	movl	-12(%ebp), %ecx							# load pseudo-register
+	movl (%ecx), %ecx							# fetch from memory
+	movl	%ecx, -12(%ebp)							# save pseudo-register
+
+	movl	-12(%ebp), %ecx							# load pseudo-register
+	movl (%ecx), %ecx							# fetch from memory
+	movl	%ecx, -12(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl	-12(%ebp), %edx							# load pseudo-register
+	cmpl %ecx, %edx							# compare for jump...
+jge L41							# if true: jump to L41
+	jmp L40							# if false: jump to L40
+L40:
+	jmp L42							# jump to L42
+L84:
+	movl $404, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %edx							# load pseudo-register
+	movl %ebp, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl (%ecx), %ecx							# fetch from memory
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
 	movl $0, %ecx							# move constant to register
 	movl	%ecx, -8(%ebp)							# save pseudo-register
 
 	movl	-4(%ebp), %ecx							# load pseudo-register
 	movl	-8(%ebp), %edx							# load pseudo-register
 	cmpl %ecx, %edx							# compare for jump...
-je L179							# if true: jump to L179
-	jmp L178							# if false: jump to L178
-L178:
+jge L49							# if true: jump to L49
+	jmp L51							# if false: jump to L51
+L51:
+	mov $L53, %ecx
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl %ecx, %ecx							# move to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl $0, %ecx							# move constant to register
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %edx							# load pseudo-register
+	movl %esp, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl %ecx, (%ecx)							# move to memory
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
 	pushl %eax
 	pushl %ecx
 	pushl %edx
-	movl $~404, %ecx							# move constant to register
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	movl	-4(%ebp), %edx							# load pseudo-register
-	movl %ebp, %ecx							# move to register
-	addl %edx, %ecx							# add two registers
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	movl	-4(%ebp), %ecx							# load pseudo-register
-	movl (%ecx), %ecx							# fetch from memory
+	movl $0, %ecx							# move constant to register
 	movl	%ecx, -4(%ebp)							# save pseudo-register
 
 	movl	-4(%ebp), %ecx							# load pseudo-register
 	pushl %ecx
-	movl $8, %ecx							# move constant to register
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	movl	-4(%ebp), %edx							# load pseudo-register
-	movl %ebp, %ecx							# move to register
-	addl %edx, %ecx							# add two registers
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	movl	-4(%ebp), %ecx							# load pseudo-register
-	movl (%ecx), %ecx							# fetch from memory
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	movl $~408, %ecx							# move constant to register
-	movl	%ecx, -8(%ebp)							# save pseudo-register
-
-	movl	-4(%ebp), %ecx							# load pseudo-register
-	movl	-8(%ebp), %edx							# load pseudo-register
-	movl %ecx, %ecx							# move to register
-	addl %edx, %ecx							# add two registers
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	movl	-4(%ebp), %ecx							# load pseudo-register
-	movl (%ecx), %ecx							# fetch from memory
+	movl $0, %ecx							# move constant to register
 	movl	%ecx, -4(%ebp)							# save pseudo-register
 
 	movl	-4(%ebp), %ecx							# load pseudo-register
 	pushl %ecx
-	call checkArrayBounds
+	call print
 	addl $8, %esp
 	movl %eax, %ecx
 	movl	%ecx, -4(%ebp)							# save pseudo-register
@@ -856,6 +1922,47 @@ L178:
 	popl %edx
 	popl %ecx
 	popl %eax
+	movl $1, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl %ecx, %ecx							# move to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl $0, %ecx							# move constant to register
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %edx							# load pseudo-register
+	movl %esp, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl %ecx, (%ecx)							# move to memory
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	pushl %eax
+	pushl %ecx
+	pushl %edx
+	movl $0, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	pushl %ecx
+	movl $0, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	pushl %ecx
+	call exit
+	addl $8, %esp
+	movl %eax, %ecx
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	popl %edx
+	popl %ecx
+	popl %eax
+L52:
 	movl $8, %ecx							# move constant to register
 	movl	%ecx, -4(%ebp)							# save pseudo-register
 
@@ -868,7 +1975,7 @@ L178:
 	movl (%ecx), %ecx							# fetch from memory
 	movl	%ecx, -4(%ebp)							# save pseudo-register
 
-	movl $~408, %ecx							# move constant to register
+	movl $400, %ecx							# move constant to register
 	movl	%ecx, -8(%ebp)							# save pseudo-register
 
 	movl	-4(%ebp), %ecx							# load pseudo-register
@@ -881,7 +1988,7 @@ L178:
 	movl (%ecx), %ecx							# fetch from memory
 	movl	%ecx, -4(%ebp)							# save pseudo-register
 
-	movl $~404, %ecx							# move constant to register
+	movl $404, %ecx							# move constant to register
 	movl	%ecx, -8(%ebp)							# save pseudo-register
 
 	movl	-8(%ebp), %edx							# load pseudo-register
@@ -891,6 +1998,15 @@ L178:
 
 	movl	-8(%ebp), %ecx							# load pseudo-register
 	movl (%ecx), %ecx							# fetch from memory
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl $1, %ecx							# move constant to register
+	movl	%ecx, -12(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %ecx							# load pseudo-register
+	movl	-12(%ebp), %edx							# load pseudo-register
+	movl %ecx, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
 	movl	%ecx, -8(%ebp)							# save pseudo-register
 
 	movl $4, %ecx							# move constant to register
@@ -915,10 +2031,7 @@ L178:
 	movl %ecx, (%ecx)							# move to memory
 	movl	%ecx, -4(%ebp)							# save pseudo-register
 
-	pushl %eax
-	pushl %ecx
-	pushl %edx
-	movl $~404, %ecx							# move constant to register
+	movl $404, %ecx							# move constant to register
 	movl	%ecx, -4(%ebp)							# save pseudo-register
 
 	movl	-4(%ebp), %edx							# load pseudo-register
@@ -948,36 +2061,48 @@ L178:
 	addl %edx, %ecx							# add two registers
 	movl	%ecx, -4(%ebp)							# save pseudo-register
 
-	movl	-4(%ebp), %ecx							# load pseudo-register
-	pushl %ecx
-	movl $8, %ecx							# move constant to register
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	movl	-4(%ebp), %edx							# load pseudo-register
-	movl %ebp, %ecx							# move to register
-	addl %edx, %ecx							# add two registers
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	movl	-4(%ebp), %ecx							# load pseudo-register
-	movl (%ecx), %ecx							# fetch from memory
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	movl $~416, %ecx							# move constant to register
+	movl $0, %ecx							# move constant to register
 	movl	%ecx, -8(%ebp)							# save pseudo-register
 
 	movl	-4(%ebp), %ecx							# load pseudo-register
 	movl	-8(%ebp), %edx							# load pseudo-register
-	movl %ecx, %ecx							# move to register
-	addl %edx, %ecx							# add two registers
+	cmpl %ecx, %edx							# compare for jump...
+jge L54							# if true: jump to L54
+	jmp L56							# if false: jump to L56
+L56:
+	mov $L58, %ecx
 	movl	%ecx, -4(%ebp)							# save pseudo-register
 
 	movl	-4(%ebp), %ecx							# load pseudo-register
-	movl (%ecx), %ecx							# fetch from memory
+	movl %ecx, %ecx							# move to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl $0, %ecx							# move constant to register
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %edx							# load pseudo-register
+	movl %esp, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl %ecx, (%ecx)							# move to memory
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	pushl %eax
+	pushl %ecx
+	pushl %edx
+	movl $0, %ecx							# move constant to register
 	movl	%ecx, -4(%ebp)							# save pseudo-register
 
 	movl	-4(%ebp), %ecx							# load pseudo-register
 	pushl %ecx
-	call checkArrayBounds
+	movl $0, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	pushl %ecx
+	call print
 	addl $8, %esp
 	movl %eax, %ecx
 	movl	%ecx, -4(%ebp)							# save pseudo-register
@@ -985,6 +2110,47 @@ L178:
 	popl %edx
 	popl %ecx
 	popl %eax
+	movl $1, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl %ecx, %ecx							# move to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl $0, %ecx							# move constant to register
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %edx							# load pseudo-register
+	movl %esp, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl %ecx, (%ecx)							# move to memory
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	pushl %eax
+	pushl %ecx
+	pushl %edx
+	movl $0, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	pushl %ecx
+	movl $0, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	pushl %ecx
+	call exit
+	addl $8, %esp
+	movl %eax, %ecx
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	popl %edx
+	popl %ecx
+	popl %eax
+L57:
 	movl $8, %ecx							# move constant to register
 	movl	%ecx, -4(%ebp)							# save pseudo-register
 
@@ -997,7 +2163,7 @@ L178:
 	movl (%ecx), %ecx							# fetch from memory
 	movl	%ecx, -4(%ebp)							# save pseudo-register
 
-	movl $~416, %ecx							# move constant to register
+	movl $392, %ecx							# move constant to register
 	movl	%ecx, -8(%ebp)							# save pseudo-register
 
 	movl	-4(%ebp), %ecx							# load pseudo-register
@@ -1010,7 +2176,7 @@ L178:
 	movl (%ecx), %ecx							# fetch from memory
 	movl	%ecx, -4(%ebp)							# save pseudo-register
 
-	movl $~404, %ecx							# move constant to register
+	movl $404, %ecx							# move constant to register
 	movl	%ecx, -8(%ebp)							# save pseudo-register
 
 	movl	-8(%ebp), %edx							# load pseudo-register
@@ -1040,6 +2206,15 @@ L178:
 	addl %edx, %ecx							# add two registers
 	movl	%ecx, -8(%ebp)							# save pseudo-register
 
+	movl $1, %ecx							# move constant to register
+	movl	%ecx, -12(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %ecx							# load pseudo-register
+	movl	-12(%ebp), %edx							# load pseudo-register
+	movl %ecx, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
 	movl $4, %ecx							# move constant to register
 	movl	%ecx, -12(%ebp)							# save pseudo-register
 
@@ -1062,10 +2237,7 @@ L178:
 	movl %ecx, (%ecx)							# move to memory
 	movl	%ecx, -4(%ebp)							# save pseudo-register
 
-	pushl %eax
-	pushl %ecx
-	pushl %edx
-	movl $~404, %ecx							# move constant to register
+	movl $404, %ecx							# move constant to register
 	movl	%ecx, -4(%ebp)							# save pseudo-register
 
 	movl	-4(%ebp), %edx							# load pseudo-register
@@ -1104,782 +2276,97 @@ L178:
 	subl %edx, %ecx							# subtract two registers
 	movl	%ecx, -4(%ebp)							# save pseudo-register
 
-	movl	-4(%ebp), %ecx							# load pseudo-register
-	pushl %ecx
-	movl $8, %ecx							# move constant to register
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	movl	-4(%ebp), %edx							# load pseudo-register
-	movl %ebp, %ecx							# move to register
-	addl %edx, %ecx							# add two registers
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	movl	-4(%ebp), %ecx							# load pseudo-register
-	movl (%ecx), %ecx							# fetch from memory
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	movl $~420, %ecx							# move constant to register
-	movl	%ecx, -8(%ebp)							# save pseudo-register
-
-	movl	-4(%ebp), %ecx							# load pseudo-register
-	movl	-8(%ebp), %edx							# load pseudo-register
-	movl %ecx, %ecx							# move to register
-	addl %edx, %ecx							# add two registers
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	movl	-4(%ebp), %ecx							# load pseudo-register
-	movl (%ecx), %ecx							# fetch from memory
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	movl	-4(%ebp), %ecx							# load pseudo-register
-	pushl %ecx
-	call checkArrayBounds
-	addl $8, %esp
-	movl %eax, %ecx
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	popl %edx
-	popl %ecx
-	popl %eax
-	movl $8, %ecx							# move constant to register
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	movl	-4(%ebp), %edx							# load pseudo-register
-	movl %ebp, %ecx							# move to register
-	addl %edx, %ecx							# add two registers
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	movl	-4(%ebp), %ecx							# load pseudo-register
-	movl (%ecx), %ecx							# fetch from memory
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	movl $~420, %ecx							# move constant to register
-	movl	%ecx, -8(%ebp)							# save pseudo-register
-
-	movl	-4(%ebp), %ecx							# load pseudo-register
-	movl	-8(%ebp), %edx							# load pseudo-register
-	movl %ecx, %ecx							# move to register
-	addl %edx, %ecx							# add two registers
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	movl	-4(%ebp), %ecx							# load pseudo-register
-	movl (%ecx), %ecx							# fetch from memory
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	movl $~404, %ecx							# move constant to register
-	movl	%ecx, -8(%ebp)							# save pseudo-register
-
-	movl	-8(%ebp), %edx							# load pseudo-register
-	movl %ebp, %ecx							# move to register
-	addl %edx, %ecx							# add two registers
-	movl	%ecx, -8(%ebp)							# save pseudo-register
-
-	movl	-8(%ebp), %ecx							# load pseudo-register
-	movl (%ecx), %ecx							# fetch from memory
-	movl	%ecx, -8(%ebp)							# save pseudo-register
-
-	movl $7, %ecx							# move constant to register
-	movl	%ecx, -12(%ebp)							# save pseudo-register
-
-	movl	-8(%ebp), %ecx							# load pseudo-register
-	movl	-12(%ebp), %edx							# load pseudo-register
-	movl %ecx, %ecx							# move to register
-	addl %edx, %ecx							# add two registers
-	movl	%ecx, -8(%ebp)							# save pseudo-register
-
-	movl $12, %ecx							# move constant to register
-	movl	%ecx, -12(%ebp)							# save pseudo-register
-
-	movl	-12(%ebp), %edx							# load pseudo-register
-	movl %ebp, %ecx							# move to register
-	addl %edx, %ecx							# add two registers
-	movl	%ecx, -12(%ebp)							# save pseudo-register
-
-	movl	-12(%ebp), %ecx							# load pseudo-register
-	movl (%ecx), %ecx							# fetch from memory
-	movl	%ecx, -12(%ebp)							# save pseudo-register
-
-	movl	-8(%ebp), %ecx							# load pseudo-register
-	movl	-12(%ebp), %edx							# load pseudo-register
-	movl %ecx, %ecx							# move to register
-	subl %edx, %ecx							# subtract two registers
-	movl	%ecx, -8(%ebp)							# save pseudo-register
-
-	movl $4, %ecx							# move constant to register
-	movl	%ecx, -12(%ebp)							# save pseudo-register
-
-	movl	-8(%ebp), %ecx							# load pseudo-register
-	movl	-12(%ebp), %edx							# load pseudo-register
-	movl %ecx, %ecx							# move to register
-	imull %edx, %ecx							# multiply two registers
-	movl	%ecx, -8(%ebp)							# save pseudo-register
-
-	movl	-4(%ebp), %ecx							# load pseudo-register
-	movl	-8(%ebp), %edx							# load pseudo-register
-	movl %ecx, %ecx							# move to register
-	addl %edx, %ecx							# add two registers
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	movl $1, %ecx							# move constant to register
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	movl	-4(%ebp), %ecx							# load pseudo-register
-	movl %ecx, (%ecx)							# move to memory
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	pushl %eax
-	pushl %ecx
-	pushl %edx
-	movl $12, %ecx							# move constant to register
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	movl	-4(%ebp), %edx							# load pseudo-register
-	movl %ebp, %ecx							# move to register
-	addl %edx, %ecx							# add two registers
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	movl	-4(%ebp), %ecx							# load pseudo-register
-	movl (%ecx), %ecx							# fetch from memory
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	movl	-4(%ebp), %ecx							# load pseudo-register
-	pushl %ecx
-	movl $8, %ecx							# move constant to register
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	movl	-4(%ebp), %edx							# load pseudo-register
-	movl %ebp, %ecx							# move to register
-	addl %edx, %ecx							# add two registers
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	movl	-4(%ebp), %ecx							# load pseudo-register
-	movl (%ecx), %ecx							# fetch from memory
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	movl $~412, %ecx							# move constant to register
-	movl	%ecx, -8(%ebp)							# save pseudo-register
-
-	movl	-4(%ebp), %ecx							# load pseudo-register
-	movl	-8(%ebp), %edx							# load pseudo-register
-	movl %ecx, %ecx							# move to register
-	addl %edx, %ecx							# add two registers
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	movl	-4(%ebp), %ecx							# load pseudo-register
-	movl (%ecx), %ecx							# fetch from memory
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	movl	-4(%ebp), %ecx							# load pseudo-register
-	pushl %ecx
-	call checkArrayBounds
-	addl $8, %esp
-	movl %eax, %ecx
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	popl %edx
-	popl %ecx
-	popl %eax
-	movl $8, %ecx							# move constant to register
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	movl	-4(%ebp), %edx							# load pseudo-register
-	movl %ebp, %ecx							# move to register
-	addl %edx, %ecx							# add two registers
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	movl	-4(%ebp), %ecx							# load pseudo-register
-	movl (%ecx), %ecx							# fetch from memory
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	movl $~412, %ecx							# move constant to register
-	movl	%ecx, -8(%ebp)							# save pseudo-register
-
-	movl	-4(%ebp), %ecx							# load pseudo-register
-	movl	-8(%ebp), %edx							# load pseudo-register
-	movl %ecx, %ecx							# move to register
-	addl %edx, %ecx							# add two registers
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	movl	-4(%ebp), %ecx							# load pseudo-register
-	movl (%ecx), %ecx							# fetch from memory
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	movl $12, %ecx							# move constant to register
-	movl	%ecx, -8(%ebp)							# save pseudo-register
-
-	movl	-8(%ebp), %edx							# load pseudo-register
-	movl %ebp, %ecx							# move to register
-	addl %edx, %ecx							# add two registers
-	movl	%ecx, -8(%ebp)							# save pseudo-register
-
-	movl	-8(%ebp), %ecx							# load pseudo-register
-	movl (%ecx), %ecx							# fetch from memory
-	movl	%ecx, -8(%ebp)							# save pseudo-register
-
-	movl $4, %ecx							# move constant to register
-	movl	%ecx, -12(%ebp)							# save pseudo-register
-
-	movl	-8(%ebp), %ecx							# load pseudo-register
-	movl	-12(%ebp), %edx							# load pseudo-register
-	movl %ecx, %ecx							# move to register
-	imull %edx, %ecx							# multiply two registers
-	movl	%ecx, -8(%ebp)							# save pseudo-register
-
-	movl	-4(%ebp), %ecx							# load pseudo-register
-	movl	-8(%ebp), %edx							# load pseudo-register
-	movl %ecx, %ecx							# move to register
-	addl %edx, %ecx							# add two registers
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	movl $~404, %ecx							# move constant to register
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	movl	-4(%ebp), %edx							# load pseudo-register
-	movl %ebp, %ecx							# move to register
-	addl %edx, %ecx							# add two registers
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	movl	-4(%ebp), %ecx							# load pseudo-register
-	movl (%ecx), %ecx							# fetch from memory
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	movl	-4(%ebp), %ecx							# load pseudo-register
-	movl %ecx, (%ecx)							# move to memory
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	pushl %eax
-	pushl %ecx
-	pushl %edx
-	movl $12, %ecx							# move constant to register
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	movl	-4(%ebp), %edx							# load pseudo-register
-	movl %ebp, %ecx							# move to register
-	addl %edx, %ecx							# add two registers
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	movl	-4(%ebp), %ecx							# load pseudo-register
-	movl (%ecx), %ecx							# fetch from memory
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	movl $1, %ecx							# move constant to register
-	movl	%ecx, -8(%ebp)							# save pseudo-register
-
-	movl	-4(%ebp), %ecx							# load pseudo-register
-	movl	-8(%ebp), %edx							# load pseudo-register
-	movl %ecx, %ecx							# move to register
-	addl %edx, %ecx							# add two registers
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	movl	-4(%ebp), %ecx							# load pseudo-register
-	pushl %ecx
-	movl $8, %ecx							# move constant to register
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	movl	-4(%ebp), %edx							# load pseudo-register
-	movl %ebp, %ecx							# move to register
-	addl %edx, %ecx							# add two registers
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	movl	-4(%ebp), %ecx							# load pseudo-register
-	movl (%ecx), %ecx							# fetch from memory
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	movl	-4(%ebp), %ecx							# load pseudo-register
-	pushl %ecx
-	call L153
-	addl $8, %esp
-	movl %eax, %ecx
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	popl %edx
-	popl %ecx
-	popl %eax
-	pushl %eax
-	pushl %ecx
-	pushl %edx
-	movl $~404, %ecx							# move constant to register
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	movl	-4(%ebp), %edx							# load pseudo-register
-	movl %ebp, %ecx							# move to register
-	addl %edx, %ecx							# add two registers
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	movl	-4(%ebp), %ecx							# load pseudo-register
-	movl (%ecx), %ecx							# fetch from memory
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	movl	-4(%ebp), %ecx							# load pseudo-register
-	pushl %ecx
-	movl $8, %ecx							# move constant to register
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	movl	-4(%ebp), %edx							# load pseudo-register
-	movl %ebp, %ecx							# move to register
-	addl %edx, %ecx							# add two registers
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	movl	-4(%ebp), %ecx							# load pseudo-register
-	movl (%ecx), %ecx							# fetch from memory
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	movl $~408, %ecx							# move constant to register
-	movl	%ecx, -8(%ebp)							# save pseudo-register
-
-	movl	-4(%ebp), %ecx							# load pseudo-register
-	movl	-8(%ebp), %edx							# load pseudo-register
-	movl %ecx, %ecx							# move to register
-	addl %edx, %ecx							# add two registers
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	movl	-4(%ebp), %ecx							# load pseudo-register
-	movl (%ecx), %ecx							# fetch from memory
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	movl	-4(%ebp), %ecx							# load pseudo-register
-	pushl %ecx
-	call checkArrayBounds
-	addl $8, %esp
-	movl %eax, %ecx
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	popl %edx
-	popl %ecx
-	popl %eax
-	movl $8, %ecx							# move constant to register
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	movl	-4(%ebp), %edx							# load pseudo-register
-	movl %ebp, %ecx							# move to register
-	addl %edx, %ecx							# add two registers
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	movl	-4(%ebp), %ecx							# load pseudo-register
-	movl (%ecx), %ecx							# fetch from memory
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	movl $~408, %ecx							# move constant to register
-	movl	%ecx, -8(%ebp)							# save pseudo-register
-
-	movl	-4(%ebp), %ecx							# load pseudo-register
-	movl	-8(%ebp), %edx							# load pseudo-register
-	movl %ecx, %ecx							# move to register
-	addl %edx, %ecx							# add two registers
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	movl	-4(%ebp), %ecx							# load pseudo-register
-	movl (%ecx), %ecx							# fetch from memory
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	movl $~404, %ecx							# move constant to register
-	movl	%ecx, -8(%ebp)							# save pseudo-register
-
-	movl	-8(%ebp), %edx							# load pseudo-register
-	movl %ebp, %ecx							# move to register
-	addl %edx, %ecx							# add two registers
-	movl	%ecx, -8(%ebp)							# save pseudo-register
-
-	movl	-8(%ebp), %ecx							# load pseudo-register
-	movl (%ecx), %ecx							# fetch from memory
-	movl	%ecx, -8(%ebp)							# save pseudo-register
-
-	movl $4, %ecx							# move constant to register
-	movl	%ecx, -12(%ebp)							# save pseudo-register
-
-	movl	-8(%ebp), %ecx							# load pseudo-register
-	movl	-12(%ebp), %edx							# load pseudo-register
-	movl %ecx, %ecx							# move to register
-	imull %edx, %ecx							# multiply two registers
-	movl	%ecx, -8(%ebp)							# save pseudo-register
-
-	movl	-4(%ebp), %ecx							# load pseudo-register
-	movl	-8(%ebp), %edx							# load pseudo-register
-	movl %ecx, %ecx							# move to register
-	addl %edx, %ecx							# add two registers
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
 	movl $0, %ecx							# move constant to register
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	movl	-4(%ebp), %ecx							# load pseudo-register
-	movl %ecx, (%ecx)							# move to memory
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	pushl %eax
-	pushl %ecx
-	pushl %edx
-	movl $~404, %ecx							# move constant to register
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	movl	-4(%ebp), %edx							# load pseudo-register
-	movl %ebp, %ecx							# move to register
-	addl %edx, %ecx							# add two registers
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	movl	-4(%ebp), %ecx							# load pseudo-register
-	movl (%ecx), %ecx							# fetch from memory
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	movl $12, %ecx							# move constant to register
-	movl	%ecx, -8(%ebp)							# save pseudo-register
-
-	movl	-8(%ebp), %edx							# load pseudo-register
-	movl %ebp, %ecx							# move to register
-	addl %edx, %ecx							# add two registers
-	movl	%ecx, -8(%ebp)							# save pseudo-register
-
-	movl	-8(%ebp), %ecx							# load pseudo-register
-	movl (%ecx), %ecx							# fetch from memory
-	movl	%ecx, -8(%ebp)							# save pseudo-register
-
-	movl	-4(%ebp), %ecx							# load pseudo-register
-	movl	-8(%ebp), %edx							# load pseudo-register
-	movl %ecx, %ecx							# move to register
-	addl %edx, %ecx							# add two registers
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	movl	-4(%ebp), %ecx							# load pseudo-register
-	pushl %ecx
-	movl $8, %ecx							# move constant to register
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	movl	-4(%ebp), %edx							# load pseudo-register
-	movl %ebp, %ecx							# move to register
-	addl %edx, %ecx							# add two registers
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	movl	-4(%ebp), %ecx							# load pseudo-register
-	movl (%ecx), %ecx							# fetch from memory
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	movl $~416, %ecx							# move constant to register
-	movl	%ecx, -8(%ebp)							# save pseudo-register
-
-	movl	-4(%ebp), %ecx							# load pseudo-register
-	movl	-8(%ebp), %edx							# load pseudo-register
-	movl %ecx, %ecx							# move to register
-	addl %edx, %ecx							# add two registers
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	movl	-4(%ebp), %ecx							# load pseudo-register
-	movl (%ecx), %ecx							# fetch from memory
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	movl	-4(%ebp), %ecx							# load pseudo-register
-	pushl %ecx
-	call checkArrayBounds
-	addl $8, %esp
-	movl %eax, %ecx
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	popl %edx
-	popl %ecx
-	popl %eax
-	movl $8, %ecx							# move constant to register
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	movl	-4(%ebp), %edx							# load pseudo-register
-	movl %ebp, %ecx							# move to register
-	addl %edx, %ecx							# add two registers
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	movl	-4(%ebp), %ecx							# load pseudo-register
-	movl (%ecx), %ecx							# fetch from memory
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	movl $~416, %ecx							# move constant to register
-	movl	%ecx, -8(%ebp)							# save pseudo-register
-
-	movl	-4(%ebp), %ecx							# load pseudo-register
-	movl	-8(%ebp), %edx							# load pseudo-register
-	movl %ecx, %ecx							# move to register
-	addl %edx, %ecx							# add two registers
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	movl	-4(%ebp), %ecx							# load pseudo-register
-	movl (%ecx), %ecx							# fetch from memory
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	movl $~404, %ecx							# move constant to register
-	movl	%ecx, -8(%ebp)							# save pseudo-register
-
-	movl	-8(%ebp), %edx							# load pseudo-register
-	movl %ebp, %ecx							# move to register
-	addl %edx, %ecx							# add two registers
-	movl	%ecx, -8(%ebp)							# save pseudo-register
-
-	movl	-8(%ebp), %ecx							# load pseudo-register
-	movl (%ecx), %ecx							# fetch from memory
-	movl	%ecx, -8(%ebp)							# save pseudo-register
-
-	movl $12, %ecx							# move constant to register
-	movl	%ecx, -12(%ebp)							# save pseudo-register
-
-	movl	-12(%ebp), %edx							# load pseudo-register
-	movl %ebp, %ecx							# move to register
-	addl %edx, %ecx							# add two registers
-	movl	%ecx, -12(%ebp)							# save pseudo-register
-
-	movl	-12(%ebp), %ecx							# load pseudo-register
-	movl (%ecx), %ecx							# fetch from memory
-	movl	%ecx, -12(%ebp)							# save pseudo-register
-
-	movl	-8(%ebp), %ecx							# load pseudo-register
-	movl	-12(%ebp), %edx							# load pseudo-register
-	movl %ecx, %ecx							# move to register
-	addl %edx, %ecx							# add two registers
-	movl	%ecx, -8(%ebp)							# save pseudo-register
-
-	movl $4, %ecx							# move constant to register
-	movl	%ecx, -12(%ebp)							# save pseudo-register
-
-	movl	-8(%ebp), %ecx							# load pseudo-register
-	movl	-12(%ebp), %edx							# load pseudo-register
-	movl %ecx, %ecx							# move to register
-	imull %edx, %ecx							# multiply two registers
-	movl	%ecx, -8(%ebp)							# save pseudo-register
-
-	movl	-4(%ebp), %ecx							# load pseudo-register
-	movl	-8(%ebp), %edx							# load pseudo-register
-	movl %ecx, %ecx							# move to register
-	addl %edx, %ecx							# add two registers
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	movl $0, %ecx							# move constant to register
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	movl	-4(%ebp), %ecx							# load pseudo-register
-	movl %ecx, (%ecx)							# move to memory
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	pushl %eax
-	pushl %ecx
-	pushl %edx
-	movl $~404, %ecx							# move constant to register
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	movl	-4(%ebp), %edx							# load pseudo-register
-	movl %ebp, %ecx							# move to register
-	addl %edx, %ecx							# add two registers
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	movl	-4(%ebp), %ecx							# load pseudo-register
-	movl (%ecx), %ecx							# fetch from memory
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	movl $7, %ecx							# move constant to register
-	movl	%ecx, -8(%ebp)							# save pseudo-register
-
-	movl	-4(%ebp), %ecx							# load pseudo-register
-	movl	-8(%ebp), %edx							# load pseudo-register
-	movl %ecx, %ecx							# move to register
-	addl %edx, %ecx							# add two registers
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	movl $12, %ecx							# move constant to register
-	movl	%ecx, -8(%ebp)							# save pseudo-register
-
-	movl	-8(%ebp), %edx							# load pseudo-register
-	movl %ebp, %ecx							# move to register
-	addl %edx, %ecx							# add two registers
-	movl	%ecx, -8(%ebp)							# save pseudo-register
-
-	movl	-8(%ebp), %ecx							# load pseudo-register
-	movl (%ecx), %ecx							# fetch from memory
-	movl	%ecx, -8(%ebp)							# save pseudo-register
-
-	movl	-4(%ebp), %ecx							# load pseudo-register
-	movl	-8(%ebp), %edx							# load pseudo-register
-	movl %ecx, %ecx							# move to register
-	subl %edx, %ecx							# subtract two registers
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	movl	-4(%ebp), %ecx							# load pseudo-register
-	pushl %ecx
-	movl $8, %ecx							# move constant to register
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	movl	-4(%ebp), %edx							# load pseudo-register
-	movl %ebp, %ecx							# move to register
-	addl %edx, %ecx							# add two registers
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	movl	-4(%ebp), %ecx							# load pseudo-register
-	movl (%ecx), %ecx							# fetch from memory
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	movl $~420, %ecx							# move constant to register
-	movl	%ecx, -8(%ebp)							# save pseudo-register
-
-	movl	-4(%ebp), %ecx							# load pseudo-register
-	movl	-8(%ebp), %edx							# load pseudo-register
-	movl %ecx, %ecx							# move to register
-	addl %edx, %ecx							# add two registers
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	movl	-4(%ebp), %ecx							# load pseudo-register
-	movl (%ecx), %ecx							# fetch from memory
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	movl	-4(%ebp), %ecx							# load pseudo-register
-	pushl %ecx
-	call checkArrayBounds
-	addl $8, %esp
-	movl %eax, %ecx
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	popl %edx
-	popl %ecx
-	popl %eax
-	movl $8, %ecx							# move constant to register
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	movl	-4(%ebp), %edx							# load pseudo-register
-	movl %ebp, %ecx							# move to register
-	addl %edx, %ecx							# add two registers
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	movl	-4(%ebp), %ecx							# load pseudo-register
-	movl (%ecx), %ecx							# fetch from memory
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	movl $~420, %ecx							# move constant to register
-	movl	%ecx, -8(%ebp)							# save pseudo-register
-
-	movl	-4(%ebp), %ecx							# load pseudo-register
-	movl	-8(%ebp), %edx							# load pseudo-register
-	movl %ecx, %ecx							# move to register
-	addl %edx, %ecx							# add two registers
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	movl	-4(%ebp), %ecx							# load pseudo-register
-	movl (%ecx), %ecx							# fetch from memory
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	movl $~404, %ecx							# move constant to register
-	movl	%ecx, -8(%ebp)							# save pseudo-register
-
-	movl	-8(%ebp), %edx							# load pseudo-register
-	movl %ebp, %ecx							# move to register
-	addl %edx, %ecx							# add two registers
-	movl	%ecx, -8(%ebp)							# save pseudo-register
-
-	movl	-8(%ebp), %ecx							# load pseudo-register
-	movl (%ecx), %ecx							# fetch from memory
-	movl	%ecx, -8(%ebp)							# save pseudo-register
-
-	movl $7, %ecx							# move constant to register
-	movl	%ecx, -12(%ebp)							# save pseudo-register
-
-	movl	-8(%ebp), %ecx							# load pseudo-register
-	movl	-12(%ebp), %edx							# load pseudo-register
-	movl %ecx, %ecx							# move to register
-	addl %edx, %ecx							# add two registers
-	movl	%ecx, -8(%ebp)							# save pseudo-register
-
-	movl $12, %ecx							# move constant to register
-	movl	%ecx, -12(%ebp)							# save pseudo-register
-
-	movl	-12(%ebp), %edx							# load pseudo-register
-	movl %ebp, %ecx							# move to register
-	addl %edx, %ecx							# add two registers
-	movl	%ecx, -12(%ebp)							# save pseudo-register
-
-	movl	-12(%ebp), %ecx							# load pseudo-register
-	movl (%ecx), %ecx							# fetch from memory
-	movl	%ecx, -12(%ebp)							# save pseudo-register
-
-	movl	-8(%ebp), %ecx							# load pseudo-register
-	movl	-12(%ebp), %edx							# load pseudo-register
-	movl %ecx, %ecx							# move to register
-	subl %edx, %ecx							# subtract two registers
-	movl	%ecx, -8(%ebp)							# save pseudo-register
-
-	movl $4, %ecx							# move constant to register
-	movl	%ecx, -12(%ebp)							# save pseudo-register
-
-	movl	-8(%ebp), %ecx							# load pseudo-register
-	movl	-12(%ebp), %edx							# load pseudo-register
-	movl %ecx, %ecx							# move to register
-	imull %edx, %ecx							# multiply two registers
-	movl	%ecx, -8(%ebp)							# save pseudo-register
-
-	movl	-4(%ebp), %ecx							# load pseudo-register
-	movl	-8(%ebp), %edx							# load pseudo-register
-	movl %ecx, %ecx							# move to register
-	addl %edx, %ecx							# add two registers
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	movl $0, %ecx							# move constant to register
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	movl	-4(%ebp), %ecx							# load pseudo-register
-	movl %ecx, (%ecx)							# move to memory
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-L179:
-	movl $~404, %ecx							# move constant to register
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	movl	-4(%ebp), %edx							# load pseudo-register
-	movl %ebp, %ecx							# move to register
-	addl %edx, %ecx							# add two registers
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	movl	-4(%ebp), %ecx							# load pseudo-register
-	movl (%ecx), %ecx							# fetch from memory
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	movl $8, %ecx							# move constant to register
-	movl	%ecx, -8(%ebp)							# save pseudo-register
-
-	movl	-8(%ebp), %edx							# load pseudo-register
-	movl %ebp, %ecx							# move to register
-	addl %edx, %ecx							# add two registers
-	movl	%ecx, -8(%ebp)							# save pseudo-register
-
-	movl	-8(%ebp), %ecx							# load pseudo-register
-	movl (%ecx), %ecx							# fetch from memory
-	movl	%ecx, -8(%ebp)							# save pseudo-register
-
-	movl $~404, %ecx							# move constant to register
-	movl	%ecx, -12(%ebp)							# save pseudo-register
-
-	movl	-8(%ebp), %ecx							# load pseudo-register
-	movl	-12(%ebp), %edx							# load pseudo-register
-	movl %ecx, %ecx							# move to register
-	addl %edx, %ecx							# add two registers
-	movl	%ecx, -8(%ebp)							# save pseudo-register
-
-	movl	-8(%ebp), %ecx							# load pseudo-register
-	movl (%ecx), %ecx							# fetch from memory
-	movl	%ecx, -8(%ebp)							# save pseudo-register
-
-	movl $1, %ecx							# move constant to register
-	movl	%ecx, -12(%ebp)							# save pseudo-register
-
-	movl	-8(%ebp), %ecx							# load pseudo-register
-	movl	-12(%ebp), %edx							# load pseudo-register
-	movl %ecx, %ecx							# move to register
-	subl %edx, %ecx							# subtract two registers
 	movl	%ecx, -8(%ebp)							# save pseudo-register
 
 	movl	-4(%ebp), %ecx							# load pseudo-register
 	movl	-8(%ebp), %edx							# load pseudo-register
 	cmpl %ecx, %edx							# compare for jump...
-jge L167							# if true: jump to L167
-	jmp L181							# if false: jump to L181
-L181:
-	movl $~404, %ecx							# move constant to register
+jge L59							# if true: jump to L59
+	jmp L61							# if false: jump to L61
+L61:
+	mov $L63, %ecx
 	movl	%ecx, -4(%ebp)							# save pseudo-register
 
-	movl	-4(%ebp), %edx							# load pseudo-register
-	movl %ebp, %ecx							# move to register
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl %ecx, %ecx							# move to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl $0, %ecx							# move constant to register
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %edx							# load pseudo-register
+	movl %esp, %ecx							# move to register
 	addl %edx, %ecx							# add two registers
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl %ecx, (%ecx)							# move to memory
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	pushl %eax
+	pushl %ecx
+	pushl %edx
+	movl $0, %ecx							# move constant to register
 	movl	%ecx, -4(%ebp)							# save pseudo-register
 
-	movl $~404, %ecx							# move constant to register
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	pushl %ecx
+	movl $0, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	pushl %ecx
+	call print
+	addl $8, %esp
+	movl %eax, %ecx
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	popl %edx
+	popl %ecx
+	popl %eax
+	movl $1, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl %ecx, %ecx							# move to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl $0, %ecx							# move constant to register
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %edx							# load pseudo-register
+	movl %esp, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl %ecx, (%ecx)							# move to memory
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	pushl %eax
+	pushl %ecx
+	pushl %edx
+	movl $0, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	pushl %ecx
+	movl $0, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	pushl %ecx
+	call exit
+	addl $8, %esp
+	movl %eax, %ecx
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	popl %edx
+	popl %ecx
+	popl %eax
+L62:
+	movl $8, %ecx							# move constant to register
 	movl	%ecx, -4(%ebp)							# save pseudo-register
 
 	movl	-4(%ebp), %edx							# load pseudo-register
@@ -1891,21 +2378,150 @@ L181:
 	movl (%ecx), %ecx							# fetch from memory
 	movl	%ecx, -4(%ebp)							# save pseudo-register
 
-	movl $1, %ecx							# move constant to register
+	movl $388, %ecx							# move constant to register
 	movl	%ecx, -8(%ebp)							# save pseudo-register
 
 	movl	-4(%ebp), %ecx							# load pseudo-register
 	movl	-8(%ebp), %edx							# load pseudo-register
 	movl %ecx, %ecx							# move to register
 	addl %edx, %ecx							# add two registers
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl (%ecx), %ecx							# fetch from memory
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl $404, %ecx							# move constant to register
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %edx							# load pseudo-register
+	movl %ebp, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %ecx							# load pseudo-register
+	movl (%ecx), %ecx							# fetch from memory
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl $7, %ecx							# move constant to register
+	movl	%ecx, -12(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %ecx							# load pseudo-register
+	movl	-12(%ebp), %edx							# load pseudo-register
+	movl %ecx, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl $12, %ecx							# move constant to register
+	movl	%ecx, -12(%ebp)							# save pseudo-register
+
+	movl	-12(%ebp), %edx							# load pseudo-register
+	movl %ebp, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -12(%ebp)							# save pseudo-register
+
+	movl	-12(%ebp), %ecx							# load pseudo-register
+	movl (%ecx), %ecx							# fetch from memory
+	movl	%ecx, -12(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %ecx							# load pseudo-register
+	movl	-12(%ebp), %edx							# load pseudo-register
+	movl %ecx, %ecx							# move to register
+	subl %edx, %ecx							# subtract two registers
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl $1, %ecx							# move constant to register
+	movl	%ecx, -12(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %ecx							# load pseudo-register
+	movl	-12(%ebp), %edx							# load pseudo-register
+	movl %ecx, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl $4, %ecx							# move constant to register
+	movl	%ecx, -12(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %ecx							# load pseudo-register
+	movl	-12(%ebp), %edx							# load pseudo-register
+	movl %ecx, %ecx							# move to register
+	imull %edx, %ecx							# multiply two registers
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl	-8(%ebp), %edx							# load pseudo-register
+	movl %ecx, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl $1, %ecx							# move constant to register
 	movl	%ecx, -4(%ebp)							# save pseudo-register
 
 	movl	-4(%ebp), %ecx							# load pseudo-register
 	movl %ecx, (%ecx)							# move to memory
 	movl	%ecx, -4(%ebp)							# save pseudo-register
 
-	jmp L180							# jump to L180
-L168:
+	movl $12, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %edx							# load pseudo-register
+	movl %ebp, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl (%ecx), %ecx							# fetch from memory
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl $0, %ecx							# move constant to register
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl	-8(%ebp), %edx							# load pseudo-register
+	cmpl %ecx, %edx							# compare for jump...
+jge L64							# if true: jump to L64
+	jmp L66							# if false: jump to L66
+L66:
+	mov $L68, %ecx
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl %ecx, %ecx							# move to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl $0, %ecx							# move constant to register
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %edx							# load pseudo-register
+	movl %esp, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl %ecx, (%ecx)							# move to memory
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	pushl %eax
+	pushl %ecx
+	pushl %edx
+	movl $0, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	pushl %ecx
+	movl $0, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	pushl %ecx
+	call print
+	addl $8, %esp
+	movl %eax, %ecx
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	popl %edx
+	popl %ecx
+	popl %eax
 	movl $1, %ecx							# move constant to register
 	movl	%ecx, -4(%ebp)							# save pseudo-register
 
@@ -1913,76 +2529,827 @@ L168:
 	movl %ecx, %ecx							# move to register
 	movl	%ecx, -4(%ebp)							# save pseudo-register
 
+	movl $0, %ecx							# move constant to register
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %edx							# load pseudo-register
+	movl %esp, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl %ecx, (%ecx)							# move to memory
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
 	pushl %eax
 	pushl %ecx
 	pushl %edx
-	movl $~404, %ecx							# move constant to register
-	movl	%ecx, -8(%ebp)							# save pseudo-register
+	movl $0, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
 
-	movl	-8(%ebp), %edx							# load pseudo-register
-	movl %ebp, %ecx							# move to register
-	addl %edx, %ecx							# add two registers
-	movl	%ecx, -8(%ebp)							# save pseudo-register
-
-	movl	-8(%ebp), %ecx							# load pseudo-register
-	movl (%ecx), %ecx							# fetch from memory
-	movl	%ecx, -8(%ebp)							# save pseudo-register
-
-	movl $12, %ecx							# move constant to register
-	movl	%ecx, -12(%ebp)							# save pseudo-register
-
-	movl	-12(%ebp), %edx							# load pseudo-register
-	movl %ebp, %ecx							# move to register
-	addl %edx, %ecx							# add two registers
-	movl	%ecx, -12(%ebp)							# save pseudo-register
-
-	movl	-12(%ebp), %ecx							# load pseudo-register
-	movl (%ecx), %ecx							# fetch from memory
-	movl	%ecx, -12(%ebp)							# save pseudo-register
-
-	movl	-8(%ebp), %ecx							# load pseudo-register
-	movl	-12(%ebp), %edx							# load pseudo-register
-	movl %ecx, %ecx							# move to register
-	addl %edx, %ecx							# add two registers
-	movl	%ecx, -8(%ebp)							# save pseudo-register
-
-	movl	-8(%ebp), %ecx							# load pseudo-register
+	movl	-4(%ebp), %ecx							# load pseudo-register
 	pushl %ecx
-	movl $8, %ecx							# move constant to register
-	movl	%ecx, -8(%ebp)							# save pseudo-register
+	movl $0, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
 
-	movl	-8(%ebp), %edx							# load pseudo-register
-	movl %ebp, %ecx							# move to register
-	addl %edx, %ecx							# add two registers
-	movl	%ecx, -8(%ebp)							# save pseudo-register
-
-	movl	-8(%ebp), %ecx							# load pseudo-register
-	movl (%ecx), %ecx							# fetch from memory
-	movl	%ecx, -8(%ebp)							# save pseudo-register
-
-	movl $~416, %ecx							# move constant to register
-	movl	%ecx, -12(%ebp)							# save pseudo-register
-
-	movl	-8(%ebp), %ecx							# load pseudo-register
-	movl	-12(%ebp), %edx							# load pseudo-register
-	movl %ecx, %ecx							# move to register
-	addl %edx, %ecx							# add two registers
-	movl	%ecx, -8(%ebp)							# save pseudo-register
-
-	movl	-8(%ebp), %ecx							# load pseudo-register
-	movl (%ecx), %ecx							# fetch from memory
-	movl	%ecx, -8(%ebp)							# save pseudo-register
-
-	movl	-8(%ebp), %ecx							# load pseudo-register
+	movl	-4(%ebp), %ecx							# load pseudo-register
 	pushl %ecx
-	call checkArrayBounds
+	call exit
 	addl $8, %esp
 	movl %eax, %ecx
-	movl	%ecx, -8(%ebp)							# save pseudo-register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
 
 	popl %edx
 	popl %ecx
 	popl %eax
+L67:
+	movl $8, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %edx							# load pseudo-register
+	movl %ebp, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl (%ecx), %ecx							# fetch from memory
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl $396, %ecx							# move constant to register
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl	-8(%ebp), %edx							# load pseudo-register
+	movl %ecx, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl (%ecx), %ecx							# fetch from memory
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl $12, %ecx							# move constant to register
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %edx							# load pseudo-register
+	movl %ebp, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %ecx							# load pseudo-register
+	movl (%ecx), %ecx							# fetch from memory
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl $1, %ecx							# move constant to register
+	movl	%ecx, -12(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %ecx							# load pseudo-register
+	movl	-12(%ebp), %edx							# load pseudo-register
+	movl %ecx, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl $4, %ecx							# move constant to register
+	movl	%ecx, -12(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %ecx							# load pseudo-register
+	movl	-12(%ebp), %edx							# load pseudo-register
+	movl %ecx, %ecx							# move to register
+	imull %edx, %ecx							# multiply two registers
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl	-8(%ebp), %edx							# load pseudo-register
+	movl %ecx, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl $404, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %edx							# load pseudo-register
+	movl %ebp, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl (%ecx), %ecx							# fetch from memory
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl %ecx, (%ecx)							# move to memory
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl $8, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %edx							# load pseudo-register
+	movl %ebp, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl (%ecx), %ecx							# fetch from memory
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl %ecx, %ecx							# move to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl $12, %ecx							# move constant to register
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %edx							# load pseudo-register
+	movl %ebp, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %ecx							# load pseudo-register
+	movl (%ecx), %ecx							# fetch from memory
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl $1, %ecx							# move constant to register
+	movl	%ecx, -12(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %ecx							# load pseudo-register
+	movl	-12(%ebp), %edx							# load pseudo-register
+	movl %ecx, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %ecx							# load pseudo-register
+	movl %ecx, %ecx							# move to register
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl $4, %ecx							# move constant to register
+	movl	%ecx, -12(%ebp)							# save pseudo-register
+
+	movl	-12(%ebp), %edx							# load pseudo-register
+	movl %esp, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -12(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %ecx							# load pseudo-register
+	movl %ecx, (%ecx)							# move to memory
+	movl	%ecx, -12(%ebp)							# save pseudo-register
+
+	movl $0, %ecx							# move constant to register
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %edx							# load pseudo-register
+	movl %esp, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl %ecx, (%ecx)							# move to memory
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	pushl %eax
+	pushl %ecx
+	pushl %edx
+	movl $0, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	pushl %ecx
+	movl $0, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	pushl %ecx
+	movl $0, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	pushl %ecx
+	movl $0, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	pushl %ecx
+	call L2
+	addl $16, %esp
+	movl %eax, %ecx
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	popl %edx
+	popl %ecx
+	popl %eax
+	movl $404, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %edx							# load pseudo-register
+	movl %ebp, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl (%ecx), %ecx							# fetch from memory
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl $0, %ecx							# move constant to register
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl	-8(%ebp), %edx							# load pseudo-register
+	cmpl %ecx, %edx							# compare for jump...
+jge L69							# if true: jump to L69
+	jmp L71							# if false: jump to L71
+L71:
+	mov $L73, %ecx
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl %ecx, %ecx							# move to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl $0, %ecx							# move constant to register
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %edx							# load pseudo-register
+	movl %esp, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl %ecx, (%ecx)							# move to memory
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	pushl %eax
+	pushl %ecx
+	pushl %edx
+	movl $0, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	pushl %ecx
+	movl $0, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	pushl %ecx
+	call print
+	addl $8, %esp
+	movl %eax, %ecx
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	popl %edx
+	popl %ecx
+	popl %eax
+	movl $1, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl %ecx, %ecx							# move to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl $0, %ecx							# move constant to register
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %edx							# load pseudo-register
+	movl %esp, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl %ecx, (%ecx)							# move to memory
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	pushl %eax
+	pushl %ecx
+	pushl %edx
+	movl $0, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	pushl %ecx
+	movl $0, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	pushl %ecx
+	call exit
+	addl $8, %esp
+	movl %eax, %ecx
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	popl %edx
+	popl %ecx
+	popl %eax
+L72:
+	movl $8, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %edx							# load pseudo-register
+	movl %ebp, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl (%ecx), %ecx							# fetch from memory
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl $400, %ecx							# move constant to register
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl	-8(%ebp), %edx							# load pseudo-register
+	movl %ecx, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl (%ecx), %ecx							# fetch from memory
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl $404, %ecx							# move constant to register
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %edx							# load pseudo-register
+	movl %ebp, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %ecx							# load pseudo-register
+	movl (%ecx), %ecx							# fetch from memory
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl $1, %ecx							# move constant to register
+	movl	%ecx, -12(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %ecx							# load pseudo-register
+	movl	-12(%ebp), %edx							# load pseudo-register
+	movl %ecx, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl $4, %ecx							# move constant to register
+	movl	%ecx, -12(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %ecx							# load pseudo-register
+	movl	-12(%ebp), %edx							# load pseudo-register
+	movl %ecx, %ecx							# move to register
+	imull %edx, %ecx							# multiply two registers
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl	-8(%ebp), %edx							# load pseudo-register
+	movl %ecx, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl $0, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl %ecx, (%ecx)							# move to memory
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl $404, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %edx							# load pseudo-register
+	movl %ebp, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl (%ecx), %ecx							# fetch from memory
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl $12, %ecx							# move constant to register
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %edx							# load pseudo-register
+	movl %ebp, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %ecx							# load pseudo-register
+	movl (%ecx), %ecx							# fetch from memory
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl	-8(%ebp), %edx							# load pseudo-register
+	movl %ecx, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl $0, %ecx							# move constant to register
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl	-8(%ebp), %edx							# load pseudo-register
+	cmpl %ecx, %edx							# compare for jump...
+jge L74							# if true: jump to L74
+	jmp L76							# if false: jump to L76
+L76:
+	mov $L78, %ecx
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl %ecx, %ecx							# move to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl $0, %ecx							# move constant to register
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %edx							# load pseudo-register
+	movl %esp, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl %ecx, (%ecx)							# move to memory
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	pushl %eax
+	pushl %ecx
+	pushl %edx
+	movl $0, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	pushl %ecx
+	movl $0, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	pushl %ecx
+	call print
+	addl $8, %esp
+	movl %eax, %ecx
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	popl %edx
+	popl %ecx
+	popl %eax
+	movl $1, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl %ecx, %ecx							# move to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl $0, %ecx							# move constant to register
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %edx							# load pseudo-register
+	movl %esp, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl %ecx, (%ecx)							# move to memory
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	pushl %eax
+	pushl %ecx
+	pushl %edx
+	movl $0, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	pushl %ecx
+	movl $0, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	pushl %ecx
+	call exit
+	addl $8, %esp
+	movl %eax, %ecx
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	popl %edx
+	popl %ecx
+	popl %eax
+L77:
+	movl $8, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %edx							# load pseudo-register
+	movl %ebp, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl (%ecx), %ecx							# fetch from memory
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl $392, %ecx							# move constant to register
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl	-8(%ebp), %edx							# load pseudo-register
+	movl %ecx, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl (%ecx), %ecx							# fetch from memory
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl $404, %ecx							# move constant to register
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %edx							# load pseudo-register
+	movl %ebp, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %ecx							# load pseudo-register
+	movl (%ecx), %ecx							# fetch from memory
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl $12, %ecx							# move constant to register
+	movl	%ecx, -12(%ebp)							# save pseudo-register
+
+	movl	-12(%ebp), %edx							# load pseudo-register
+	movl %ebp, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -12(%ebp)							# save pseudo-register
+
+	movl	-12(%ebp), %ecx							# load pseudo-register
+	movl (%ecx), %ecx							# fetch from memory
+	movl	%ecx, -12(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %ecx							# load pseudo-register
+	movl	-12(%ebp), %edx							# load pseudo-register
+	movl %ecx, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl $1, %ecx							# move constant to register
+	movl	%ecx, -12(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %ecx							# load pseudo-register
+	movl	-12(%ebp), %edx							# load pseudo-register
+	movl %ecx, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl $4, %ecx							# move constant to register
+	movl	%ecx, -12(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %ecx							# load pseudo-register
+	movl	-12(%ebp), %edx							# load pseudo-register
+	movl %ecx, %ecx							# move to register
+	imull %edx, %ecx							# multiply two registers
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl	-8(%ebp), %edx							# load pseudo-register
+	movl %ecx, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl $0, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl %ecx, (%ecx)							# move to memory
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl $404, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %edx							# load pseudo-register
+	movl %ebp, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl (%ecx), %ecx							# fetch from memory
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl $7, %ecx							# move constant to register
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl	-8(%ebp), %edx							# load pseudo-register
+	movl %ecx, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl $12, %ecx							# move constant to register
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %edx							# load pseudo-register
+	movl %ebp, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %ecx							# load pseudo-register
+	movl (%ecx), %ecx							# fetch from memory
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl	-8(%ebp), %edx							# load pseudo-register
+	movl %ecx, %ecx							# move to register
+	subl %edx, %ecx							# subtract two registers
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl $0, %ecx							# move constant to register
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl	-8(%ebp), %edx							# load pseudo-register
+	cmpl %ecx, %edx							# compare for jump...
+jge L79							# if true: jump to L79
+	jmp L81							# if false: jump to L81
+L81:
+	mov $L83, %ecx
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl %ecx, %ecx							# move to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl $0, %ecx							# move constant to register
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %edx							# load pseudo-register
+	movl %esp, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl %ecx, (%ecx)							# move to memory
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	pushl %eax
+	pushl %ecx
+	pushl %edx
+	movl $0, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	pushl %ecx
+	movl $0, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	pushl %ecx
+	call print
+	addl $8, %esp
+	movl %eax, %ecx
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	popl %edx
+	popl %ecx
+	popl %eax
+	movl $1, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl %ecx, %ecx							# move to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl $0, %ecx							# move constant to register
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %edx							# load pseudo-register
+	movl %esp, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl %ecx, (%ecx)							# move to memory
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	pushl %eax
+	pushl %ecx
+	pushl %edx
+	movl $0, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	pushl %ecx
+	movl $0, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	pushl %ecx
+	call exit
+	addl $8, %esp
+	movl %eax, %ecx
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	popl %edx
+	popl %ecx
+	popl %eax
+L82:
+	movl $8, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %edx							# load pseudo-register
+	movl %ebp, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl (%ecx), %ecx							# fetch from memory
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl $388, %ecx							# move constant to register
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl	-8(%ebp), %edx							# load pseudo-register
+	movl %ecx, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl (%ecx), %ecx							# fetch from memory
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl $404, %ecx							# move constant to register
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %edx							# load pseudo-register
+	movl %ebp, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %ecx							# load pseudo-register
+	movl (%ecx), %ecx							# fetch from memory
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl $7, %ecx							# move constant to register
+	movl	%ecx, -12(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %ecx							# load pseudo-register
+	movl	-12(%ebp), %edx							# load pseudo-register
+	movl %ecx, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl $12, %ecx							# move constant to register
+	movl	%ecx, -12(%ebp)							# save pseudo-register
+
+	movl	-12(%ebp), %edx							# load pseudo-register
+	movl %ebp, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -12(%ebp)							# save pseudo-register
+
+	movl	-12(%ebp), %ecx							# load pseudo-register
+	movl (%ecx), %ecx							# fetch from memory
+	movl	%ecx, -12(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %ecx							# load pseudo-register
+	movl	-12(%ebp), %edx							# load pseudo-register
+	movl %ecx, %ecx							# move to register
+	subl %edx, %ecx							# subtract two registers
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl $1, %ecx							# move constant to register
+	movl	%ecx, -12(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %ecx							# load pseudo-register
+	movl	-12(%ebp), %edx							# load pseudo-register
+	movl %ecx, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl $4, %ecx							# move constant to register
+	movl	%ecx, -12(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %ecx							# load pseudo-register
+	movl	-12(%ebp), %edx							# load pseudo-register
+	movl %ecx, %ecx							# move to register
+	imull %edx, %ecx							# multiply two registers
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl	-8(%ebp), %edx							# load pseudo-register
+	movl %ecx, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl $0, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl %ecx, (%ecx)							# move to memory
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	jmp L85							# jump to L85
+L49:
+	movl $404, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %edx							# load pseudo-register
+	movl %ebp, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl (%ecx), %ecx							# fetch from memory
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
 	movl $8, %ecx							# move constant to register
 	movl	%ecx, -8(%ebp)							# save pseudo-register
 
@@ -1995,7 +3362,7 @@ L168:
 	movl (%ecx), %ecx							# fetch from memory
 	movl	%ecx, -8(%ebp)							# save pseudo-register
 
-	movl $~416, %ecx							# move constant to register
+	movl $400, %ecx							# move constant to register
 	movl	%ecx, -12(%ebp)							# save pseudo-register
 
 	movl	-8(%ebp), %ecx							# load pseudo-register
@@ -2008,43 +3375,61 @@ L168:
 	movl (%ecx), %ecx							# fetch from memory
 	movl	%ecx, -8(%ebp)							# save pseudo-register
 
-	movl $~404, %ecx							# move constant to register
-	movl	%ecx, -12(%ebp)							# save pseudo-register
+	movl	-8(%ebp), %ecx							# load pseudo-register
+	movl (%ecx), %ecx							# fetch from memory
+	movl	%ecx, -8(%ebp)							# save pseudo-register
 
-	movl	-12(%ebp), %edx							# load pseudo-register
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl	-8(%ebp), %edx							# load pseudo-register
+	cmpl %ecx, %edx							# compare for jump...
+jge L51							# if true: jump to L51
+	jmp L50							# if false: jump to L50
+L50:
+	jmp L52							# jump to L52
+L54:
+	movl $404, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %edx							# load pseudo-register
 	movl %ebp, %ecx							# move to register
 	addl %edx, %ecx							# add two registers
-	movl	%ecx, -12(%ebp)							# save pseudo-register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
 
-	movl	-12(%ebp), %ecx							# load pseudo-register
+	movl	-4(%ebp), %ecx							# load pseudo-register
 	movl (%ecx), %ecx							# fetch from memory
-	movl	%ecx, -12(%ebp)							# save pseudo-register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
 
 	movl $12, %ecx							# move constant to register
-	movl	%ecx, -16(%ebp)							# save pseudo-register
+	movl	%ecx, -8(%ebp)							# save pseudo-register
 
-	movl	-16(%ebp), %edx							# load pseudo-register
+	movl	-8(%ebp), %edx							# load pseudo-register
 	movl %ebp, %ecx							# move to register
 	addl %edx, %ecx							# add two registers
-	movl	%ecx, -16(%ebp)							# save pseudo-register
+	movl	%ecx, -8(%ebp)							# save pseudo-register
 
-	movl	-16(%ebp), %ecx							# load pseudo-register
+	movl	-8(%ebp), %ecx							# load pseudo-register
 	movl (%ecx), %ecx							# fetch from memory
-	movl	%ecx, -16(%ebp)							# save pseudo-register
+	movl	%ecx, -8(%ebp)							# save pseudo-register
 
-	movl	-12(%ebp), %ecx							# load pseudo-register
-	movl	-16(%ebp), %edx							# load pseudo-register
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl	-8(%ebp), %edx							# load pseudo-register
 	movl %ecx, %ecx							# move to register
 	addl %edx, %ecx							# add two registers
-	movl	%ecx, -12(%ebp)							# save pseudo-register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
 
-	movl $4, %ecx							# move constant to register
-	movl	%ecx, -16(%ebp)							# save pseudo-register
+	movl $8, %ecx							# move constant to register
+	movl	%ecx, -8(%ebp)							# save pseudo-register
 
-	movl	-12(%ebp), %ecx							# load pseudo-register
-	movl	-16(%ebp), %edx							# load pseudo-register
-	movl %ecx, %ecx							# move to register
-	imull %edx, %ecx							# multiply two registers
+	movl	-8(%ebp), %edx							# load pseudo-register
+	movl %ebp, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %ecx							# load pseudo-register
+	movl (%ecx), %ecx							# fetch from memory
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl $392, %ecx							# move constant to register
 	movl	%ecx, -12(%ebp)							# save pseudo-register
 
 	movl	-8(%ebp), %ecx							# load pseudo-register
@@ -2057,55 +3442,352 @@ L168:
 	movl (%ecx), %ecx							# fetch from memory
 	movl	%ecx, -8(%ebp)							# save pseudo-register
 
-	movl $0, %ecx							# move constant to register
-	movl	%ecx, -12(%ebp)							# save pseudo-register
-
 	movl	-8(%ebp), %ecx							# load pseudo-register
-	movl	-12(%ebp), %edx							# load pseudo-register
+	movl (%ecx), %ecx							# fetch from memory
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl	-8(%ebp), %edx							# load pseudo-register
 	cmpl %ecx, %edx							# compare for jump...
-je L171							# if true: jump to L171
-	jmp L172							# if false: jump to L172
-L172:
-	movl $0, %ecx							# move constant to register
+jge L56							# if true: jump to L56
+	jmp L55							# if false: jump to L55
+L55:
+	jmp L57							# jump to L57
+L59:
+	movl $404, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %edx							# load pseudo-register
+	movl %ebp, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
 	movl	%ecx, -4(%ebp)							# save pseudo-register
 
 	movl	-4(%ebp), %ecx							# load pseudo-register
-	movl %ecx, %ecx							# move to register
+	movl (%ecx), %ecx							# fetch from memory
 	movl	%ecx, -4(%ebp)							# save pseudo-register
 
-L171:
-	movl	-4(%ebp), %ecx							# load pseudo-register
-	movl %ecx, %ecx							# move to register
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	jmp L170							# jump to L170
-L174:
-	movl $0, %ecx							# move constant to register
-	movl	%ecx, -4(%ebp)							# save pseudo-register
+	movl $7, %ecx							# move constant to register
+	movl	%ecx, -8(%ebp)							# save pseudo-register
 
 	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl	-8(%ebp), %edx							# load pseudo-register
 	movl %ecx, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
 	movl	%ecx, -4(%ebp)							# save pseudo-register
 
-	jmp L175							# jump to L175
-L187:
+	movl $12, %ecx							# move constant to register
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %edx							# load pseudo-register
+	movl %ebp, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %ecx							# load pseudo-register
+	movl (%ecx), %ecx							# fetch from memory
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl	-8(%ebp), %edx							# load pseudo-register
+	movl %ecx, %ecx							# move to register
+	subl %edx, %ecx							# subtract two registers
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl $8, %ecx							# move constant to register
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %edx							# load pseudo-register
+	movl %ebp, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %ecx							# load pseudo-register
+	movl (%ecx), %ecx							# fetch from memory
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl $388, %ecx							# move constant to register
+	movl	%ecx, -12(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %ecx							# load pseudo-register
+	movl	-12(%ebp), %edx							# load pseudo-register
+	movl %ecx, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %ecx							# load pseudo-register
+	movl (%ecx), %ecx							# fetch from memory
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %ecx							# load pseudo-register
+	movl (%ecx), %ecx							# fetch from memory
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl	-8(%ebp), %edx							# load pseudo-register
+	cmpl %ecx, %edx							# compare for jump...
+jge L61							# if true: jump to L61
+	jmp L60							# if false: jump to L60
+L60:
+	jmp L62							# jump to L62
+L64:
+	movl $12, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %edx							# load pseudo-register
+	movl %ebp, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl (%ecx), %ecx							# fetch from memory
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl $8, %ecx							# move constant to register
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %edx							# load pseudo-register
+	movl %ebp, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %ecx							# load pseudo-register
+	movl (%ecx), %ecx							# fetch from memory
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl $396, %ecx							# move constant to register
+	movl	%ecx, -12(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %ecx							# load pseudo-register
+	movl	-12(%ebp), %edx							# load pseudo-register
+	movl %ecx, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %ecx							# load pseudo-register
+	movl (%ecx), %ecx							# fetch from memory
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %ecx							# load pseudo-register
+	movl (%ecx), %ecx							# fetch from memory
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl	-8(%ebp), %edx							# load pseudo-register
+	cmpl %ecx, %edx							# compare for jump...
+jge L66							# if true: jump to L66
+	jmp L65							# if false: jump to L65
+L65:
+	jmp L67							# jump to L67
+L69:
+	movl $404, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %edx							# load pseudo-register
+	movl %ebp, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl (%ecx), %ecx							# fetch from memory
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl $8, %ecx							# move constant to register
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %edx							# load pseudo-register
+	movl %ebp, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %ecx							# load pseudo-register
+	movl (%ecx), %ecx							# fetch from memory
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl $400, %ecx							# move constant to register
+	movl	%ecx, -12(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %ecx							# load pseudo-register
+	movl	-12(%ebp), %edx							# load pseudo-register
+	movl %ecx, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %ecx							# load pseudo-register
+	movl (%ecx), %ecx							# fetch from memory
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %ecx							# load pseudo-register
+	movl (%ecx), %ecx							# fetch from memory
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl	-8(%ebp), %edx							# load pseudo-register
+	cmpl %ecx, %edx							# compare for jump...
+jge L71							# if true: jump to L71
+	jmp L70							# if false: jump to L70
+L70:
+	jmp L72							# jump to L72
+L74:
+	movl $404, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %edx							# load pseudo-register
+	movl %ebp, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl (%ecx), %ecx							# fetch from memory
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl $12, %ecx							# move constant to register
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %edx							# load pseudo-register
+	movl %ebp, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %ecx							# load pseudo-register
+	movl (%ecx), %ecx							# fetch from memory
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl	-8(%ebp), %edx							# load pseudo-register
+	movl %ecx, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl $8, %ecx							# move constant to register
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %edx							# load pseudo-register
+	movl %ebp, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %ecx							# load pseudo-register
+	movl (%ecx), %ecx							# fetch from memory
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl $392, %ecx							# move constant to register
+	movl	%ecx, -12(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %ecx							# load pseudo-register
+	movl	-12(%ebp), %edx							# load pseudo-register
+	movl %ecx, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %ecx							# load pseudo-register
+	movl (%ecx), %ecx							# fetch from memory
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %ecx							# load pseudo-register
+	movl (%ecx), %ecx							# fetch from memory
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl	-8(%ebp), %edx							# load pseudo-register
+	cmpl %ecx, %edx							# compare for jump...
+jge L76							# if true: jump to L76
+	jmp L75							# if false: jump to L75
+L75:
+	jmp L77							# jump to L77
+L79:
+	movl $404, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %edx							# load pseudo-register
+	movl %ebp, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl (%ecx), %ecx							# fetch from memory
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl $7, %ecx							# move constant to register
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl	-8(%ebp), %edx							# load pseudo-register
+	movl %ecx, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl $12, %ecx							# move constant to register
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %edx							# load pseudo-register
+	movl %ebp, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %ecx							# load pseudo-register
+	movl (%ecx), %ecx							# fetch from memory
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl	-8(%ebp), %edx							# load pseudo-register
+	movl %ecx, %ecx							# move to register
+	subl %edx, %ecx							# subtract two registers
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl $8, %ecx							# move constant to register
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %edx							# load pseudo-register
+	movl %ebp, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %ecx							# load pseudo-register
+	movl (%ecx), %ecx							# fetch from memory
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl $388, %ecx							# move constant to register
+	movl	%ecx, -12(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %ecx							# load pseudo-register
+	movl	-12(%ebp), %edx							# load pseudo-register
+	movl %ecx, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %ecx							# load pseudo-register
+	movl (%ecx), %ecx							# fetch from memory
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %ecx							# load pseudo-register
+	movl (%ecx), %ecx							# fetch from memory
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl	-8(%ebp), %edx							# load pseudo-register
+	cmpl %ecx, %edx							# compare for jump...
+jge L81							# if true: jump to L81
+	jmp L80							# if false: jump to L80
+L80:
+	jmp L82							# jump to L82
+L93:
 	popl %esi
 	popl %edi
 	popl %ebx
 	movl %ebp, %esp
 	popl %ebp
 	ret
-.globl L152
-.type L152, @function
-L152:
+.globl L1
+.type L1, @function
+L1:
 	pushl %ebp
 	movl %esp, %ebp
 	subl $408, %esp
 	pushl %ebx
 	pushl %edi
 	pushl %esi
-L190:
-	movl $~404, %ecx							# move constant to register
+L96:
+	movl $404, %ecx							# move constant to register
 	movl	%ecx, -4(%ebp)							# save pseudo-register
 
 	movl	-4(%ebp), %edx							# load pseudo-register
@@ -2120,7 +3802,7 @@ L190:
 	movl %ecx, (%ecx)							# move to memory
 	movl	%ecx, -4(%ebp)							# save pseudo-register
 
-	movl $~404, %ecx							# move constant to register
+	movl $404, %ecx							# move constant to register
 	movl	%ecx, -4(%ebp)							# save pseudo-register
 
 	movl	-4(%ebp), %edx							# load pseudo-register
@@ -2144,7 +3826,7 @@ L190:
 	movl (%ecx), %ecx							# fetch from memory
 	movl	%ecx, -8(%ebp)							# save pseudo-register
 
-	movl $~404, %ecx							# move constant to register
+	movl $404, %ecx							# move constant to register
 	movl	%ecx, -12(%ebp)							# save pseudo-register
 
 	movl	-8(%ebp), %ecx							# load pseudo-register
@@ -2169,19 +3851,43 @@ L190:
 	movl	-4(%ebp), %ecx							# load pseudo-register
 	movl	-8(%ebp), %edx							# load pseudo-register
 	cmpl %ecx, %edx							# compare for jump...
-jle L164							# if true: jump to L164
-	jmp L154							# if false: jump to L154
-L154:
+jle L19							# if true: jump to L19
+	jmp L3							# if false: jump to L3
+L3:
+	mov $L21, %ecx
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl %ecx, %ecx							# move to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl $0, %ecx							# move constant to register
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %edx							# load pseudo-register
+	movl %esp, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl %ecx, (%ecx)							# move to memory
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
 	pushl %eax
 	pushl %ecx
 	pushl %edx
-	mov $L166, %ecx
+	movl $0, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	pushl %ecx
+	movl $0, %ecx							# move constant to register
 	movl	%ecx, -4(%ebp)							# save pseudo-register
 
 	movl	-4(%ebp), %ecx							# load pseudo-register
 	pushl %ecx
 	call print
-	addl $4, %esp
+	addl $8, %esp
 	movl %eax, %ecx
 	movl	%ecx, -4(%ebp)							# save pseudo-register
 
@@ -2194,9 +3900,9 @@ L154:
 
 	movl	-4(%ebp), %ecx							# load pseudo-register
 	movl %ecx, %eax							# move to register
-	jmp L189							# jump to L189
-L164:
-	movl $~408, %ecx							# move constant to register
+	jmp L95							# jump to L95
+L19:
+	movl $400, %ecx							# move constant to register
 	movl	%ecx, -4(%ebp)							# save pseudo-register
 
 	movl	-4(%ebp), %edx							# load pseudo-register
@@ -2211,7 +3917,7 @@ L164:
 	movl %ecx, (%ecx)							# move to memory
 	movl	%ecx, -4(%ebp)							# save pseudo-register
 
-	movl $~408, %ecx							# move constant to register
+	movl $400, %ecx							# move constant to register
 	movl	%ecx, -4(%ebp)							# save pseudo-register
 
 	movl	-4(%ebp), %edx							# load pseudo-register
@@ -2235,7 +3941,7 @@ L164:
 	movl (%ecx), %ecx							# fetch from memory
 	movl	%ecx, -8(%ebp)							# save pseudo-register
 
-	movl $~404, %ecx							# move constant to register
+	movl $404, %ecx							# move constant to register
 	movl	%ecx, -12(%ebp)							# save pseudo-register
 
 	movl	-8(%ebp), %ecx							# load pseudo-register
@@ -2260,19 +3966,43 @@ L164:
 	movl	-4(%ebp), %ecx							# load pseudo-register
 	movl	-8(%ebp), %edx							# load pseudo-register
 	cmpl %ecx, %edx							# compare for jump...
-jle L161							# if true: jump to L161
-	jmp L155							# if false: jump to L155
-L155:
+jle L16							# if true: jump to L16
+	jmp L4							# if false: jump to L4
+L4:
+	mov $L18, %ecx
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl %ecx, %ecx							# move to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl $0, %ecx							# move constant to register
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %edx							# load pseudo-register
+	movl %esp, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl %ecx, (%ecx)							# move to memory
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
 	pushl %eax
 	pushl %ecx
 	pushl %edx
-	mov $L163, %ecx
+	movl $0, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	pushl %ecx
+	movl $0, %ecx							# move constant to register
 	movl	%ecx, -4(%ebp)							# save pseudo-register
 
 	movl	-4(%ebp), %ecx							# load pseudo-register
 	pushl %ecx
 	call print
-	addl $4, %esp
+	addl $8, %esp
 	movl %eax, %ecx
 	movl	%ecx, -4(%ebp)							# save pseudo-register
 
@@ -2283,7 +4013,7 @@ L155:
 	movl %ecx, %ecx							# move to register
 	movl	%ecx, -4(%ebp)							# save pseudo-register
 
-	movl $~404, %ecx							# move constant to register
+	movl $404, %ecx							# move constant to register
 	movl	%ecx, -4(%ebp)							# save pseudo-register
 
 	movl	-4(%ebp), %edx							# load pseudo-register
@@ -2307,7 +4037,7 @@ L155:
 	movl (%ecx), %ecx							# fetch from memory
 	movl	%ecx, -8(%ebp)							# save pseudo-register
 
-	movl $~404, %ecx							# move constant to register
+	movl $404, %ecx							# move constant to register
 	movl	%ecx, -12(%ebp)							# save pseudo-register
 
 	movl	-8(%ebp), %ecx							# load pseudo-register
@@ -2332,10 +4062,10 @@ L155:
 	movl	-4(%ebp), %ecx							# load pseudo-register
 	movl	-8(%ebp), %edx							# load pseudo-register
 	cmpl %ecx, %edx							# compare for jump...
-jge L154							# if true: jump to L154
-	jmp L165							# if false: jump to L165
-L165:
-	movl $~404, %ecx							# move constant to register
+jge L3							# if true: jump to L3
+	jmp L20							# if false: jump to L20
+L20:
+	movl $404, %ecx							# move constant to register
 	movl	%ecx, -4(%ebp)							# save pseudo-register
 
 	movl	-4(%ebp), %edx							# load pseudo-register
@@ -2343,7 +4073,7 @@ L165:
 	addl %edx, %ecx							# add two registers
 	movl	%ecx, -4(%ebp)							# save pseudo-register
 
-	movl $~404, %ecx							# move constant to register
+	movl $404, %ecx							# move constant to register
 	movl	%ecx, -4(%ebp)							# save pseudo-register
 
 	movl	-4(%ebp), %edx							# load pseudo-register
@@ -2368,12 +4098,9 @@ L165:
 	movl %ecx, (%ecx)							# move to memory
 	movl	%ecx, -4(%ebp)							# save pseudo-register
 
-	jmp L164							# jump to L164
-L161:
-	pushl %eax
-	pushl %ecx
-	pushl %edx
-	movl $~404, %ecx							# move constant to register
+	jmp L19							# jump to L19
+L16:
+	movl $404, %ecx							# move constant to register
 	movl	%ecx, -4(%ebp)							# save pseudo-register
 
 	movl	-4(%ebp), %edx							# load pseudo-register
@@ -2385,36 +4112,48 @@ L161:
 	movl (%ecx), %ecx							# fetch from memory
 	movl	%ecx, -4(%ebp)							# save pseudo-register
 
-	movl	-4(%ebp), %ecx							# load pseudo-register
-	pushl %ecx
-	movl $8, %ecx							# move constant to register
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	movl	-4(%ebp), %edx							# load pseudo-register
-	movl %ebp, %ecx							# move to register
-	addl %edx, %ecx							# add two registers
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	movl	-4(%ebp), %ecx							# load pseudo-register
-	movl (%ecx), %ecx							# fetch from memory
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	movl $~412, %ecx							# move constant to register
+	movl $0, %ecx							# move constant to register
 	movl	%ecx, -8(%ebp)							# save pseudo-register
 
 	movl	-4(%ebp), %ecx							# load pseudo-register
 	movl	-8(%ebp), %edx							# load pseudo-register
-	movl %ecx, %ecx							# move to register
-	addl %edx, %ecx							# add two registers
+	cmpl %ecx, %edx							# compare for jump...
+jge L6							# if true: jump to L6
+	jmp L8							# if false: jump to L8
+L8:
+	mov $L10, %ecx
 	movl	%ecx, -4(%ebp)							# save pseudo-register
 
 	movl	-4(%ebp), %ecx							# load pseudo-register
-	movl (%ecx), %ecx							# fetch from memory
+	movl %ecx, %ecx							# move to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl $0, %ecx							# move constant to register
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %edx							# load pseudo-register
+	movl %esp, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl %ecx, (%ecx)							# move to memory
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	pushl %eax
+	pushl %ecx
+	pushl %edx
+	movl $0, %ecx							# move constant to register
 	movl	%ecx, -4(%ebp)							# save pseudo-register
 
 	movl	-4(%ebp), %ecx							# load pseudo-register
 	pushl %ecx
-	call checkArrayBounds
+	movl $0, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	pushl %ecx
+	call print
 	addl $8, %esp
 	movl %eax, %ecx
 	movl	%ecx, -4(%ebp)							# save pseudo-register
@@ -2422,6 +4161,47 @@ L161:
 	popl %edx
 	popl %ecx
 	popl %eax
+	movl $1, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl %ecx, %ecx							# move to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl $0, %ecx							# move constant to register
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %edx							# load pseudo-register
+	movl %esp, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl %ecx, (%ecx)							# move to memory
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	pushl %eax
+	pushl %ecx
+	pushl %edx
+	movl $0, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	pushl %ecx
+	movl $0, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	pushl %ecx
+	call exit
+	addl $8, %esp
+	movl %eax, %ecx
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	popl %edx
+	popl %ecx
+	popl %eax
+L9:
 	movl $8, %ecx							# move constant to register
 	movl	%ecx, -4(%ebp)							# save pseudo-register
 
@@ -2434,7 +4214,7 @@ L161:
 	movl (%ecx), %ecx							# fetch from memory
 	movl	%ecx, -4(%ebp)							# save pseudo-register
 
-	movl $~412, %ecx							# move constant to register
+	movl $396, %ecx							# move constant to register
 	movl	%ecx, -8(%ebp)							# save pseudo-register
 
 	movl	-4(%ebp), %ecx							# load pseudo-register
@@ -2447,7 +4227,7 @@ L161:
 	movl (%ecx), %ecx							# fetch from memory
 	movl	%ecx, -4(%ebp)							# save pseudo-register
 
-	movl $~404, %ecx							# move constant to register
+	movl $404, %ecx							# move constant to register
 	movl	%ecx, -8(%ebp)							# save pseudo-register
 
 	movl	-8(%ebp), %edx							# load pseudo-register
@@ -2457,6 +4237,15 @@ L161:
 
 	movl	-8(%ebp), %ecx							# load pseudo-register
 	movl (%ecx), %ecx							# fetch from memory
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl $1, %ecx							# move constant to register
+	movl	%ecx, -12(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %ecx							# load pseudo-register
+	movl	-12(%ebp), %edx							# load pseudo-register
+	movl %ecx, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
 	movl	%ecx, -8(%ebp)							# save pseudo-register
 
 	movl $4, %ecx							# move constant to register
@@ -2478,7 +4267,7 @@ L161:
 	movl (%ecx), %ecx							# fetch from memory
 	movl	%ecx, -4(%ebp)							# save pseudo-register
 
-	movl $~408, %ecx							# move constant to register
+	movl $400, %ecx							# move constant to register
 	movl	%ecx, -8(%ebp)							# save pseudo-register
 
 	movl	-8(%ebp), %edx							# load pseudo-register
@@ -2493,31 +4282,55 @@ L161:
 	movl	-4(%ebp), %ecx							# load pseudo-register
 	movl	-8(%ebp), %edx							# load pseudo-register
 	cmpl %ecx, %edx							# compare for jump...
-je L158							# if true: jump to L158
-	jmp L159							# if false: jump to L159
-L159:
-	mov $L157, %ecx
+je L13							# if true: jump to L13
+	jmp L14							# if false: jump to L14
+L14:
+	mov $L12, %ecx
 	movl	%ecx, -4(%ebp)							# save pseudo-register
 
 	movl	-4(%ebp), %ecx							# load pseudo-register
 	movl %ecx, %ecx							# move to register
 	movl	%ecx, -4(%ebp)							# save pseudo-register
 
-L160:
+L15:
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl %ecx, %ecx							# move to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl $0, %ecx							# move constant to register
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %edx							# load pseudo-register
+	movl %esp, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl %ecx, (%ecx)							# move to memory
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
 	pushl %eax
 	pushl %ecx
 	pushl %edx
+	movl $0, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	pushl %ecx
+	movl $0, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
 	movl	-4(%ebp), %ecx							# load pseudo-register
 	pushl %ecx
 	call print
-	addl $4, %esp
+	addl $8, %esp
 	movl %eax, %ecx
 	movl	%ecx, -4(%ebp)							# save pseudo-register
 
 	popl %edx
 	popl %ecx
 	popl %eax
-	movl $~408, %ecx							# move constant to register
+	movl $400, %ecx							# move constant to register
 	movl	%ecx, -4(%ebp)							# save pseudo-register
 
 	movl	-4(%ebp), %edx							# load pseudo-register
@@ -2541,7 +4354,7 @@ L160:
 	movl (%ecx), %ecx							# fetch from memory
 	movl	%ecx, -8(%ebp)							# save pseudo-register
 
-	movl $~404, %ecx							# move constant to register
+	movl $404, %ecx							# move constant to register
 	movl	%ecx, -12(%ebp)							# save pseudo-register
 
 	movl	-8(%ebp), %ecx							# load pseudo-register
@@ -2566,10 +4379,10 @@ L160:
 	movl	-4(%ebp), %ecx							# load pseudo-register
 	movl	-8(%ebp), %edx							# load pseudo-register
 	cmpl %ecx, %edx							# compare for jump...
-jge L155							# if true: jump to L155
-	jmp L162							# if false: jump to L162
-L162:
-	movl $~408, %ecx							# move constant to register
+jge L4							# if true: jump to L4
+	jmp L17							# if false: jump to L17
+L17:
+	movl $400, %ecx							# move constant to register
 	movl	%ecx, -4(%ebp)							# save pseudo-register
 
 	movl	-4(%ebp), %edx							# load pseudo-register
@@ -2577,7 +4390,7 @@ L162:
 	addl %edx, %ecx							# add two registers
 	movl	%ecx, -4(%ebp)							# save pseudo-register
 
-	movl $~408, %ecx							# move constant to register
+	movl $400, %ecx							# move constant to register
 	movl	%ecx, -4(%ebp)							# save pseudo-register
 
 	movl	-4(%ebp), %edx							# load pseudo-register
@@ -2602,32 +4415,114 @@ L162:
 	movl %ecx, (%ecx)							# move to memory
 	movl	%ecx, -4(%ebp)							# save pseudo-register
 
-	jmp L161							# jump to L161
-L158:
-	mov $L156, %ecx
+	jmp L16							# jump to L16
+L6:
+	movl $404, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %edx							# load pseudo-register
+	movl %ebp, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl (%ecx), %ecx							# fetch from memory
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl $8, %ecx							# move constant to register
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %edx							# load pseudo-register
+	movl %ebp, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %ecx							# load pseudo-register
+	movl (%ecx), %ecx							# fetch from memory
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl $396, %ecx							# move constant to register
+	movl	%ecx, -12(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %ecx							# load pseudo-register
+	movl	-12(%ebp), %edx							# load pseudo-register
+	movl %ecx, %ecx							# move to register
+	addl %edx, %ecx							# add two registers
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %ecx							# load pseudo-register
+	movl (%ecx), %ecx							# fetch from memory
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-8(%ebp), %ecx							# load pseudo-register
+	movl (%ecx), %ecx							# fetch from memory
+	movl	%ecx, -8(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	movl	-8(%ebp), %edx							# load pseudo-register
+	cmpl %ecx, %edx							# compare for jump...
+jge L8							# if true: jump to L8
+	jmp L7							# if false: jump to L7
+L7:
+	jmp L9							# jump to L9
+L13:
+	mov $L11, %ecx
 	movl	%ecx, -4(%ebp)							# save pseudo-register
 
 	movl	-4(%ebp), %ecx							# load pseudo-register
 	movl %ecx, %ecx							# move to register
 	movl	%ecx, -4(%ebp)							# save pseudo-register
 
-	jmp L160							# jump to L160
-L189:
+	jmp L15							# jump to L15
+L95:
 	popl %esi
 	popl %edi
 	popl %ebx
 	movl %ebp, %esp
 	popl %ebp
 	ret
-L166:
+L83:
+	.long 21
+	.byte 69, 114, 114, 111, 114, 58, 32, 111, 117, 116, 45, 111, 102, 45, 98, 111, 117, 110, 100, 115, 10, 0
+L78:
+	.long 21
+	.byte 69, 114, 114, 111, 114, 58, 32, 111, 117, 116, 45, 111, 102, 45, 98, 111, 117, 110, 100, 115, 10, 0
+L73:
+	.long 21
+	.byte 69, 114, 114, 111, 114, 58, 32, 111, 117, 116, 45, 111, 102, 45, 98, 111, 117, 110, 100, 115, 10, 0
+L68:
+	.long 21
+	.byte 69, 114, 114, 111, 114, 58, 32, 111, 117, 116, 45, 111, 102, 45, 98, 111, 117, 110, 100, 115, 10, 0
+L63:
+	.long 21
+	.byte 69, 114, 114, 111, 114, 58, 32, 111, 117, 116, 45, 111, 102, 45, 98, 111, 117, 110, 100, 115, 10, 0
+L58:
+	.long 21
+	.byte 69, 114, 114, 111, 114, 58, 32, 111, 117, 116, 45, 111, 102, 45, 98, 111, 117, 110, 100, 115, 10, 0
+L53:
+	.long 21
+	.byte 69, 114, 114, 111, 114, 58, 32, 111, 117, 116, 45, 111, 102, 45, 98, 111, 117, 110, 100, 115, 10, 0
+L43:
+	.long 21
+	.byte 69, 114, 114, 111, 114, 58, 32, 111, 117, 116, 45, 111, 102, 45, 98, 111, 117, 110, 100, 115, 10, 0
+L33:
+	.long 21
+	.byte 69, 114, 114, 111, 114, 58, 32, 111, 117, 116, 45, 111, 102, 45, 98, 111, 117, 110, 100, 115, 10, 0
+L28:
+	.long 21
+	.byte 69, 114, 114, 111, 114, 58, 32, 111, 117, 116, 45, 111, 102, 45, 98, 111, 117, 110, 100, 115, 10, 0
+L21:
 	.long 1
 	.byte 10, 0
-L163:
+L18:
 	.long 1
 	.byte 10, 0
-L157:
+L12:
 	.long 2
 	.byte 32, 46, 0
-L156:
+L11:
 	.long 2
 	.byte 32, 79, 0
+L10:
+	.long 21
+	.byte 69, 114, 114, 111, 114, 58, 32, 111, 117, 116, 45, 111, 102, 45, 98, 111, 117, 110, 100, 115, 10, 0
