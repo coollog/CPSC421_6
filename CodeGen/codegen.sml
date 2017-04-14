@@ -35,6 +35,9 @@ struct
   structure R = Register
   structure S = Symbol
 
+  (* Builds an assembly comment. *)
+  fun explain(comment) = "\t\t\t\t\t\t\t# " ^ comment ^ "\n"
+
   fun codegen(stm: T.stm) : A.instr list =
   let val ilist = ref (nil: A.instr list)
     fun emit x = ilist := x :: !ilist
@@ -50,8 +53,7 @@ struct
     and resultOPER(assem, src, dst, jump) =
       result(fn r => emitOPER(assem, src, r::dst, jump))
 
-    and explain(comment) = "\t\t\t\t\t\t\t# " ^ comment ^ "\n"
-
+    (* Generates the various assembly instructions. *)
     and assLABEL(lab) = S.name lab ^ ":\n"
     and assJMP(lab) = "\tjmp `j0" ^ explain("jump to " ^ S.name lab)
     and assJMPexp() = "\tjmp `s0" ^ explain("jump to somewhere")
@@ -200,6 +202,9 @@ struct
      rev(!ilist)
   end
 
+  (* Turns a string into an assembly section with a length and a sequence of
+   * byte codes.
+   *)
   fun string(label, s) =
     let
       val charList = explode(s)
