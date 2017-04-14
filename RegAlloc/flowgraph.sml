@@ -10,7 +10,6 @@ sig
                  ismove: bool Graph.Table.table}
 
   val dot : TextIO.outstream * flowgraph -> unit   
-
 end (* signature FLOW *)
 
 structure Flow : FLOW =

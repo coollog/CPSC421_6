@@ -1,7 +1,7 @@
 <i> what you have done so far
 
-I have written all the parts of CodeGen and tested minimally with IG1 and RA1.
-Hopefully, it does what it should do.
+I have written all the parts of CodeGen and tested minimally.
+Hopefully, it does what it should do. The code has been documented thoroughly.
 
 <ii> how other groups would use your code (i.e., the bin files) ?
 
