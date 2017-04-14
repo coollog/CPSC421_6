@@ -72,7 +72,7 @@ struct
             val allocation = RegAlloc.color{
               interference=igraph,
               initial=initial,
-              registers=R.registers(*R.calleesaves@R.truecallersaves@R.callersaves*)
+              registers=R.registers
             }
 
             val body =
