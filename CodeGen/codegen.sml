@@ -204,11 +204,11 @@ struct
     let
       val charList = explode(s)
       val ordList = map (fn c => Int.toString(ord(c))) charList
-      val byteSeq = foldr (fn (s1, s2) => s1 ^ ", " ^ s2) "" ordList
+      val byteSeq = foldr (fn (s1, s2) => s1 ^ ", " ^ s2) "0" ordList
     in
       S.name label ^ ":\n" ^
       "\t.long " ^ Int.toString(size s) ^ "\n" ^
-      "\t.byte \"" ^ byteSeq ^ "\"\n"
+      "\t.byte " ^ byteSeq ^ "\n"
     end
 
   (* procEntryExit sequence + function calling sequence tune-up
