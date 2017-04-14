@@ -60,7 +60,7 @@ struct
   val pseudoregs: register list =
     List.tabulate(NPSEUDOREGS, fn i => "f" ^ Int.toString i)
 
-  val registers: register list = calleesaves @ pseudoregs
+  val registers: register list = pseudoregs @ calleesaves
 
 end (* structure Register *)
 

@@ -2,9 +2,7 @@
 
 signature MAKEGRAPH = 
 sig
-
   val instrs2graph : Assem.instr list -> Flow.flowgraph * Flow.Graph.node list
-
 end
 
 structure MakeGraph : MAKEGRAPH =
@@ -21,118 +19,160 @@ struct
    graph, i.e., the "def" set, the "use" set, and the "ismove" flag
 
  *)
+  fun instrs2graph(x) = 
+    let
+      val controlGraph = Graph.newGraph()
    
- structure A = Assem
- structure F = Flow
- structure G = Graph
-
-  fun instrs2graph (instrs) = 
-  let
-
-    (*
-    * The instrs2graph function is divided into two passes:
-    * (1) add_nodes() builds a flowgraph with only nodes by
-    *   a. adding nodes for each instruction
-    *   b. filling the def, use, ismove tables
-    * (2) add_edges() adds edges to the flowgraph built in (1) by
-    *   a. connecting instructions to those that *immediately* follow
-    *   b. resolving jumps
-    *)
-
-    (* used to track labels resolve in add_nodes that will be used
-    * to resolve jumps in add_edges *)
-    val labels = ref Symbol.empty
-
-    (* base case : create empty graph / tables *)
-    fun add_nodes ([]) =
-        (
-          F.FGRAPH{
-            control=G.newGraph(),
-            use=G.Table.empty,
-            def=G.Table.empty,
-            ismove=G.Table.empty
-          },
-          []
-        )
-
-      (* recursive case : parse instr to add node to graph *)
-      | add_nodes (instr :: instrs) = 
+      (* Adds a single assembly instruction to a few tables:
+      *   1) nodeTable: Assem.instr Graph.Table.table
+      *     Maps Assem.instr to the corresponding nodes within the graph.
+      *
+      *     Used when edges of control graph are created to keep track
+      *     of which labels to jump to. Notice that this is necessary since
+      *     we need to operate on labels and nodes at once.
+      *
+      *   2) labelTable: node Symbol.table
+      *     Maps labels to nodes. Note that this table will only ever contain
+      *     nodes that are created from Assem.LABEL.
+      *
+      *     This is necessary when creating the 
+      *     edges within controlGraph to find the nodes corresponding
+      *     to labels that we are supposed to jump to.
+      *
+      *   3) defTable: Temp.temp list Graph.Table.table
+      *     We need this to construct Flow.flowgraph. 
+      *
+      *     Returns the temps that a node in the flow graph defines.
+      *
+      *   4) useTable: Temp.temp list Graph.Table.table
+      *     We need this to construct Flow.flowgraph
+      *
+      *     Returns the temps that a node in the flow graph uses.
+      *
+      *   5) ismoveTable: bool Graph.Table.table
+      *     We need this to construct Flow.flowgraph
+      *
+      *     Returns true if a node in the graph corresponds to a move
+      *     instruction and false otherwise.
+      *)   
+      fun addToTables (
+        assInstr,         (* Assembly instruction *)
+        ( nodeTable,      (* Assem.instr Graph.Table.table *)
+          labelTable,     (* node Symbol.table *)
+          defTable,       (* Temp.temp list Graph.Table.table *)
+          useTable,       (* Temp.temp list Graph.Table.table *)
+          ismoveTable)) = (* bool Graph.Table.table *)
         let
+          val node = Graph.newNode(controlGraph)
 
-          (* recursive call to add_nodes *)
-          val (F.FGRAPH{control, def, use, ismove}, nodes) = add_nodes (instrs)
+          val newNodeTable = Graph.Table.enter(nodeTable, node, assInstr)
 
-          (* add the new node to the control graph *)
-          val node = G.newNode(control)
+          val newLabelTable = case assInstr
+            of Assem.LABEL {assem, lab} => 
+              Symbol.enter(labelTable, lab, node)
+             | _ => 
+               labelTable
 
-         (* parse def, use, ismove from instr *)
-          val (def', use', ismove') = (
-            case instr
-              of A.OPER{assem, dst, src, jump} => (dst, src, false)
-               | A.LABEL{assem, lab} => ([], [], false)
-               | A.MOVE{assem, dst, src} => ([dst], [src], true))
+          val newDefTable = case assInstr
+            of Assem.OPER info => 
+              Graph.Table.enter(defTable, node, #dst(info))
+             | Assem.MOVE info =>
+              Graph.Table.enter(defTable, node, [#dst(info)])
+             | _ => 
+              Graph.Table.enter(defTable, node, [])
+
+          val newUseTable = case assInstr
+            of Assem.OPER info => 
+              Graph.Table.enter(useTable, node, #src(info))
+             | Assem.MOVE info =>
+              Graph.Table.enter(useTable, node, [#src(info)])
+             | _ => 
+              Graph.Table.enter(useTable, node, [])
+
+          val newIsmoveTable = case assInstr
+            of Assem.MOVE info =>
+              Graph.Table.enter(ismoveTable, node, true)
+             | _ =>
+              Graph.Table.enter(ismoveTable, node, false)
         in
-
-          (* if a label, add to labels table *)
-          labels := (
-            case instr
-              of A.LABEL{assem, lab} => Symbol.enter(!labels, lab, node)
-               | _ => !labels
-           );
-
-          (* return the augmented flowgraph structure and list of nodes *)
-          (F.FGRAPH{
-              control=control,
-              def=G.Table.enter(def, node, def'),
-              use=G.Table.enter(use, node, use'),
-              ismove=G.Table.enter(ismove, node, ismove')
-          }, node :: nodes)
+          (newNodeTable, newLabelTable, newDefTable, newUseTable, newIsmoveTable)
         end
 
-    (* base case : do nothing *)
-    fun add_edges([], []) = ()
+      (* Construct the tables by executing on all of the instructions in x *)
+      val (nodeTable, labelTable, defTable, useTable, ismoveTable) =
+        foldl 
+          addToTables 
+          (Graph.Table.empty, Symbol.empty, Graph.Table.empty,
+           Graph.Table.empty, Graph.Table.empty) 
+          x
 
-      (* the two error cases : somehow we have different length instrs and nodes *)
-      | add_edges(_ :: instrs, []) = ErrorMsg.impossible "# of instrs should equal # of nodes in flowgraph"
-      | add_edges([], _ :: nodes) = ErrorMsg.impossible "# of instrs should equal # of nodes in flowgraph"
-
-      (* recursive case : add edges + resolve jumps for this instr, node pair *)
-      | add_edges (instr :: instrs, node :: nodes) = (
+      (* Add an edge from node to the node corresponding to label. 
+      *
+      * This is where we require the usage of the labelTable. This will also
+      * throw whenever a particular label is not known to reg alloc.
+      * *)
+      fun addEdgeFromLabel node label =
         let
-
-          (* connect node to the labels specified in jump *)
-          fun resolve_jumps (A.OPER{assem=_, dst=_, src=_, jump=SOME(jump_to_labels)}) = (
-              List.app
-              (fn (to_label) =>
-                case Symbol.look(!labels, to_label)
-                  of SOME(to_node) => G.mk_edge({from=node, to=to_node})
-                   | _ => ErrorMsg.impossible ("cannot jump to " ^ Symbol.name to_label))
-              jump_to_labels
-            )
-
-            (* no jumps, nothing to do *)
-            | resolve_jumps (_) = ()
+          val labelNode = Symbol.look(labelTable, label)
         in
-          (* if instr involves jump(s), resolve the jump(s)... *)
-          resolve_jumps (instr);
-
-          (* connect this node to the node following it *)
-          if List.null nodes then ()
-          else G.mk_edge({from=node, to=List.hd nodes});
-
-          (* recursively add edges *)
-          add_edges (instrs, nodes)
+          case labelNode
+            of NONE => 
+              ErrorMsg.impossible ("addEdge::addEdgeFromLabel: not found")
+             | SOME(n) =>
+              (Graph.mk_edge {from=node, to=n}; ())
         end
-      )
 
-    (* add nodes to the fgraph *)
-    val (fgraph, nodes) = add_nodes (instrs)
-  in
+      (* Add all edges for node *)
+      fun addEdge(node, nextNode) =
+        let
+          val instruction = Graph.Table.look(nodeTable, node)
+       in
+          case instruction
+            of NONE => 
+              ErrorMsg.impossible ("MakeGraph::addEdge: instruction not found.")
+             | SOME(Assem.OPER{assem, dst, src, jump = NONE}) =>
+              (Graph.mk_edge {from=node, to=nextNode}; 
+               ())
+             | SOME(Assem.OPER{assem, dst, src, jump = SOME(x::xs)}) =>
+              (List.map (addEdgeFromLabel node) (x::xs);
+               ())
+            (* This is a dead-end in the code -- we allow it if the compiler
+            * stack above us does. *)
+             | SOME(Assem.OPER{assem, dst, src, jump = SOME(nil)}) =>
+              ()
+             | SOME(_) =>
+              (Graph.mk_edge {from=node, to=nextNode}; 
+               ())
+        end
 
-    (* add edges, resolving all jumps *)
-    add_edges(instrs, nodes);
-
-    (fgraph, nodes)
-  end
-
+      (* Add all edges within the graph. Notice that this is done using
+      * by-effects so the return value will be ignored later on *)
+      fun addEdges(nil) = () (* Base case *)
+        | addEdges([x]) = (* This gets hit for the last instruction *)
+          let
+            val instruction = Graph.Table.look(nodeTable, x)
+          in
+            case instruction
+              of NONE =>
+                ErrorMsg.impossible("MakeGraph::addEdges: instruction not found.")
+               | SOME(Assem.OPER{assem, dst, src, jump = NONE}) =>
+                ErrorMsg.impossible("MakeGraph::addEdges: last elt without jump!")
+               | SOME(Assem.OPER{assem, dst, src, jump = SOME(z::zs)}) =>
+                (List.map (addEdgeFromLabel x) (z::zs); ())
+               | SOME(_) =>
+                () (* We allow the last instruction to be a dead end if the
+                stack above is OK with passing us such a graph.*)
+          end
+        | addEdges(node::nextNode::xs) = (* Your regular recursive step *)
+          (addEdge(node, nextNode); addEdges(nextNode::xs))
+    in
+      (* Add edges and return the required entities *)
+      (addEdges(Graph.nodes controlGraph);
+        (Flow.FGRAPH{
+          control = controlGraph,
+          def = defTable,
+          use = useTable,
+          ismove = ismoveTable},
+         Graph.nodes(controlGraph)))
+    end
 end
