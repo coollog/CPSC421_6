@@ -115,7 +115,7 @@ struct
             val format0 = Assem.format (fn t => "t" ^ Temp.makestring t)
             val format1 = Assem.format(fn t => (valOf(Temp.Table.look(allocation, t))))
 
-         in app (fn i => TextIO.output(out,format1 i)) instrs'
+         in app (fn i => TextIO.output(out,format0 i)) instrs'
         end
 
   fun withOpenFile fname f =
