@@ -24,18 +24,18 @@ struct
             val stms = Canon.linearize body
             val stms' = Canon.traceSchedule(Canon.basicBlocks stms)
 
-            (*val _ =
+            val _ =
               let
                 fun printstms(stm::stms) =
                       (Printtree.printtree(out, stm); printstms(stms))
                   | printstms([]) = ()
               in
                 printstms(stms')
-              end*)
+              end
 
             val instrs = List.concat(map C.codegen stms')
 
-            (* IG1 and RA1 *)
+            (* IG1 and RA6 *)
 
             (*
              * Once the RegAlloc module is ready, you can get
@@ -58,14 +58,9 @@ struct
 
             val initial =
               let
-                val initial = Temp.Table.empty
-
-                fun addToTable(cur,
-                               reg::regs : (Temp.temp * Register.register) list)
-                      = addToTable(Temp.Table.enter(cur, #1 reg, #2 reg), regs)
-                  | addToTable(cur, []) = cur
-              in
-                addToTable(initial, Register.specialregs)
+                fun addToTable(reg:(Temp.temp * R.register), cur) =
+                  Temp.Table.enter(cur, #1 reg, #2 reg)
+              in foldr addToTable Temp.Table.empty Register.specialregs
               end
 
             (* graph coloring to allocate registers for all temporaries *)
@@ -85,6 +80,29 @@ struct
               in
                 map pairWithTemps instrs
               end
+
+            val Flow.FGRAPH{control, def, use, ismove} = flowgraph
+            val temps = (
+              List.foldr
+              (fn (node, s) =>
+                LiveSet.union(s,
+                  LiveSet.construct(
+                    (valOf (Graph.Table.look(def, node)))
+                    @ (valOf (Graph.Table.look(use, node)))
+                  )
+                )
+              )
+              LiveSet.empty
+              nodes
+            )
+            val _ = (
+              List.app
+              (fn (tmp) => (print
+                ((Temp.makestring tmp) ^ " -> "
+                ^ (valOf (Temp.Table.look(allocation, tmp))) ^ "\n")
+              ))
+              (LiveSet.members(temps))
+            )
 
             val instrs' = C.procEntryExit({
               name=name,

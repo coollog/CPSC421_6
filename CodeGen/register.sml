@@ -40,6 +40,7 @@ struct
   val EDX = Temp.newtemp()
   val ESI = Temp.newtemp()
   val EDI = Temp.newtemp()
+  val EIP = Temp.newtemp()
 
   (* of course, none of the following should be empty list *)
 
@@ -52,7 +53,11 @@ struct
     (FP, "%ebp"),
     (SP, "%esp"),
     (ECX, "%ecx"),
-    (EDX, "%edx")]
+    (EDX, "%edx"),
+    (EIP, "%eip"),
+    (EBX, "%ebx"),
+    (EDI, "%edi"),
+    (ESI, "%esi")]
   val calleesaves : register list = ["%ebx", "%edi", "%esi"]
   val truecallersaves : register list = ["%eax", "%ecx", "%edx"]
   val callersaves : register list = ["%eax", "%ecx", "%edx"]
@@ -60,7 +65,7 @@ struct
   val pseudoregs: register list =
     List.tabulate(NPSEUDOREGS, fn i => "f" ^ Int.toString i)
 
-  val registers: register list = pseudoregs @ calleesaves
+  val registers: register list = calleesaves @ pseudoregs
 
 end (* structure Register *)
 

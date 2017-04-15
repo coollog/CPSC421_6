@@ -43,6 +43,8 @@ struct
     fun emit x = ilist := x :: !ilist
     fun result(gen) = let val t = Temp.newtemp() in gen t; t end
 
+    type preInstr = {assem: string, reg: Temp.temp list, nextIdx: int}
+
     (* Some functions to make munch code more organized. *)
     fun emitLABEL(lab) = emit(A.LABEL{assem=assLABEL(lab), lab=lab})
     and emitOPER(assem, src, dst, jump) =
@@ -72,13 +74,15 @@ struct
         jumpInstr ^ " `j0" ^ explain("if true: jump to " ^ S.name lab1) ^
         "\tjmp `j1" ^ explain("if false: jump to " ^ S.name lab2)
       end
-    and assMOVreg() = "\tmovl `s0, `d0" ^ explain("move to register")
-    and assMOVmem() = "\tmovl `s0, (`d0)" ^ explain("move to memory")
+    and assMOVreg(pSrc, pDst) =
+      "\tmovl " ^ pSrc ^ ", " ^ pDst ^ explain("move to register")
+    and assMOVmem(pSrc, pDst) =
+      "\tmovl " ^ pSrc ^ ", " ^ pDst ^ explain("move to memory")
     and assMOVfetch() = "\tmovl (`s0), `d0" ^ explain("fetch from memory")
     and assMOVconst(i) = "\tmovl $" ^ Int.toString i ^ ", `d0" ^
                          explain("move constant to register")
-    and assMOVlabel(lab) = "\tmov $" ^ S.name lab ^ ", `d0\n"
-    and assADD() = "\taddl `s1, `d0" ^ explain("add two registers")
+    and assADD(pSrc, pDst) =
+      "\taddl " ^ pSrc ^ ", " ^ pDst ^ explain("add two registers")
     and assSUB() = "\tsubl `s1, `d0" ^ explain("subtract two registers")
     and assIMUL() = "\timull `s1, `d0" ^ explain("multiply two registers")
     and assIDIV() = "\tmovl `s0, `d0\t# save %eax\n" ^
@@ -108,18 +112,90 @@ struct
           emitOPER(assCMP(relop, lab1, lab2),
                    [munchExp e1, munchExp e2], [], SOME[lab1, lab2])
 
+      (* MOVE reg BINOP *)
+      | munchStm(T.MOVE(T.TEMP t, exp as T.BINOP(_))) =
+          let val pDst = evalExp(T.TEMP t, "d", 0)
+          in munchExpWithDst(exp, pDst) end
+
+      (* MOVE mem BINOP *)
+      | munchStm(T.MOVE(T.MEM(e1, _), exp as T.BINOP(_))) =
+          let val pDst = evalExp(T.MEM(e1, 4), "d", 0)
+          in munchExpWithDst(exp, pDst) end
+
       (* MOVE reg e1 *)
       | munchStm(T.MOVE(T.TEMP t, e1)) =
-          emitMOVE(assMOVreg(), munchExp e1, t)
+          let val pDst = evalExp(T.TEMP t, "d", 0)
+              val pSrc = evalExp(e1, "s", 0)
+          in emitOPER(assMOVreg(#assem pSrc, #assem pDst),
+                      #reg pSrc, #reg pDst, NONE) end
 
       (* MOVE MEM[e1] e2 *)
-      | munchStm(T.MOVE(T.MEM(e1, s1),e2)) =
-          let val dst=munchExp e1 val src=munchExp e2 in
-            emitMOVE(assMOVmem(), src, dst) end
+      | munchStm(T.MOVE(T.MEM(e1, _),e2)) =
+          let val pDst=evalExp(T.MEM(e1, 4), "d", 0)
+              val pSrc=evalExp(e2, "s", 0)
+          in emitOPER(assMOVmem(#assem pSrc, #assem pDst),
+                      #reg pSrc, #reg pDst, NONE) end
 
       | munchStm(T.MOVE _) = ErrorMsg.impossible "CodeGen: INVALID MOV"
 
       | munchStm(T.EXP e) = (munchExp e; ())
+
+    and
+      (* Operands of assembly instructions could be registers or expressions for
+       * memory addresses, so this helps to process these.
+       *)
+        (* like %eax *)
+        evalExp(T.TEMP t, prefix, startIdx):preInstr =
+          {assem="`" ^ prefix ^ Int.toString startIdx,
+           reg=[t], nextIdx=startIdx + 1}
+
+        (* like $Hello *)
+      | evalExp(T.NAME lab, _, startIdx):preInstr =
+          {assem="$" ^ S.name lab, reg=[], nextIdx=startIdx}
+
+        (* like $4 *)
+      | evalExp(T.CONST k, _, startIdx):preInstr =
+          {assem="$" ^ Int.toString k, reg=[], nextIdx=startIdx}
+
+        (* like (%eax) *)
+      | evalExp(T.MEM(T.TEMP t, _), prefix, startIdx):preInstr =
+          {assem="(`" ^ prefix ^ Int.toString startIdx ^ ")",
+           reg=[t], nextIdx=startIdx + 1}
+
+        (* like -4(%eax) *)
+      | evalExp(T.MEM(T.BINOP(T.PLUS, T.TEMP t, T.CONST k), _),
+                prefix, startIdx):preInstr =
+          {assem=Int.toString k ^ "(`" ^ prefix ^ Int.toString startIdx ^ ")",
+           reg=[t], nextIdx=startIdx + 1}
+
+        (* like -4(%eax) *)
+      | evalExp(T.MEM(T.BINOP(T.PLUS, T.CONST k, T.TEMP t), _),
+                prefix, startIdx):preInstr =
+          {assem=Int.toString k ^ "(`" ^ prefix ^ Int.toString startIdx ^ ")",
+           reg=[t], nextIdx=startIdx + 1}
+
+        (* like (%eax, %ebx, 1) *)
+      | evalExp(T.MEM(T.BINOP(T.PLUS, T.TEMP t1, T.TEMP t2), _),
+                prefix, startIdx):preInstr =
+          {assem="(`" ^ prefix ^ Int.toString startIdx ^
+                 ", `" ^ prefix ^ Int.toString(startIdx + 1) ^ ", 1)",
+           reg=[t1, t2], nextIdx=startIdx + 2}
+
+      | evalExp(exp, prefix, startIdx):preInstr =
+          {assem="`" ^ prefix ^ Int.toString startIdx,
+           reg=[munchExp exp], nextIdx=startIdx + 1}
+
+    and
+      (* Munching to a dst register for encapsulated subexpressions. *)
+      munchExpWithDst(T.BINOP(T.PLUS,e1,e2), pDst) =
+          let val pSrc1 = evalExp(e1, "s", 0)
+              val pSrc2 = evalExp(e2, "s", #nextIdx pSrc1)
+          in emitOPER(assMOVreg(#assem pSrc1, #assem pDst) ^
+                      assADD(#assem pSrc2, #assem pDst),
+                      #reg pSrc1 @ #reg pSrc2, #reg pDst, NONE) end
+
+    | munchExpWithDst(_) = ErrorMsg.impossible "CodeGen: INVALID BINOP"
+
 
     and
       (* FETCH MEM[i] *)
@@ -128,17 +204,17 @@ struct
 
       (* ADD *)
       | munchExp(T.BINOP(T.PLUS,e1,e2)) =
-          resultOPER(assMOVreg() ^ assADD(),
+          resultOPER(assMOVreg("`s0", "`d0") ^ assADD("`s1", "`d0"),
                      [munchExp e1, munchExp e2], [], NONE)
 
       (* SUB *)
       | munchExp(T.BINOP(T.MINUS,e1,e2)) =
-          resultOPER(assMOVreg() ^ assSUB(),
+          resultOPER(assMOVreg("`s0", "`d0") ^ assSUB(),
                      [munchExp e1, munchExp e2], [], NONE)
 
       (* IMUL *)
       | munchExp(T.BINOP(T.MUL,e1,e2)) =
-          resultOPER(assMOVreg() ^ assIMUL(),
+          resultOPER(assMOVreg("`s0", "`d0") ^ assIMUL(),
                      [munchExp e1, munchExp e2], [], NONE)
 
       (* IDIV *)
@@ -149,24 +225,25 @@ struct
 
       (* AND *)
       | munchExp(T.BINOP(T.AND,e1,e2)) =
-          resultOPER(assMOVreg() ^ assAND(),
+          resultOPER(assMOVreg("`s0", "`d0") ^ assAND(),
                      [munchExp e1, munchExp e2], [], NONE)
 
       (* OR *)
       | munchExp(T.BINOP(T.OR,e1,e2)) =
-          resultOPER(assMOVreg() ^ assOR(),
+          resultOPER(assMOVreg("`s0", "`d0") ^ assOR(),
                      [munchExp e1, munchExp e2], [], NONE)
 
       | munchExp(T.BINOP(_)) = ErrorMsg.impossible "CodeGen: INVALID BINOP"
 
       (* CONST *)
-      | munchExp(T.CONST i) = resultOPER(assMOVconst(i), [], [], NONE)
+      | munchExp(T.CONST k) = resultOPER(assMOVconst(k), [], [], NONE)
 
       | munchExp(T.CONSTF _) = ErrorMsg.impossible "CodeGen: INVALID CONSTF"
 
       | munchExp(T.TEMP t) = t
 
-      | munchExp(T.NAME label) = resultOPER(assMOVlabel(label), [], [], NONE)
+      | munchExp(T.NAME lab) =
+          ErrorMsg.impossible "CodeGen: INVALID TOP LEVEL NAME"
 
       (* CALL *)
       | munchExp(T.CALL(T.NAME lab, args)) =
