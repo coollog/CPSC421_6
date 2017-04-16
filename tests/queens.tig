@@ -18,8 +18,8 @@ let
 	     print("\n"));
          print("\n"))
 
-    function try(c:int) =
-        (for i:= 0 to c do print("."); print("\n"); flush())
+    function try(c:int) = 0
+        /*(for i:= 0 to c do print("."); print("\n"); flush())*/
      /*if c=N
      then printboard()
      else for r := 0 to N-1
@@ -31,7 +31,8 @@ let
                 diag1[r+c]:=0;
                 diag2[r+7-c]:=0)*/
 
- in try(10);
+ in printboard();
+    try(10);
     1
 end
 
