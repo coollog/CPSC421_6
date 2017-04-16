@@ -54,8 +54,6 @@ struct
 
     and resultOPER(assem, src, dst, jump) =
       result(fn r => emitOPER(assem, src, r::dst, jump))
-    and resultOPERsrcAsDst(assem, src, jump) =
-      result(fn r => emitOPER(assem, src @ [r], [r], jump))
 
     (* Generates the various assembly instructions. *)
     and assLABEL(lab) = S.name lab ^ ":\n"
@@ -90,14 +88,6 @@ struct
       "\tsubl " ^ pSrc ^ ", " ^ pDst ^ explain("subtract two registers")
     and assIMUL(pSrc, pDst) =
       "\timull " ^ pSrc ^ ", " ^ pDst ^ explain("multiply two registers")
-    and assIDIV() = "\tmovl `s0, `d1\t# save %eax\n" ^
-                    "\tmovl `s1, `d2\t# save %edx\n" ^
-                    "\tmovl `s2, `s0\t# put divisor in %eax\n" ^
-                    "\tmovl $0, `s1\t# put 0 in %edx\n" ^
-                    "\tidiv `s3\t# divide by register\n" ^
-                    "\tmovl `s3, `d0\t# put quotient in result register\n" ^
-                    "\tmovl `d1, `s0\t# restore %eax\n" ^
-                    "\tmovl `d2, `s1\t# restore %edx\n"
     and assAND(pSrc, pDst) =
       "\tandl " ^ pSrc ^ ", " ^ pDst ^ explain("bitwise and two registers")
     and assOR(pSrc, pDst) =
@@ -212,34 +202,62 @@ struct
 
       (* ADD *)
       | munchExp(T.BINOP(T.PLUS,e1,e2)) =
-          resultOPERsrcAsDst(assMOVreg("`s0", "`s2") ^ assADD("`s1", "`s2"),
-                             [munchExp e1, munchExp e2], NONE)
+          result(fn r => (
+            emitOPER(assMOVreg("`s0", "`d0"), [munchExp e1], [r], NONE);
+            emitOPER(assADD("`s0", "`s1"), [munchExp e2, r], [r], NONE)))
 
       (* SUB *)
       | munchExp(T.BINOP(T.MINUS,e1,e2)) =
-          resultOPERsrcAsDst(assMOVreg("`s0", "`s2") ^ assSUB("`s1", "`s2"),
-                             [munchExp e1, munchExp e2], NONE)
+          result(fn r => (
+            emitOPER(assMOVreg("`s0", "`d0"), [munchExp e1], [r], NONE);
+            emitOPER(assSUB("`s0", "`s1"), [munchExp e2, r], [r], NONE)))
 
       (* IMUL *)
       | munchExp(T.BINOP(T.MUL,e1,e2)) =
-          resultOPERsrcAsDst(assMOVreg("`s0", "`s2") ^ assIMUL("`s1", "`s2"),
-                             [munchExp e1, munchExp e2], NONE)
+          result(fn r => (
+            emitOPER(assMOVreg("`s0", "`d0"), [munchExp e1], [r], NONE);
+            emitOPER(assIMUL("`s0", "`s1"), [munchExp e2, r], [r], NONE)))
 
       (* IDIV *)
       | munchExp(T.BINOP(T.DIV,e1,e2)) =
-          resultOPER(assIDIV(),
-                    [R.RV, R.EDX, munchExp e1, munchExp e2],
-                    [Temp.newtemp(), Temp.newtemp()], NONE)
+          let
+            val r = Temp.newtemp()
+            val t1 = Temp.newtemp()
+            val t2 = Temp.newtemp()
+            val pSrc1 = evalExp(e1, "s", 0)
+            val pSrc2 = evalExp(e2, "s", 0)
+          in
+            emitOPER("\tmovl `s0, `d0" ^ explain("save %eax"),
+                     [R.RV], [t1], NONE);
+            emitOPER("\tmovl `s0, `d0" ^ explain("save %edx"),
+                     [R.EDX], [t2], NONE);
+            emitOPER("\tmovl $0, `s1" ^ explain("put 0 in %edx\n"),
+                     [R.EDX], [t2], NONE);
+            emitOPER("\tmovl `s0, `d0" ^ explain("put divisor in %eax"),
+                     #reg pSrc1, [R.RV], NONE);
+            emitOPER("\tidiv `s0" ^ explain("divide by register"),
+                     #reg pSrc2, [R.RV], NONE);
+            emitOPER("\tmovl `s0, `d0" ^
+                     explain("put quotient in result register"),
+                     [R.RV], [r], NONE);
+            emitOPER("\tmovl `s0, `d0" ^ explain("restore %eax"),
+                     [t1], [R.RV], NONE);
+            emitOPER("\tmovl `s0, `d0" ^ explain("restore %edx"),
+                     [t2], [R.EDX], NONE);
+            r
+          end
 
       (* AND *)
       | munchExp(T.BINOP(T.AND,e1,e2)) =
-          resultOPERsrcAsDst(assMOVreg("`s0", "`s2") ^ assAND("`s1", "`s2"),
-                             [munchExp e1, munchExp e2], NONE)
+          result(fn r => (
+            emitOPER(assMOVreg("`s0", "`d0"), [munchExp e1], [r], NONE);
+            emitOPER(assAND("`s0", "`s1"), [munchExp e2, r], [r], NONE)))
 
       (* OR *)
       | munchExp(T.BINOP(T.OR,e1,e2)) =
-          resultOPERsrcAsDst(assMOVreg("`s0", "`s2") ^ assOR("`s1", "`s2"),
-                             [munchExp e1, munchExp e2], NONE)
+          result(fn r => (
+            emitOPER(assMOVreg("`s0", "`d0"), [munchExp e1], [r], NONE);
+            emitOPER(assOR("`s0", "`s1"), [munchExp e2, r], [r], NONE)))
 
       | munchExp(T.BINOP(_)) = ErrorMsg.impossible "CodeGen: INVALID BINOP"
 
@@ -524,7 +542,7 @@ struct
           mapInstrInternal(insn, [src], [dst], NONE)
     and mapInstrInternal(insn, srcs, dsts, jmp) =
       let
-        val (loadinsns, newsrcs) = mapsrcs(srcs, [R.ECX, R.EDX, Temp.newtemp()]);
+        val (loadinsns, newsrcs) = mapsrcs(srcs, [R.ECX, R.EDX]);
         val (storeinsns, newdsts) = mapdsts(dsts, srcs, newsrcs);
       in
         A.OPER{assem=loadinsns ^ insn ^ storeinsns,
