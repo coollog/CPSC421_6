@@ -3,6 +3,6 @@ let
 	type  arrtype = array of int
 	var arr1:arrtype := arrtype [10] of 0
 in
-	arr1; print("bob\n");
+	arr1; print(chr(arr[0] + ord("0"))); print("\n");
         1
 end
