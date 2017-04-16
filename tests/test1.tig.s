@@ -7,7 +7,7 @@ tigermain:
 	pushl %ebx							# push callee save
 	pushl %edi							# push callee save
 	pushl %esi							# push callee save
-L24:
+L2:
 	movl %ebp, %ebx							# move to register
 	movl $-404, %edi							# move constant to register
 	addl %edi, %ebx							# add two registers
@@ -32,28 +32,7 @@ L24:
 	pushl %eax							# save caller save
 	pushl %ecx							# save caller save
 	pushl %edx							# save caller save
-	pushl $0							# push onto stack
-	call chr
-	addl $4, %esp							# pop arguments
-	movl %eax, %ebx							# get return value
-	popl %edx							# restore caller save
-	popl %ecx							# restore caller save
-	popl %eax							# restore caller save
-	movl %ebx, %ebx							# move to register
-	pushl %eax							# save caller save
-	pushl %ecx							# save caller save
-	pushl %edx							# save caller save
-	pushl %ebx							# push onto stack
-	call print
-	addl $4, %esp							# pop arguments
-	movl %eax, %ebx							# get return value
-	popl %edx							# restore caller save
-	popl %ecx							# restore caller save
-	popl %eax							# restore caller save
-	pushl %eax							# save caller save
-	pushl %ecx							# save caller save
-	pushl %edx							# save caller save
-	pushl $L22							# push onto stack
+	pushl $L0							# push onto stack
 	call print
 	addl $4, %esp							# pop arguments
 	movl %eax, %ebx							# get return value
@@ -61,17 +40,14 @@ L24:
 	popl %ecx							# restore caller save
 	popl %eax							# restore caller save
 	movl $1, %eax							# move to register
-	jmp L23							# jump to L23
-L23:
+	jmp L1							# jump to L1
+L1:
 	popl %esi							# pop callee save
 	popl %edi							# pop callee save
 	popl %ebx							# pop callee save
 	movl %ebp, %esp							# deallocate frame
 	popl %ebp							# restore base pointer
 	ret
-L22:
+L0:
 	.long 1
 	.byte 10, 0
-L21:
-	.long 1
-	.byte 48, 0
