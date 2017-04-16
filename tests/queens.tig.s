@@ -7,7 +7,7 @@ tigermain:
 	pushl %ebx							# push callee save
 	pushl %edi							# push callee save
 	pushl %esi							# push callee save
-L39:
+L34:
 	movl $8, -404(%ebp)							# move to memory
 	movl %ebp, %ebx							# move to register
 	movl $-408, %edi							# move constant to register
@@ -115,8 +115,8 @@ L39:
 	popl %ecx							# restore caller save
 	popl %eax							# restore caller save
 	movl $1, %eax							# move to register
-	jmp L38							# jump to L38
-L38:
+	jmp L33							# jump to L33
+L33:
 	popl %esi							# pop callee save
 	popl %edi							# pop callee save
 	popl %ebx							# pop callee save
@@ -128,39 +128,17 @@ L38:
 L1:
 	pushl %ebp							# save base pointer
 	movl %esp, %ebp							# base pointer <- stack pointer
-	subl $408, %esp							# allocate space for local variables
+	subl $404, %esp							# allocate space for local variables
 	pushl %ebx							# push callee save
 	pushl %edi							# push callee save
 	pushl %esi							# push callee save
-L41:
-	movl $0, -404(%ebp)							# move to memory
-	movl %ebp, %ebx							# move to register
-	movl $-404, %edi							# move constant to register
-	addl %edi, %ebx							# add two registers
-	movl (%ebx), %edi							# fetch from memory
-	movl %ebp, %ebx							# move to register
-	movl $12, %esi							# move constant to register
-	addl %esi, %ebx							# add two registers
-	movl (%ebx), %ebx							# fetch from memory
-	cmpl %edi, %ebx							# compare for jump...
-	jle L17							# if true: jump to L17
-	jmp L15							# if false: jump to L15
-L15:
+L36:
 	pushl %eax							# save caller save
 	pushl %ecx							# save caller save
 	pushl %edx							# save caller save
-	pushl $L19							# push onto stack
+	pushl 12(%ebp)							# push onto stack
 	call print
 	addl $4, %esp							# pop arguments
-	movl %eax, %ebx							# get return value
-	popl %edx							# restore caller save
-	popl %ecx							# restore caller save
-	popl %eax							# restore caller save
-	pushl %eax							# save caller save
-	pushl %ecx							# save caller save
-	pushl %edx							# save caller save
-	call flush
-	addl $0, %esp							# pop arguments
 	movl %eax, %ebx							# get return value
 	popl %edx							# restore caller save
 	popl %ecx							# restore caller save
@@ -178,12 +156,12 @@ L15:
 	addl %esi, %ebx							# add two registers
 	movl (%ebx), %ebx							# fetch from memory
 	cmpl %edi, %ebx							# compare for jump...
-	je L35							# if true: jump to L35
-	jmp L36							# if false: jump to L36
-L36:
-	movl $0, -408(%ebp)							# move to memory
+	je L30							# if true: jump to L30
+	jmp L31							# if false: jump to L31
+L31:
+	movl $0, -404(%ebp)							# move to memory
 	movl %ebp, %ebx							# move to register
-	movl $-408, %edi							# move constant to register
+	movl $-404, %edi							# move constant to register
 	addl %edi, %ebx							# add two registers
 	movl (%ebx), %edi							# fetch from memory
 	movl %ebp, %ebx							# move to register
@@ -198,97 +176,14 @@ L36:
 	movl $1, %esi							# move constant to register
 	subl %esi, %ebx							# subtract two registers
 	cmpl %edi, %ebx							# compare for jump...
-	jle L33							# if true: jump to L33
-	jmp L20							# if false: jump to L20
-L20:
+	jle L28							# if true: jump to L28
+	jmp L15							# if false: jump to L15
+L15:
 	movl $0, %ebx							# move to register
-L37:
-	pushl %eax							# save caller save
-	pushl %ecx							# save caller save
-	pushl %edx							# save caller save
-	movl $0, %ebx							# move constant to register
-	movl %ebx, %edi							# move to register
-	movl %ebp, %ebx							# move to register
-	movl $12, %esi							# move constant to register
-	addl %esi, %ebx							# add two registers
-	movl (%ebx), %ebx							# fetch from memory
-	subl %ebx, %edi							# subtract two registers
-	pushl %edi							# push onto stack
-	movl %ebp, %ebx							# move to register
-	movl $8, %edi							# move constant to register
-	addl %edi, %ebx							# add two registers
-	movl (%ebx), %ebx							# fetch from memory
-	movl %ebx, %ebx							# move to register
-	movl $-420, %edi							# move constant to register
-	addl %edi, %ebx							# add two registers
-	movl (%ebx), %ebx							# fetch from memory
-	pushl %ebx							# push onto stack
-	call checkArrayBounds
-	addl $8, %esp							# pop arguments
-	movl %eax, %ebx							# get return value
-	popl %edx							# restore caller save
-	popl %ecx							# restore caller save
-	popl %eax							# restore caller save
-	movl %ebp, %ebx							# move to register
-	movl $8, %edi							# move constant to register
-	addl %edi, %ebx							# add two registers
-	movl (%ebx), %ebx							# fetch from memory
-	movl %ebx, %ebx							# move to register
-	movl $-420, %edi							# move constant to register
-	addl %edi, %ebx							# add two registers
-	movl (%ebx), %ebx							# fetch from memory
-	movl %ebx, %esi							# move to register
-	movl $0, %ebx							# move constant to register
-	movl %ebx, %edi							# move to register
-	movl %ebp, %ebx							# move to register
-	movl $12, %ecx							# move constant to register
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
-	movl	-4(%ebp), %ecx							# load pseudo-register
-	addl %ecx, %ebx							# add two registers
-	movl (%ebx), %ebx							# fetch from memory
-	subl %ebx, %edi							# subtract two registers
-	movl %edi, %ebx							# move to register
-	movl $4, %edi							# move constant to register
-	imull %edi, %ebx							# multiply two registers
-	addl %ebx, %esi							# add two registers
-	movl (%esi), %ebx							# fetch from memory
-	movl $0, %ebx							# move to memory
-	movl $0, %eax							# move to register
-	jmp L40							# jump to L40
-L17:
-	pushl %eax							# save caller save
-	pushl %ecx							# save caller save
-	pushl %edx							# save caller save
-	pushl $L16							# push onto stack
-	call print
-	addl $4, %esp							# pop arguments
-	movl %eax, %ebx							# get return value
-	popl %edx							# restore caller save
-	popl %ecx							# restore caller save
-	popl %eax							# restore caller save
-	movl %ebp, %ebx							# move to register
-	movl $-404, %edi							# move constant to register
-	addl %edi, %ebx							# add two registers
-	movl (%ebx), %edi							# fetch from memory
-	movl %ebp, %ebx							# move to register
-	movl $12, %esi							# move constant to register
-	addl %esi, %ebx							# add two registers
-	movl (%ebx), %ebx							# fetch from memory
-	cmpl %edi, %ebx							# compare for jump...
-	jge L15							# if true: jump to L15
-	jmp L18							# if false: jump to L18
-L18:
-	movl %ebp, %ebx							# move to register
-	movl $-404, %edi							# move constant to register
-	addl %edi, %ebx							# add two registers
-	movl (%ebx), %ebx							# fetch from memory
-	movl %ebx, %ebx							# move to register
-	movl $1, %edi							# move constant to register
-	addl %edi, %ebx							# add two registers
-	movl %ebx, -404(%ebp)							# move to memory
-	jmp L17							# jump to L17
-L35:
+L32:
+	movl %ebx, %eax							# move to register
+	jmp L35							# jump to L35
+L30:
 	pushl %eax							# save caller save
 	pushl %ecx							# save caller save
 	pushl %edx							# save caller save
@@ -300,12 +195,12 @@ L35:
 	popl %ecx							# restore caller save
 	popl %eax							# restore caller save
 	movl %ebx, %ebx							# move to register
-	jmp L37							# jump to L37
-L33:
+	jmp L32							# jump to L32
+L28:
 	pushl %eax							# save caller save
 	pushl %ecx							# save caller save
 	pushl %edx							# save caller save
-	pushl -408(%ebp)							# push onto stack
+	pushl -404(%ebp)							# push onto stack
 	movl %ebp, %ebx							# move to register
 	movl $8, %edi							# move constant to register
 	addl %edi, %ebx							# add two registers
@@ -331,7 +226,7 @@ L33:
 	movl (%ebx), %ebx							# fetch from memory
 	movl %ebx, %edi							# move to register
 	movl %ebp, %ebx							# move to register
-	movl $-408, %esi							# move constant to register
+	movl $-404, %esi							# move constant to register
 	addl %esi, %ebx							# add two registers
 	movl (%ebx), %ebx							# fetch from memory
 	movl %ebx, %ebx							# move to register
@@ -341,22 +236,22 @@ L33:
 	movl (%edi), %ebx							# fetch from memory
 	movl $0, %edi							# move constant to register
 	cmpl %ebx, %edi							# compare for jump...
-	je L21							# if true: jump to L21
-	jmp L22							# if false: jump to L22
-L22:
+	je L16							# if true: jump to L16
+	jmp L17							# if false: jump to L17
+L17:
 	movl $0, %ebx							# move to register
-L23:
+L18:
 	movl $0, %edi							# move constant to register
 	cmpl %ebx, %edi							# compare for jump...
-	je L27							# if true: jump to L27
-	jmp L26							# if false: jump to L26
-L26:
+	je L22							# if true: jump to L22
+	jmp L21							# if false: jump to L21
+L21:
 	movl $1, %edi							# move to register
 	pushl %eax							# save caller save
 	pushl %ecx							# save caller save
 	pushl %edx							# save caller save
 	movl %ebp, %ebx							# move to register
-	movl $-408, %esi							# move constant to register
+	movl $-404, %esi							# move constant to register
 	addl %esi, %ebx							# add two registers
 	movl (%ebx), %ebx							# fetch from memory
 	movl %ebx, %ebx							# move to register
@@ -399,7 +294,7 @@ L26:
 	movl	%ecx, -4(%ebp)							# save pseudo-register
 
 	movl %ebp, %ebx							# move to register
-	movl $-408, %esi							# move constant to register
+	movl $-404, %esi							# move constant to register
 	addl %esi, %ebx							# add two registers
 	movl (%ebx), %ebx							# fetch from memory
 	movl %ebx, %ebx							# move to register
@@ -424,22 +319,22 @@ L26:
 	movl (%ecx), %ebx							# fetch from memory
 	movl $0, %esi							# move constant to register
 	cmpl %ebx, %esi							# compare for jump...
-	je L29							# if true: jump to L29
-	jmp L30							# if false: jump to L30
-L30:
+	je L24							# if true: jump to L24
+	jmp L25							# if false: jump to L25
+L25:
 	movl $0, %edi							# move to register
-L29:
+L24:
 	movl %edi, %ebx							# move to register
-L28:
+L23:
 	movl $0, %edi							# move constant to register
 	cmpl %ebx, %edi							# compare for jump...
-	je L32							# if true: jump to L32
-	jmp L31							# if false: jump to L31
-L31:
+	je L27							# if true: jump to L27
+	jmp L26							# if false: jump to L26
+L26:
 	pushl %eax							# save caller save
 	pushl %ecx							# save caller save
 	pushl %edx							# save caller save
-	pushl -408(%ebp)							# push onto stack
+	pushl -404(%ebp)							# push onto stack
 	movl %ebp, %ebx							# move to register
 	movl $8, %edi							# move constant to register
 	addl %edi, %ebx							# add two registers
@@ -465,7 +360,7 @@ L31:
 	movl (%ebx), %ebx							# fetch from memory
 	movl %ebx, %edi							# move to register
 	movl %ebp, %ebx							# move to register
-	movl $-408, %esi							# move constant to register
+	movl $-404, %esi							# move constant to register
 	addl %esi, %ebx							# add two registers
 	movl (%ebx), %ebx							# fetch from memory
 	movl %ebx, %ebx							# move to register
@@ -478,7 +373,7 @@ L31:
 	pushl %ecx							# save caller save
 	pushl %edx							# save caller save
 	movl %ebp, %ebx							# move to register
-	movl $-408, %edi							# move constant to register
+	movl $-404, %edi							# move constant to register
 	addl %edi, %ebx							# add two registers
 	movl (%ebx), %ebx							# fetch from memory
 	movl %ebx, %edi							# move to register
@@ -513,7 +408,7 @@ L31:
 	movl (%ebx), %ebx							# fetch from memory
 	movl %ebx, %esi							# move to register
 	movl %ebp, %ebx							# move to register
-	movl $-408, %edi							# move constant to register
+	movl $-404, %edi							# move constant to register
 	addl %edi, %ebx							# add two registers
 	movl (%ebx), %ebx							# fetch from memory
 	movl %ebx, %edi							# move to register
@@ -535,7 +430,7 @@ L31:
 	pushl %ecx							# save caller save
 	pushl %edx							# save caller save
 	movl %ebp, %ebx							# move to register
-	movl $-408, %edi							# move constant to register
+	movl $-404, %edi							# move constant to register
 	addl %edi, %ebx							# add two registers
 	movl (%ebx), %ebx							# fetch from memory
 	movl %ebx, %ebx							# move to register
@@ -573,7 +468,7 @@ L31:
 	movl (%ebx), %ebx							# fetch from memory
 	movl %ebx, %esi							# move to register
 	movl %ebp, %ebx							# move to register
-	movl $-408, %edi							# move constant to register
+	movl $-404, %edi							# move constant to register
 	addl %edi, %ebx							# add two registers
 	movl (%ebx), %ebx							# fetch from memory
 	movl %ebx, %ebx							# move to register
@@ -614,7 +509,7 @@ L31:
 	popl %ecx							# restore caller save
 	popl %eax							# restore caller save
 	movl %ebp, %ebx							# move to register
-	movl $-408, %edi							# move constant to register
+	movl $-404, %edi							# move constant to register
 	addl %edi, %ebx							# add two registers
 	movl (%ebx), %esi							# fetch from memory
 	movl %ebp, %ebx							# move to register
@@ -663,7 +558,7 @@ L31:
 	pushl %eax							# save caller save
 	pushl %ecx							# save caller save
 	pushl %edx							# save caller save
-	pushl -408(%ebp)							# push onto stack
+	pushl -404(%ebp)							# push onto stack
 	movl %ebp, %ebx							# move to register
 	movl $8, %edi							# move constant to register
 	addl %edi, %ebx							# add two registers
@@ -689,7 +584,7 @@ L31:
 	movl (%ebx), %ebx							# fetch from memory
 	movl %ebx, %edi							# move to register
 	movl %ebp, %ebx							# move to register
-	movl $-408, %esi							# move constant to register
+	movl $-404, %esi							# move constant to register
 	addl %esi, %ebx							# add two registers
 	movl (%ebx), %ebx							# fetch from memory
 	movl %ebx, %ebx							# move to register
@@ -702,7 +597,7 @@ L31:
 	pushl %ecx							# save caller save
 	pushl %edx							# save caller save
 	movl %ebp, %ebx							# move to register
-	movl $-408, %edi							# move constant to register
+	movl $-404, %edi							# move constant to register
 	addl %edi, %ebx							# add two registers
 	movl (%ebx), %ebx							# fetch from memory
 	movl %ebx, %edi							# move to register
@@ -737,7 +632,7 @@ L31:
 	movl (%ebx), %ebx							# fetch from memory
 	movl %ebx, %esi							# move to register
 	movl %ebp, %ebx							# move to register
-	movl $-408, %edi							# move constant to register
+	movl $-404, %edi							# move constant to register
 	addl %edi, %ebx							# add two registers
 	movl (%ebx), %ebx							# fetch from memory
 	movl %ebx, %edi							# move to register
@@ -755,9 +650,72 @@ L31:
 	addl %ebx, %esi							# add two registers
 	movl (%esi), %ebx							# fetch from memory
 	movl $0, %ebx							# move to memory
-L32:
+	pushl %eax							# save caller save
+	pushl %ecx							# save caller save
+	pushl %edx							# save caller save
 	movl %ebp, %ebx							# move to register
-	movl $-408, %edi							# move constant to register
+	movl $-404, %edi							# move constant to register
+	addl %edi, %ebx							# add two registers
+	movl (%ebx), %ebx							# fetch from memory
+	movl %ebx, %ebx							# move to register
+	movl $7, %edi							# move constant to register
+	addl %edi, %ebx							# add two registers
+	movl %ebx, %edi							# move to register
+	movl %ebp, %ebx							# move to register
+	movl $12, %esi							# move constant to register
+	addl %esi, %ebx							# add two registers
+	movl (%ebx), %ebx							# fetch from memory
+	subl %ebx, %edi							# subtract two registers
+	pushl %edi							# push onto stack
+	movl %ebp, %ebx							# move to register
+	movl $8, %edi							# move constant to register
+	addl %edi, %ebx							# add two registers
+	movl (%ebx), %ebx							# fetch from memory
+	movl %ebx, %ebx							# move to register
+	movl $-420, %edi							# move constant to register
+	addl %edi, %ebx							# add two registers
+	movl (%ebx), %ebx							# fetch from memory
+	pushl %ebx							# push onto stack
+	call checkArrayBounds
+	addl $8, %esp							# pop arguments
+	movl %eax, %ebx							# get return value
+	popl %edx							# restore caller save
+	popl %ecx							# restore caller save
+	popl %eax							# restore caller save
+	movl %ebp, %ebx							# move to register
+	movl $8, %edi							# move constant to register
+	addl %edi, %ebx							# add two registers
+	movl (%ebx), %ebx							# fetch from memory
+	movl %ebx, %ebx							# move to register
+	movl $-420, %edi							# move constant to register
+	addl %edi, %ebx							# add two registers
+	movl (%ebx), %ebx							# fetch from memory
+	movl %ebx, %esi							# move to register
+	movl %ebp, %ebx							# move to register
+	movl $-404, %edi							# move constant to register
+	addl %edi, %ebx							# add two registers
+	movl (%ebx), %ebx							# fetch from memory
+	movl %ebx, %ebx							# move to register
+	movl $7, %edi							# move constant to register
+	addl %edi, %ebx							# add two registers
+	movl %ebx, %edi							# move to register
+	movl %ebp, %ebx							# move to register
+	movl $12, %ecx							# move constant to register
+	movl	%ecx, -4(%ebp)							# save pseudo-register
+
+	movl	-4(%ebp), %ecx							# load pseudo-register
+	addl %ecx, %ebx							# add two registers
+	movl (%ebx), %ebx							# fetch from memory
+	subl %ebx, %edi							# subtract two registers
+	movl %edi, %ebx							# move to register
+	movl $4, %edi							# move constant to register
+	imull %edi, %ebx							# multiply two registers
+	addl %ebx, %esi							# add two registers
+	movl (%esi), %ebx							# fetch from memory
+	movl $0, %ebx							# move to memory
+L27:
+	movl %ebp, %ebx							# move to register
+	movl $-404, %edi							# move constant to register
 	addl %edi, %ebx							# add two registers
 	movl (%ebx), %edi							# fetch from memory
 	movl %ebp, %ebx							# move to register
@@ -772,25 +730,25 @@ L32:
 	movl $1, %esi							# move constant to register
 	subl %esi, %ebx							# subtract two registers
 	cmpl %edi, %ebx							# compare for jump...
-	jge L20							# if true: jump to L20
-	jmp L34							# if false: jump to L34
-L34:
+	jge L15							# if true: jump to L15
+	jmp L29							# if false: jump to L29
+L29:
 	movl %ebp, %ebx							# move to register
-	movl $-408, %edi							# move constant to register
+	movl $-404, %edi							# move constant to register
 	addl %edi, %ebx							# add two registers
 	movl (%ebx), %ebx							# fetch from memory
 	movl %ebx, %ebx							# move to register
 	movl $1, %edi							# move constant to register
 	addl %edi, %ebx							# add two registers
-	movl %ebx, -408(%ebp)							# move to memory
-	jmp L33							# jump to L33
-L21:
+	movl %ebx, -404(%ebp)							# move to memory
+	jmp L28							# jump to L28
+L16:
 	movl $1, %edi							# move to register
 	pushl %eax							# save caller save
 	pushl %ecx							# save caller save
 	pushl %edx							# save caller save
 	movl %ebp, %ebx							# move to register
-	movl $-408, %esi							# move constant to register
+	movl $-404, %esi							# move constant to register
 	addl %esi, %ebx							# add two registers
 	movl (%ebx), %ebx							# fetch from memory
 	movl %ebx, %esi							# move to register
@@ -830,7 +788,7 @@ L21:
 	movl	%ecx, -4(%ebp)							# save pseudo-register
 
 	movl %ebp, %ebx							# move to register
-	movl $-408, %esi							# move constant to register
+	movl $-404, %esi							# move constant to register
 	addl %esi, %ebx							# add two registers
 	movl (%ebx), %ebx							# fetch from memory
 	movl %ebx, %esi							# move to register
@@ -852,29 +810,23 @@ L21:
 	movl (%ecx), %ebx							# fetch from memory
 	movl $0, %esi							# move constant to register
 	cmpl %ebx, %esi							# compare for jump...
-	je L24							# if true: jump to L24
-	jmp L25							# if false: jump to L25
-L25:
+	je L19							# if true: jump to L19
+	jmp L20							# if false: jump to L20
+L20:
 	movl $0, %edi							# move to register
-L24:
+L19:
 	movl %edi, %ebx							# move to register
-	jmp L23							# jump to L23
-L27:
+	jmp L18							# jump to L18
+L22:
 	movl $0, %ebx							# move to register
-	jmp L28							# jump to L28
-L40:
+	jmp L23							# jump to L23
+L35:
 	popl %esi							# pop callee save
 	popl %edi							# pop callee save
 	popl %ebx							# pop callee save
 	movl %ebp, %esp							# deallocate frame
 	popl %ebp							# restore base pointer
 	ret
-L19:
-	.long 1
-	.byte 10, 0
-L16:
-	.long 1
-	.byte 46, 0
 .globl L0
 .type L0, @function
 L0:
@@ -884,7 +836,7 @@ L0:
 	pushl %ebx							# push callee save
 	pushl %edi							# push callee save
 	pushl %esi							# push callee save
-L43:
+L38:
 	movl $0, -404(%ebp)							# move to memory
 	movl %ebp, %ebx							# move to register
 	movl $-404, %edi							# move constant to register
@@ -917,7 +869,7 @@ L2:
 	popl %eax							# restore caller save
 	movl %ebx, %ebx							# move to register
 	movl %ebx, %eax							# move to register
-	jmp L42							# jump to L42
+	jmp L37							# jump to L37
 L12:
 	movl $0, -408(%ebp)							# move to memory
 	movl %ebp, %ebx							# move to register
@@ -1067,7 +1019,7 @@ L10:
 L6:
 	movl $L4, %ebx							# move to register
 	jmp L8							# jump to L8
-L42:
+L37:
 	popl %esi							# pop callee save
 	popl %edi							# pop callee save
 	popl %ebx							# pop callee save
