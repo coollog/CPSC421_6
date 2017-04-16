@@ -130,6 +130,13 @@ struct
           in emitOPER(assMOVreg(#assem pSrc, #assem pDst),
                       #reg pSrc, #reg pDst, NONE) end
 
+      (* MOVE MEM[e1] MEM[e2] *)
+      | munchStm(T.MOVE(T.MEM(e1, _),T.MEM(e2, _))) =
+          let val d0 = munchExp(T.MEM(e2, 4))
+              val pDst=evalExp(T.MEM(e1, 4), "d", 0)
+          in emitOPER(assMOVmem("`s0", #assem pDst),
+                      [d0], #reg pDst, NONE) end
+
       (* MOVE MEM[e1] e2 *)
       | munchStm(T.MOVE(T.MEM(e1, _),e2)) =
           let val pDst=evalExp(T.MEM(e1, 4), "d", 0)
