@@ -54,11 +54,12 @@ struct
 
     and resultOPER(assem, src, dst, jump) =
       result(fn r => emitOPER(assem, src, r::dst, jump))
-    and resultOPERdstAsSrc(assem, src, dst, jump) =
-      result(fn r => emitOPER(assem, src @ [r], dst, jump))
+    and resultOPERsrcAsDst(assem, src, jump) =
+      result(fn r => emitOPER(assem, src @ [r], [r], jump))
 
     (* Generates the various assembly instructions. *)
     and assLABEL(lab) = S.name lab ^ ":\n"
+    and assPUSH(pSrc) = "\tpushl " ^ pSrc ^ explain("push onto stack")
     and assJMP(lab) = "\tjmp `j0" ^ explain("jump to " ^ S.name lab)
     and assJMPexp() = "\tjmp `s0" ^ explain("jump to somewhere")
     and assCMP(relop, lab1, lab2) =
@@ -211,18 +212,18 @@ struct
 
       (* ADD *)
       | munchExp(T.BINOP(T.PLUS,e1,e2)) =
-          resultOPERdstAsSrc(assMOVreg("`s0", "`s2") ^ assADD("`s1", "`s2"),
-                             [munchExp e1, munchExp e2], [], NONE)
+          resultOPERsrcAsDst(assMOVreg("`s0", "`s2") ^ assADD("`s1", "`s2"),
+                             [munchExp e1, munchExp e2], NONE)
 
       (* SUB *)
       | munchExp(T.BINOP(T.MINUS,e1,e2)) =
-          resultOPERdstAsSrc(assMOVreg("`s0", "`s2") ^ assSUB("`s1", "`s2"),
-                             [munchExp e1, munchExp e2], [], NONE)
+          resultOPERsrcAsDst(assMOVreg("`s0", "`s2") ^ assSUB("`s1", "`s2"),
+                             [munchExp e1, munchExp e2], NONE)
 
       (* IMUL *)
       | munchExp(T.BINOP(T.MUL,e1,e2)) =
-          resultOPERdstAsSrc(assMOVreg("`s0", "`s2") ^ assIMUL("`s1", "`s2"),
-                             [munchExp e1, munchExp e2], [], NONE)
+          resultOPERsrcAsDst(assMOVreg("`s0", "`s2") ^ assIMUL("`s1", "`s2"),
+                             [munchExp e1, munchExp e2], NONE)
 
       (* IDIV *)
       | munchExp(T.BINOP(T.DIV,e1,e2)) =
@@ -232,13 +233,13 @@ struct
 
       (* AND *)
       | munchExp(T.BINOP(T.AND,e1,e2)) =
-          resultOPERdstAsSrc(assMOVreg("`s0", "`s2") ^ assAND("`s1", "`s2"),
-                             [munchExp e1, munchExp e2], [], NONE)
+          resultOPERsrcAsDst(assMOVreg("`s0", "`s2") ^ assAND("`s1", "`s2"),
+                             [munchExp e1, munchExp e2], NONE)
 
       (* OR *)
       | munchExp(T.BINOP(T.OR,e1,e2)) =
-          resultOPERdstAsSrc(assMOVreg("`s0", "`s2") ^ assOR("`s1", "`s2"),
-                             [munchExp e1, munchExp e2], [], NONE)
+          resultOPERsrcAsDst(assMOVreg("`s0", "`s2") ^ assOR("`s1", "`s2"),
+                             [munchExp e1, munchExp e2], NONE)
 
       | munchExp(T.BINOP(_)) = ErrorMsg.impossible "CodeGen: INVALID BINOP"
 
@@ -249,7 +250,7 @@ struct
 
       | munchExp(T.TEMP t) = t
 
-      | munchExp(T.NAME lab) =
+      | munchExp(T.NAME _) =
           ErrorMsg.impossible "CodeGen: INVALID TOP LEVEL NAME"
 
       (* CALL *)
@@ -258,25 +259,29 @@ struct
           let
             val paramSize = 4 * length(args)
             val pushTrueCallerSaves = String.concat(
-              map (fn reg => "\tpushl " ^ reg ^ "\n") R.truecallersaves)
+              map (fn reg => "\tpushl " ^ reg ^ explain("save caller save"))
+                  R.truecallersaves)
             (* Pushl args onto stack. *)
             val revArgs = rev(args)
-            fun pushArgs(args) = app (fn arg => emit(A.OPER{
-                  assem="\tpushl `s0\n",
-                  src=[munchExp arg], dst=[], jump=NONE})) revArgs
+            fun pushArg(arg) =
+              let val pSrc = evalExp(arg, "s", 0)
+              in emitOPER(assPUSH(#assem pSrc), #reg pSrc, [], NONE) end
+            fun pushArgs(args) = app pushArg revArgs
             val revTrueCallerSaves = rev(R.truecallersaves)
             val popTrueCallerSaves = String.concat(
-              map (fn reg => "\tpopl " ^ reg ^ "\n") revTrueCallerSaves)
+              map (fn reg => "\tpopl " ^ reg ^ explain("restore caller save"))
+                  revTrueCallerSaves)
           in
             (* Pushl caller saves *)
-            emit(A.OPER{assem=pushTrueCallerSaves, src=[], dst=[], jump=NONE});
+            emitOPER(pushTrueCallerSaves, [], [], NONE);
             pushArgs(args);
-            emit(A.OPER{assem="\tcall " ^ Symbol.name lab ^ "\n" ^
-                              "\taddl $" ^ Int.toString paramSize ^ ", %esp\n" ^
-                              "\tmovl %eax, `d0\n",
-                        src=[], dst=[r], jump=NONE});
+            emitOPER("\tcall " ^ Symbol.name lab ^ "\n" ^
+                     "\taddl $" ^ Int.toString paramSize ^ ", `s0" ^
+                     explain("pop arguments") ^
+                     "\tmovl `s1, `d0" ^ explain("get return value"),
+                     [R.SP, R.RV], [r], NONE);
             (* Popl caller saves *)
-            emit(A.OPER{assem=popTrueCallerSaves, src=[], dst=[], jump=NONE})
+            emitOPER(popTrueCallerSaves, [], [], NONE)
           end)
 
       | munchExp(T.ESEQ _ | T.CVTOP _ | T.CALL _) =
@@ -336,12 +341,16 @@ struct
         A.OPER({assem=".globl " ^ Symbol.name name ^ "\n" ^
                       ".type " ^ Symbol.name name ^ ", @function\n" ^
                       Symbol.name name ^ ":\n" ^
-                      "\tpushl %ebp\n" ^
-                      "\tmovl %esp, %ebp\n" ^
-                      "\tsubl $" ^ Int.toString localVarSize ^ ", %esp\n",
+                      "\tpushl %ebp" ^ explain("save base pointer") ^
+                      "\tmovl %esp, %ebp" ^
+                      explain("base pointer <- stack pointer") ^
+                      "\tsubl $" ^ Int.toString localVarSize ^ ", %esp" ^
+                      explain("allocate space for local variables"),
                 src=[],dst=[],jump=NONE})
       ] @ map
-            (fn reg => A.OPER({assem="\tpushl " ^ reg ^ "\n", src=[],dst=[],jump=NONE}))
+            (fn reg => A.OPER({assem="\tpushl " ^ reg ^
+                                     explain("push callee save"),
+                               src=[],dst=[],jump=NONE}))
             R.calleesaves
 
       (*
@@ -354,11 +363,12 @@ struct
       *)
       val epilogue =
         map
-          (fn reg => A.OPER({assem="\tpopl " ^ reg ^ "\n", src=[],dst=[],jump=NONE}))
+          (fn reg => A.OPER({assem="\tpopl " ^ reg ^ explain("pop callee save"),
+                             src=[],dst=[],jump=NONE}))
           (rev(R.calleesaves)) @
         [
-          A.OPER({assem="\tmovl %ebp, %esp\n" ^
-                        "\tpopl %ebp\n" ^
+          A.OPER({assem="\tmovl %ebp, %esp" ^ explain("deallocate frame") ^
+                        "\tpopl %ebp" ^ explain("restore base pointer") ^
                         "\tret\n", src=[],dst=[],jump=NONE})
         ]
 
@@ -490,6 +500,7 @@ struct
     			      (* no mapping *)
     			      ("", dst::dsts)
 		          end
+              handle e => raise e
 		      else
 		        (* this dst isn't a source, but it might be a pseudo-register *)
             if (String.isPrefix "f" dstnm) then
@@ -513,7 +524,7 @@ struct
           mapInstrInternal(insn, [src], [dst], NONE)
     and mapInstrInternal(insn, srcs, dsts, jmp) =
       let
-        val (loadinsns, newsrcs) = mapsrcs(srcs, [R.ECX, R.EDX]);
+        val (loadinsns, newsrcs) = mapsrcs(srcs, [R.ECX, R.EDX, R.RV]);
         val (storeinsns, newdsts) = mapdsts(dsts, srcs, newsrcs);
       in
         A.OPER{assem=loadinsns ^ insn ^ storeinsns,

@@ -112,16 +112,30 @@ struct
               frame=frame
             })
 
-            val format0 = Assem.format (fn t => "t" ^ Temp.makestring t)
-            val format1 = Assem.format(fn t => (valOf(Temp.Table.look(allocation, t))))
+            val format0 = A.format (fn t => "t" ^ Temp.makestring t)
+            val format1 = A.format(fn t => (valOf(Temp.Table.look(allocation, t))))
 
-         in app (fn i => TextIO.output(out,format0 i)) instrs'
+            (*fun srcListStr(instr:A.instr) =
+              let
+                val srcList = case instr of
+                  A.OPER{src,...} => map Temp.makestring src
+                | A.MOVE{src,...} => [Temp.makestring src]
+                | A.LABEL{...} => []
+                fun joinTemps(cur, t2) = cur ^ ", t" ^ t2
+              in
+                foldr joinTemps "" srcList
+              end
+            fun assemOf(A.OPER{assem,...}) = assem
+              | assemOf(A.MOVE{assem,...}) = assem
+              | assemOf(A.LABEL{assem,...}) = assem*)
+
+         (*in app (fn i => TextIO.output(out,assemOf i ^ ": " ^ srcListStr(i) ^ "\n")) instrs'*)
+         in app (fn i => TextIO.output(out,format1 i)) instrs'
         end
 
   fun withOpenFile fname f =
         let val out = TextIO.openOut fname
          in (f out before TextIO.closeOut out)
-               handle e => (TextIO.closeOut out; raise e)
         end
 
   fun compile filename =
