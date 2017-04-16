@@ -524,7 +524,7 @@ struct
           mapInstrInternal(insn, [src], [dst], NONE)
     and mapInstrInternal(insn, srcs, dsts, jmp) =
       let
-        val (loadinsns, newsrcs) = mapsrcs(srcs, [R.ECX, R.EDX, R.RV]);
+        val (loadinsns, newsrcs) = mapsrcs(srcs, [R.ECX, R.EDX, Temp.newtemp()]);
         val (storeinsns, newdsts) = mapdsts(dsts, srcs, newsrcs);
       in
         A.OPER{assem=loadinsns ^ insn ^ storeinsns,
