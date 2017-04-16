@@ -165,7 +165,8 @@ L15:
 	popl %edx							# restore caller save
 	popl %ecx							# restore caller save
 	popl %eax							# restore caller save
-	movl $0, %eax							# move to register
+	movl %ebx, %ebx							# move to register
+	movl %ebx, %eax							# move to register
 	jmp L22							# jump to L22
 L17:
 	pushl %eax							# save caller save
