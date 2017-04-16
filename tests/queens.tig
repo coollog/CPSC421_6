@@ -20,7 +20,7 @@ let
 
     function try(c:int) =
  /*for i:= 0 to c do print("."); print("\n"); flush();*/
- (print(c);
+ (print("trying");
      if c=N
      then printboard()
      else for r := 0 to N-1
