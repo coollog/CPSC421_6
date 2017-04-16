@@ -38,6 +38,9 @@ struct
   (* Builds an assembly comment. *)
   fun explain(comment) = "\t\t\t\t\t\t\t# " ^ comment ^ "\n"
 
+  (* Converts an int to a string with negative "-" *)
+  fun int2str(i) = if i < 0 then "-" ^ Int.toString (~i) else Int.toString i
+
   fun codegen(stm: T.stm) : A.instr list =
   let val ilist = ref (nil: A.instr list)
     fun emit x = ilist := x :: !ilist
@@ -80,7 +83,7 @@ struct
     and assMOVmem(pSrc, pDst) =
       "\tmovl " ^ pSrc ^ ", " ^ pDst ^ explain("move to memory")
     and assMOVfetch() = "\tmovl (`s0), `d0" ^ explain("fetch from memory")
-    and assMOVconst(i) = "\tmovl $" ^ Int.toString i ^ ", `d0" ^
+    and assMOVconst(i) = "\tmovl $" ^ int2str i ^ ", `d0" ^
                          explain("move constant to register")
     and assADD(pSrc, pDst) =
       "\taddl " ^ pSrc ^ ", " ^ pDst ^ explain("add two registers")
@@ -144,7 +147,7 @@ struct
        *)
         (* like %eax *)
         evalExp(T.TEMP t, prefix, startIdx):preInstr =
-          {assem="`" ^ prefix ^ Int.toString startIdx,
+          {assem="`" ^ prefix ^ int2str startIdx,
            reg=[t], nextIdx=startIdx + 1}
 
         (* like $Hello *)
@@ -153,34 +156,34 @@ struct
 
         (* like $4 *)
       | evalExp(T.CONST k, _, startIdx):preInstr =
-          {assem="$" ^ Int.toString k, reg=[], nextIdx=startIdx}
+          {assem="$" ^ int2str k, reg=[], nextIdx=startIdx}
 
         (* like (%eax) *)
       | evalExp(T.MEM(T.TEMP t, _), prefix, startIdx):preInstr =
-          {assem="(`" ^ prefix ^ Int.toString startIdx ^ ")",
+          {assem="(`" ^ prefix ^ int2str startIdx ^ ")",
            reg=[t], nextIdx=startIdx + 1}
 
         (* like -4(%eax) *)
       | evalExp(T.MEM(T.BINOP(T.PLUS, T.TEMP t, T.CONST k), _),
                 prefix, startIdx):preInstr =
-          {assem=Int.toString k ^ "(`" ^ prefix ^ Int.toString startIdx ^ ")",
+          {assem=int2str k ^ "(`" ^ prefix ^ int2str startIdx ^ ")",
            reg=[t], nextIdx=startIdx + 1}
 
         (* like -4(%eax) *)
       | evalExp(T.MEM(T.BINOP(T.PLUS, T.CONST k, T.TEMP t), _),
                 prefix, startIdx):preInstr =
-          {assem=Int.toString k ^ "(`" ^ prefix ^ Int.toString startIdx ^ ")",
+          {assem=int2str k ^ "(`" ^ prefix ^ int2str startIdx ^ ")",
            reg=[t], nextIdx=startIdx + 1}
 
         (* like (%eax, %ebx, 1) *)
       | evalExp(T.MEM(T.BINOP(T.PLUS, T.TEMP t1, T.TEMP t2), _),
                 prefix, startIdx):preInstr =
-          {assem="(`" ^ prefix ^ Int.toString startIdx ^
-                 ", `" ^ prefix ^ Int.toString(startIdx + 1) ^ ", 1)",
+          {assem="(`" ^ prefix ^ int2str startIdx ^
+                 ", `" ^ prefix ^ int2str(startIdx + 1) ^ ", 1)",
            reg=[t1, t2], nextIdx=startIdx + 2}
 
       | evalExp(exp, prefix, startIdx):preInstr =
-          {assem="`" ^ prefix ^ Int.toString startIdx,
+          {assem="`" ^ prefix ^ int2str startIdx,
            reg=[munchExp exp], nextIdx=startIdx + 1}
 
     and
@@ -294,7 +297,7 @@ struct
             emitOPER(pushTrueCallerSaves, [], [], NONE);
             pushArgs(args);
             emitOPER("\tcall " ^ Symbol.name lab ^ "\n" ^
-                     "\taddl $" ^ Int.toString paramSize ^ ", `s0" ^
+                     "\taddl $" ^ int2str paramSize ^ ", `s0" ^
                      explain("pop arguments") ^
                      "\tmovl `s1, `d0" ^ explain("get return value"),
                      [R.SP, R.RV], [r], NONE);
@@ -315,7 +318,7 @@ struct
   fun string(label, s) =
     let
       val charList = explode(s)
-      val ordList = map (fn c => Int.toString(ord(c))) charList
+      val ordList = map (fn c => int2str(ord(c))) charList
       val byteSeq = foldr (fn (s1, s2) => s1 ^ ", " ^ s2) "0" ordList
     in
       S.name label ^ ":\n" ^
@@ -362,7 +365,7 @@ struct
                       "\tpushl %ebp" ^ explain("save base pointer") ^
                       "\tmovl %esp, %ebp" ^
                       explain("base pointer <- stack pointer") ^
-                      "\tsubl $" ^ Int.toString localVarSize ^ ", %esp" ^
+                      "\tsubl $" ^ int2str localVarSize ^ ", %esp" ^
                       explain("allocate space for local variables"),
                 src=[],dst=[],jump=NONE})
       ] @ map
