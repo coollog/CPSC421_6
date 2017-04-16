@@ -24,14 +24,14 @@ struct
             val stms = Canon.linearize body
             val stms' = Canon.traceSchedule(Canon.basicBlocks stms)
 
-            val _ =
+            (*val _ =
               let
                 fun printstms(stm::stms) =
                       (Printtree.printtree(out, stm); printstms(stms))
                   | printstms([]) = ()
               in
                 printstms(stms')
-              end
+              end*)
 
             val instrs = List.concat(map C.codegen stms')
 
@@ -115,21 +115,6 @@ struct
             val format0 = A.format (fn t => "t" ^ Temp.makestring t)
             val format1 = A.format(fn t => (valOf(Temp.Table.look(allocation, t))))
 
-            (*fun srcListStr(instr:A.instr) =
-              let
-                val srcList = case instr of
-                  A.OPER{src,...} => map Temp.makestring src
-                | A.MOVE{src,...} => [Temp.makestring src]
-                | A.LABEL{...} => []
-                fun joinTemps(cur, t2) = cur ^ ", t" ^ t2
-              in
-                foldr joinTemps "" srcList
-              end
-            fun assemOf(A.OPER{assem,...}) = assem
-              | assemOf(A.MOVE{assem,...}) = assem
-              | assemOf(A.LABEL{assem,...}) = assem*)
-
-         (*in app (fn i => TextIO.output(out,assemOf i ^ ": " ^ srcListStr(i) ^ "\n")) instrs'*)
          in app (fn i => TextIO.output(out,format1 i)) instrs'
         end
 
