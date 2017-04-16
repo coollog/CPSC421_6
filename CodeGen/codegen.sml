@@ -66,12 +66,12 @@ struct
     and assCMP(relop, lab1, lab2) =
       let
         val jumpInstr = case relop of
-          T.EQ => "je"
-        | T.NE => "jne"
-        | T.GT => "jg"
-        | T.GE => "jge"
-        | T.LT => "jl"
-        | T.LE => "jle"
+          T.EQ => "\tje"
+        | T.NE => "\tjne"
+        | T.GT => "\tjg"
+        | T.GE => "\tjge"
+        | T.LT => "\tjl"
+        | T.LE => "\tjle"
         | _ => ErrorMsg.impossible "CodeGen: INVALID CJUMP"
       in
         "\tcmpl `s0, `s1" ^ explain("compare for jump...") ^
