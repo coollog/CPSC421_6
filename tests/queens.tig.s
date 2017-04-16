@@ -1,3 +1,107 @@
+LABEL L112
+MOVE(
+ MEM[4](
+  BINOP(PLUS,
+   TEMP T101,
+   CONST ~404)),
+ CONST 8)
+MOVE(
+ TEMP T982,
+ BINOP(PLUS,
+  TEMP T101,
+  CONST ~408))
+MOVE(
+ TEMP T981,
+ CALL(
+  NAME initArray,
+   MEM[4](
+    BINOP(PLUS,
+     TEMP T101,
+     CONST ~404)),
+   CONST 0))
+MOVE(
+ MEM[4](
+  TEMP T982),
+ TEMP T981)
+MOVE(
+ TEMP T984,
+ BINOP(PLUS,
+  TEMP T101,
+  CONST ~412))
+MOVE(
+ TEMP T983,
+ CALL(
+  NAME initArray,
+   MEM[4](
+    BINOP(PLUS,
+     TEMP T101,
+     CONST ~404)),
+   CONST 0))
+MOVE(
+ MEM[4](
+  TEMP T984),
+ TEMP T983)
+MOVE(
+ TEMP T986,
+ BINOP(PLUS,
+  TEMP T101,
+  CONST ~416))
+MOVE(
+ TEMP T985,
+ CALL(
+  NAME initArray,
+   BINOP(MINUS,
+    BINOP(PLUS,
+     MEM[4](
+      BINOP(PLUS,
+       TEMP T101,
+       CONST ~404)),
+     MEM[4](
+      BINOP(PLUS,
+       TEMP T101,
+       CONST ~404))),
+    CONST 1),
+   CONST 0))
+MOVE(
+ MEM[4](
+  TEMP T986),
+ TEMP T985)
+MOVE(
+ TEMP T988,
+ BINOP(PLUS,
+  TEMP T101,
+  CONST ~420))
+MOVE(
+ TEMP T987,
+ CALL(
+  NAME initArray,
+   BINOP(MINUS,
+    BINOP(PLUS,
+     MEM[4](
+      BINOP(PLUS,
+       TEMP T101,
+       CONST ~404)),
+     MEM[4](
+      BINOP(PLUS,
+       TEMP T101,
+       CONST ~404))),
+    CONST 1),
+   CONST 0))
+MOVE(
+ MEM[4](
+  TEMP T988),
+ TEMP T987)
+EXP(
+ CALL(
+  NAME L79,
+   TEMP T101,
+   CONST 0))
+MOVE(
+ TEMP T100,
+ CONST 1)
+JUMP(
+ NAME L111)
+LABEL L111
 .globl tigermain
 .type tigermain, @function
 tigermain:
@@ -7,10 +111,12 @@ tigermain:
 	pushl %ebx							# push callee save
 	pushl %edi							# push callee save
 	pushl %esi							# push callee save
-L34:
+L112:
 	movl $8, -404(%ebp)							# move to memory
 	movl %ebp, %ebx							# move to register
-	addl $-408, %ebx							# add two registers
+	movl $-408, %edi							# move constant to register
+	addl %edi, %ebx							# add two registers
+	movl %ebx, %ebx							# move to register
 	pushl %eax							# save caller save
 	pushl %ecx							# save caller save
 	pushl %edx							# save caller save
@@ -24,8 +130,10 @@ L34:
 	popl %eax							# restore caller save
 	movl %ebx, %ebx							# move to register
 	movl %ebx, (%ebx)							# move to memory
-	movl %ebp, %edi							# move to register
-	addl $-412, %edi							# add two registers
+	movl %ebp, %ebx							# move to register
+	movl $-412, %edi							# move constant to register
+	addl %edi, %ebx							# add two registers
+	movl %ebx, %ebx							# move to register
 	pushl %eax							# save caller save
 	pushl %ecx							# save caller save
 	pushl %edx							# save caller save
@@ -38,9 +146,11 @@ L34:
 	popl %ecx							# restore caller save
 	popl %eax							# restore caller save
 	movl %ebx, %ebx							# move to register
-	movl %ebx, (%edi)							# move to memory
-	movl %ebp, %esi							# move to register
-	addl $-416, %esi							# add two registers
+	movl %ebx, (%ebx)							# move to memory
+	movl %ebp, %ebx							# move to register
+	movl $-416, %edi							# move constant to register
+	addl %edi, %ebx							# add two registers
+	movl %ebx, %ebx							# move to register
 	pushl %eax							# save caller save
 	pushl %ecx							# save caller save
 	pushl %edx							# save caller save
@@ -66,11 +176,11 @@ L34:
 	popl %ecx							# restore caller save
 	popl %eax							# restore caller save
 	movl %ebx, %ebx							# move to register
-	movl %ebx, (%esi)							# move to memory
-	movl	-4(%ebp), %edx							# load pseudo-register
-	movl %ebp, %edx							# move to register
-	addl $-420, %edx							# add two registers
-	movl	%edx, -4(%ebp)							# save pseudo-register
+	movl %ebx, (%ebx)							# move to memory
+	movl %ebp, %ebx							# move to register
+	movl $-420, %edi							# move constant to register
+	addl %edi, %ebx							# add two registers
+	movl %ebx, %ebx							# move to register
 	pushl %eax							# save caller save
 	pushl %ecx							# save caller save
 	pushl %edx							# save caller save
@@ -96,39 +206,582 @@ L34:
 	popl %ecx							# restore caller save
 	popl %eax							# restore caller save
 	movl %ebx, %ebx							# move to register
-	movl %ebx, (%ecx)							# move to memory
-	movl	%ecx, -4(%ebp)							# save pseudo-register
-
+	movl %ebx, (%ebx)							# move to memory
 	pushl %eax							# save caller save
 	pushl %ecx							# save caller save
 	pushl %edx							# save caller save
 	pushl $0							# push onto stack
 	pushl %ebp							# push onto stack
-	call L1
+	call L79
 	addl $8, %esp							# pop arguments
 	movl %eax, %ebx							# get return value
 	popl %edx							# restore caller save
 	popl %ecx							# restore caller save
 	popl %eax							# restore caller save
 	movl $1, %eax							# move to register
-	jmp L33							# jump to L33
-L33:
+	jmp L111							# jump to L111
+L111:
 	popl %esi							# pop callee save
 	popl %edi							# pop callee save
 	popl %ebx							# pop callee save
 	movl %ebp, %esp							# deallocate frame
 	popl %ebp							# restore base pointer
 	ret
-.globl L1
-.type L1, @function
-L1:
+LABEL L114
+CJUMP(
+EQ,
+ MEM[4](
+  BINOP(PLUS,
+   TEMP T101,
+   CONST 12)),
+ MEM[4](
+  BINOP(PLUS,
+   MEM[4](
+    BINOP(PLUS,
+     TEMP T101,
+     CONST 8)),
+   CONST ~404)),
+ L108,L109)
+LABEL L109
+MOVE(
+ MEM[4](
+  BINOP(PLUS,
+   TEMP T101,
+   CONST ~404)),
+ CONST 0)
+CJUMP(
+LE,
+ MEM[4](
+  BINOP(PLUS,
+   TEMP T101,
+   CONST ~404)),
+ BINOP(MINUS,
+  MEM[4](
+   BINOP(PLUS,
+    MEM[4](
+     BINOP(PLUS,
+      TEMP T101,
+      CONST 8)),
+    CONST ~404)),
+  CONST 1),
+ L106,L93)
+LABEL L93
+MOVE(
+ TEMP T980,
+ CONST 0)
+LABEL L110
+MOVE(
+ TEMP T100,
+ TEMP T980)
+JUMP(
+ NAME L113)
+LABEL L108
+MOVE(
+ TEMP T980,
+ CALL(
+  NAME L78,
+   MEM[4](
+    BINOP(PLUS,
+     TEMP T101,
+     CONST 8))))
+JUMP(
+ NAME L110)
+LABEL L106
+EXP(
+ CALL(
+  NAME checkArrayBounds,
+   MEM[4](
+    BINOP(PLUS,
+     MEM[4](
+      BINOP(PLUS,
+       TEMP T101,
+       CONST 8)),
+     CONST ~408)),
+   MEM[4](
+    BINOP(PLUS,
+     TEMP T101,
+     CONST ~404))))
+CJUMP(
+EQ,
+ MEM[4](
+  BINOP(PLUS,
+   MEM[4](
+    BINOP(PLUS,
+     MEM[4](
+      BINOP(PLUS,
+       TEMP T101,
+       CONST 8)),
+     CONST ~408)),
+   BINOP(MUL,
+    MEM[4](
+     BINOP(PLUS,
+      TEMP T101,
+      CONST ~404)),
+    CONST 4))),
+ CONST 0,
+ L94,L95)
+LABEL L95
+MOVE(
+ TEMP T976,
+ CONST 0)
+LABEL L96
+CJUMP(
+EQ,
+ TEMP T976,
+ CONST 0,
+ L100,L99)
+LABEL L99
+MOVE(
+ TEMP T979,
+ CONST 1)
+EXP(
+ CALL(
+  NAME checkArrayBounds,
+   MEM[4](
+    BINOP(PLUS,
+     MEM[4](
+      BINOP(PLUS,
+       TEMP T101,
+       CONST 8)),
+     CONST ~420)),
+   BINOP(MINUS,
+    BINOP(PLUS,
+     MEM[4](
+      BINOP(PLUS,
+       TEMP T101,
+       CONST ~404)),
+     CONST 7),
+    MEM[4](
+     BINOP(PLUS,
+      TEMP T101,
+      CONST 12)))))
+CJUMP(
+EQ,
+ MEM[4](
+  BINOP(PLUS,
+   MEM[4](
+    BINOP(PLUS,
+     MEM[4](
+      BINOP(PLUS,
+       TEMP T101,
+       CONST 8)),
+     CONST ~420)),
+   BINOP(MUL,
+    BINOP(MINUS,
+     BINOP(PLUS,
+      MEM[4](
+       BINOP(PLUS,
+        TEMP T101,
+        CONST ~404)),
+      CONST 7),
+     MEM[4](
+      BINOP(PLUS,
+       TEMP T101,
+       CONST 12))),
+    CONST 4))),
+ CONST 0,
+ L102,L103)
+LABEL L103
+MOVE(
+ TEMP T979,
+ CONST 0)
+LABEL L102
+MOVE(
+ TEMP T978,
+ TEMP T979)
+LABEL L101
+CJUMP(
+EQ,
+ TEMP T978,
+ CONST 0,
+ L105,L104)
+LABEL L104
+EXP(
+ CALL(
+  NAME checkArrayBounds,
+   MEM[4](
+    BINOP(PLUS,
+     MEM[4](
+      BINOP(PLUS,
+       TEMP T101,
+       CONST 8)),
+     CONST ~408)),
+   MEM[4](
+    BINOP(PLUS,
+     TEMP T101,
+     CONST ~404))))
+MOVE(
+ MEM[4](
+  BINOP(PLUS,
+   MEM[4](
+    BINOP(PLUS,
+     MEM[4](
+      BINOP(PLUS,
+       TEMP T101,
+       CONST 8)),
+     CONST ~408)),
+   BINOP(MUL,
+    MEM[4](
+     BINOP(PLUS,
+      TEMP T101,
+      CONST ~404)),
+    CONST 4))),
+ CONST 1)
+EXP(
+ CALL(
+  NAME checkArrayBounds,
+   MEM[4](
+    BINOP(PLUS,
+     MEM[4](
+      BINOP(PLUS,
+       TEMP T101,
+       CONST 8)),
+     CONST ~416)),
+   BINOP(PLUS,
+    MEM[4](
+     BINOP(PLUS,
+      TEMP T101,
+      CONST ~404)),
+    MEM[4](
+     BINOP(PLUS,
+      TEMP T101,
+      CONST 12)))))
+MOVE(
+ MEM[4](
+  BINOP(PLUS,
+   MEM[4](
+    BINOP(PLUS,
+     MEM[4](
+      BINOP(PLUS,
+       TEMP T101,
+       CONST 8)),
+     CONST ~416)),
+   BINOP(MUL,
+    BINOP(PLUS,
+     MEM[4](
+      BINOP(PLUS,
+       TEMP T101,
+       CONST ~404)),
+     MEM[4](
+      BINOP(PLUS,
+       TEMP T101,
+       CONST 12))),
+    CONST 4))),
+ CONST 1)
+EXP(
+ CALL(
+  NAME checkArrayBounds,
+   MEM[4](
+    BINOP(PLUS,
+     MEM[4](
+      BINOP(PLUS,
+       TEMP T101,
+       CONST 8)),
+     CONST ~420)),
+   BINOP(MINUS,
+    BINOP(PLUS,
+     MEM[4](
+      BINOP(PLUS,
+       TEMP T101,
+       CONST ~404)),
+     CONST 7),
+    MEM[4](
+     BINOP(PLUS,
+      TEMP T101,
+      CONST 12)))))
+MOVE(
+ MEM[4](
+  BINOP(PLUS,
+   MEM[4](
+    BINOP(PLUS,
+     MEM[4](
+      BINOP(PLUS,
+       TEMP T101,
+       CONST 8)),
+     CONST ~420)),
+   BINOP(MUL,
+    BINOP(MINUS,
+     BINOP(PLUS,
+      MEM[4](
+       BINOP(PLUS,
+        TEMP T101,
+        CONST ~404)),
+      CONST 7),
+     MEM[4](
+      BINOP(PLUS,
+       TEMP T101,
+       CONST 12))),
+    CONST 4))),
+ CONST 1)
+EXP(
+ CALL(
+  NAME checkArrayBounds,
+   MEM[4](
+    BINOP(PLUS,
+     MEM[4](
+      BINOP(PLUS,
+       TEMP T101,
+       CONST 8)),
+     CONST ~412)),
+   MEM[4](
+    BINOP(PLUS,
+     TEMP T101,
+     CONST 12))))
+MOVE(
+ MEM[4](
+  BINOP(PLUS,
+   MEM[4](
+    BINOP(PLUS,
+     MEM[4](
+      BINOP(PLUS,
+       TEMP T101,
+       CONST 8)),
+     CONST ~412)),
+   BINOP(MUL,
+    MEM[4](
+     BINOP(PLUS,
+      TEMP T101,
+      CONST 12)),
+    CONST 4))),
+ MEM[4](
+  BINOP(PLUS,
+   TEMP T101,
+   CONST ~404)))
+EXP(
+ CALL(
+  NAME L79,
+   MEM[4](
+    BINOP(PLUS,
+     TEMP T101,
+     CONST 8)),
+   BINOP(PLUS,
+    MEM[4](
+     BINOP(PLUS,
+      TEMP T101,
+      CONST 12)),
+    CONST 1)))
+EXP(
+ CALL(
+  NAME checkArrayBounds,
+   MEM[4](
+    BINOP(PLUS,
+     MEM[4](
+      BINOP(PLUS,
+       TEMP T101,
+       CONST 8)),
+     CONST ~408)),
+   MEM[4](
+    BINOP(PLUS,
+     TEMP T101,
+     CONST ~404))))
+MOVE(
+ MEM[4](
+  BINOP(PLUS,
+   MEM[4](
+    BINOP(PLUS,
+     MEM[4](
+      BINOP(PLUS,
+       TEMP T101,
+       CONST 8)),
+     CONST ~408)),
+   BINOP(MUL,
+    MEM[4](
+     BINOP(PLUS,
+      TEMP T101,
+      CONST ~404)),
+    CONST 4))),
+ CONST 0)
+EXP(
+ CALL(
+  NAME checkArrayBounds,
+   MEM[4](
+    BINOP(PLUS,
+     MEM[4](
+      BINOP(PLUS,
+       TEMP T101,
+       CONST 8)),
+     CONST ~416)),
+   BINOP(PLUS,
+    MEM[4](
+     BINOP(PLUS,
+      TEMP T101,
+      CONST ~404)),
+    MEM[4](
+     BINOP(PLUS,
+      TEMP T101,
+      CONST 12)))))
+MOVE(
+ MEM[4](
+  BINOP(PLUS,
+   MEM[4](
+    BINOP(PLUS,
+     MEM[4](
+      BINOP(PLUS,
+       TEMP T101,
+       CONST 8)),
+     CONST ~416)),
+   BINOP(MUL,
+    BINOP(PLUS,
+     MEM[4](
+      BINOP(PLUS,
+       TEMP T101,
+       CONST ~404)),
+     MEM[4](
+      BINOP(PLUS,
+       TEMP T101,
+       CONST 12))),
+    CONST 4))),
+ CONST 0)
+EXP(
+ CALL(
+  NAME checkArrayBounds,
+   MEM[4](
+    BINOP(PLUS,
+     MEM[4](
+      BINOP(PLUS,
+       TEMP T101,
+       CONST 8)),
+     CONST ~420)),
+   BINOP(MINUS,
+    BINOP(PLUS,
+     MEM[4](
+      BINOP(PLUS,
+       TEMP T101,
+       CONST ~404)),
+     CONST 7),
+    MEM[4](
+     BINOP(PLUS,
+      TEMP T101,
+      CONST 12)))))
+MOVE(
+ MEM[4](
+  BINOP(PLUS,
+   MEM[4](
+    BINOP(PLUS,
+     MEM[4](
+      BINOP(PLUS,
+       TEMP T101,
+       CONST 8)),
+     CONST ~420)),
+   BINOP(MUL,
+    BINOP(MINUS,
+     BINOP(PLUS,
+      MEM[4](
+       BINOP(PLUS,
+        TEMP T101,
+        CONST ~404)),
+      CONST 7),
+     MEM[4](
+      BINOP(PLUS,
+       TEMP T101,
+       CONST 12))),
+    CONST 4))),
+ CONST 0)
+LABEL L105
+CJUMP(
+GE,
+ MEM[4](
+  BINOP(PLUS,
+   TEMP T101,
+   CONST ~404)),
+ BINOP(MINUS,
+  MEM[4](
+   BINOP(PLUS,
+    MEM[4](
+     BINOP(PLUS,
+      TEMP T101,
+      CONST 8)),
+    CONST ~404)),
+  CONST 1),
+ L93,L107)
+LABEL L107
+MOVE(
+ MEM[4](
+  BINOP(PLUS,
+   TEMP T101,
+   CONST ~404)),
+ BINOP(PLUS,
+  MEM[4](
+   BINOP(PLUS,
+    TEMP T101,
+    CONST ~404)),
+  CONST 1))
+JUMP(
+ NAME L106)
+LABEL L94
+MOVE(
+ TEMP T977,
+ CONST 1)
+EXP(
+ CALL(
+  NAME checkArrayBounds,
+   MEM[4](
+    BINOP(PLUS,
+     MEM[4](
+      BINOP(PLUS,
+       TEMP T101,
+       CONST 8)),
+     CONST ~416)),
+   BINOP(PLUS,
+    MEM[4](
+     BINOP(PLUS,
+      TEMP T101,
+      CONST ~404)),
+    MEM[4](
+     BINOP(PLUS,
+      TEMP T101,
+      CONST 12)))))
+CJUMP(
+EQ,
+ MEM[4](
+  BINOP(PLUS,
+   MEM[4](
+    BINOP(PLUS,
+     MEM[4](
+      BINOP(PLUS,
+       TEMP T101,
+       CONST 8)),
+     CONST ~416)),
+   BINOP(MUL,
+    BINOP(PLUS,
+     MEM[4](
+      BINOP(PLUS,
+       TEMP T101,
+       CONST ~404)),
+     MEM[4](
+      BINOP(PLUS,
+       TEMP T101,
+       CONST 12))),
+    CONST 4))),
+ CONST 0,
+ L97,L98)
+LABEL L98
+MOVE(
+ TEMP T977,
+ CONST 0)
+LABEL L97
+MOVE(
+ TEMP T976,
+ TEMP T977)
+JUMP(
+ NAME L96)
+LABEL L100
+MOVE(
+ TEMP T978,
+ CONST 0)
+JUMP(
+ NAME L101)
+LABEL L113
+.globl L79
+.type L79, @function
+L79:
 	pushl %ebp							# save base pointer
 	movl %esp, %ebp							# base pointer <- stack pointer
 	subl $404, %esp							# allocate space for local variables
 	pushl %ebx							# push callee save
 	pushl %edi							# push callee save
 	pushl %esi							# push callee save
-L36:
+L114:
 	movl %ebp, %ebx							# move to register
 	movl $12, %edi							# move constant to register
 	addl %edi, %ebx							# add two registers
@@ -142,9 +795,9 @@ L36:
 	addl %esi, %ebx							# add two registers
 	movl (%ebx), %ebx							# fetch from memory
 	cmpl %edi, %ebx							# compare for jump...
-je L30							# if true: jump to L30
-	jmp L31							# if false: jump to L31
-L31:
+je L108							# if true: jump to L108
+	jmp L109							# if false: jump to L109
+L109:
 	movl $0, -404(%ebp)							# move to memory
 	movl %ebp, %ebx							# move to register
 	movl $-404, %edi							# move constant to register
@@ -162,27 +815,27 @@ L31:
 	movl $1, %esi							# move constant to register
 	subl %esi, %ebx							# subtract two registers
 	cmpl %edi, %ebx							# compare for jump...
-jle L28							# if true: jump to L28
-	jmp L15							# if false: jump to L15
-L15:
+jle L106							# if true: jump to L106
+	jmp L93							# if false: jump to L93
+L93:
 	movl $0, %ebx							# move to register
-L32:
+L110:
 	movl %ebx, %eax							# move to register
-	jmp L35							# jump to L35
-L30:
+	jmp L113							# jump to L113
+L108:
 	pushl %eax							# save caller save
 	pushl %ecx							# save caller save
 	pushl %edx							# save caller save
 	pushl 8(%ebp)							# push onto stack
-	call L0
+	call L78
 	addl $4, %esp							# pop arguments
 	movl %eax, %ebx							# get return value
 	popl %edx							# restore caller save
 	popl %ecx							# restore caller save
 	popl %eax							# restore caller save
 	movl %ebx, %ebx							# move to register
-	jmp L32							# jump to L32
-L28:
+	jmp L110							# jump to L110
+L106:
 	pushl %eax							# save caller save
 	pushl %ecx							# save caller save
 	pushl %edx							# save caller save
@@ -222,16 +875,16 @@ L28:
 	movl (%edi), %ebx							# fetch from memory
 	movl $0, %edi							# move constant to register
 	cmpl %ebx, %edi							# compare for jump...
-je L16							# if true: jump to L16
-	jmp L17							# if false: jump to L17
-L17:
+je L94							# if true: jump to L94
+	jmp L95							# if false: jump to L95
+L95:
 	movl $0, %ebx							# move to register
-L18:
+L96:
 	movl $0, %edi							# move constant to register
 	cmpl %ebx, %edi							# compare for jump...
-je L22							# if true: jump to L22
-	jmp L21							# if false: jump to L21
-L21:
+je L100							# if true: jump to L100
+	jmp L99							# if false: jump to L99
+L99:
 	movl $1, %edi							# move to register
 	pushl %eax							# save caller save
 	pushl %ecx							# save caller save
@@ -305,18 +958,18 @@ L21:
 	movl (%ecx), %ebx							# fetch from memory
 	movl $0, %esi							# move constant to register
 	cmpl %ebx, %esi							# compare for jump...
-je L24							# if true: jump to L24
-	jmp L25							# if false: jump to L25
-L25:
+je L102							# if true: jump to L102
+	jmp L103							# if false: jump to L103
+L103:
 	movl $0, %edi							# move to register
-L24:
+L102:
 	movl %edi, %ebx							# move to register
-L23:
+L101:
 	movl $0, %edi							# move constant to register
 	cmpl %ebx, %edi							# compare for jump...
-je L27							# if true: jump to L27
-	jmp L26							# if false: jump to L26
-L26:
+je L105							# if true: jump to L105
+	jmp L104							# if false: jump to L104
+L104:
 	pushl %eax							# save caller save
 	pushl %ecx							# save caller save
 	pushl %edx							# save caller save
@@ -535,7 +1188,7 @@ L26:
 	addl %edi, %ebx							# add two registers
 	pushl %ebx							# push onto stack
 	pushl 8(%ebp)							# push onto stack
-	call L1
+	call L79
 	addl $8, %esp							# pop arguments
 	movl %eax, %ebx							# get return value
 	popl %edx							# restore caller save
@@ -699,7 +1352,7 @@ L26:
 	addl %ebx, %esi							# add two registers
 	movl (%esi), %ebx							# fetch from memory
 	movl $0, %ebx							# move to memory
-L27:
+L105:
 	movl %ebp, %ebx							# move to register
 	movl $-404, %edi							# move constant to register
 	addl %edi, %ebx							# add two registers
@@ -716,13 +1369,19 @@ L27:
 	movl $1, %esi							# move constant to register
 	subl %esi, %ebx							# subtract two registers
 	cmpl %edi, %ebx							# compare for jump...
-jge L15							# if true: jump to L15
-	jmp L29							# if false: jump to L29
-L29:
-	movl -404(%ebp), -404(%ebp)							# move to register
-	addl $1, -404(%ebp)							# add two registers
-	jmp L28							# jump to L28
-L16:
+jge L93							# if true: jump to L93
+	jmp L107							# if false: jump to L107
+L107:
+	movl %ebp, %ebx							# move to register
+	movl $-404, %edi							# move constant to register
+	addl %edi, %ebx							# add two registers
+	movl (%ebx), %ebx							# fetch from memory
+	movl %ebx, %ebx							# move to register
+	movl $1, %edi							# move constant to register
+	addl %edi, %ebx							# add two registers
+	movl %ebx, -404(%ebp)							# move to memory
+	jmp L106							# jump to L106
+L94:
 	movl $1, %edi							# move to register
 	pushl %eax							# save caller save
 	pushl %ecx							# save caller save
@@ -790,33 +1449,211 @@ L16:
 	movl (%ecx), %ebx							# fetch from memory
 	movl $0, %esi							# move constant to register
 	cmpl %ebx, %esi							# compare for jump...
-je L19							# if true: jump to L19
-	jmp L20							# if false: jump to L20
-L20:
+je L97							# if true: jump to L97
+	jmp L98							# if false: jump to L98
+L98:
 	movl $0, %edi							# move to register
-L19:
+L97:
 	movl %edi, %ebx							# move to register
-	jmp L18							# jump to L18
-L22:
+	jmp L96							# jump to L96
+L100:
 	movl $0, %ebx							# move to register
-	jmp L23							# jump to L23
-L35:
+	jmp L101							# jump to L101
+L113:
 	popl %esi							# pop callee save
 	popl %edi							# pop callee save
 	popl %ebx							# pop callee save
 	movl %ebp, %esp							# deallocate frame
 	popl %ebp							# restore base pointer
 	ret
-.globl L0
-.type L0, @function
-L0:
+LABEL L116
+MOVE(
+ MEM[4](
+  BINOP(PLUS,
+   TEMP T101,
+   CONST ~404)),
+ CONST 0)
+CJUMP(
+LE,
+ MEM[4](
+  BINOP(PLUS,
+   TEMP T101,
+   CONST ~404)),
+ BINOP(MINUS,
+  MEM[4](
+   BINOP(PLUS,
+    MEM[4](
+     BINOP(PLUS,
+      TEMP T101,
+      CONST 8)),
+    CONST ~404)),
+  CONST 1),
+ L90,L80)
+LABEL L80
+MOVE(
+ TEMP T1350,
+ CALL(
+  NAME print,
+   NAME L92))
+MOVE(
+ TEMP T100,
+ TEMP T1350)
+JUMP(
+ NAME L115)
+LABEL L90
+MOVE(
+ MEM[4](
+  BINOP(PLUS,
+   TEMP T101,
+   CONST ~408)),
+ CONST 0)
+CJUMP(
+LE,
+ MEM[4](
+  BINOP(PLUS,
+   TEMP T101,
+   CONST ~408)),
+ BINOP(MINUS,
+  MEM[4](
+   BINOP(PLUS,
+    MEM[4](
+     BINOP(PLUS,
+      TEMP T101,
+      CONST 8)),
+    CONST ~404)),
+  CONST 1),
+ L87,L81)
+LABEL L81
+MOVE(
+ TEMP T1349,
+ CALL(
+  NAME print,
+   NAME L89))
+EXP(
+ TEMP T1349)
+CJUMP(
+GE,
+ MEM[4](
+  BINOP(PLUS,
+   TEMP T101,
+   CONST ~404)),
+ BINOP(MINUS,
+  MEM[4](
+   BINOP(PLUS,
+    MEM[4](
+     BINOP(PLUS,
+      TEMP T101,
+      CONST 8)),
+    CONST ~404)),
+  CONST 1),
+ L80,L91)
+LABEL L91
+MOVE(
+ MEM[4](
+  BINOP(PLUS,
+   TEMP T101,
+   CONST ~404)),
+ BINOP(PLUS,
+  MEM[4](
+   BINOP(PLUS,
+    TEMP T101,
+    CONST ~404)),
+  CONST 1))
+JUMP(
+ NAME L90)
+LABEL L87
+EXP(
+ CALL(
+  NAME checkArrayBounds,
+   MEM[4](
+    BINOP(PLUS,
+     MEM[4](
+      BINOP(PLUS,
+       TEMP T101,
+       CONST 8)),
+     CONST ~412)),
+   MEM[4](
+    BINOP(PLUS,
+     TEMP T101,
+     CONST ~404))))
+CJUMP(
+EQ,
+ MEM[4](
+  BINOP(PLUS,
+   MEM[4](
+    BINOP(PLUS,
+     MEM[4](
+      BINOP(PLUS,
+       TEMP T101,
+       CONST 8)),
+     CONST ~412)),
+   BINOP(MUL,
+    MEM[4](
+     BINOP(PLUS,
+      TEMP T101,
+      CONST ~404)),
+    CONST 4))),
+ MEM[4](
+  BINOP(PLUS,
+   TEMP T101,
+   CONST ~408)),
+ L84,L85)
+LABEL L85
+MOVE(
+ TEMP T975,
+ NAME L83)
+LABEL L86
+EXP(
+ CALL(
+  NAME print,
+   TEMP T975))
+CJUMP(
+GE,
+ MEM[4](
+  BINOP(PLUS,
+   TEMP T101,
+   CONST ~408)),
+ BINOP(MINUS,
+  MEM[4](
+   BINOP(PLUS,
+    MEM[4](
+     BINOP(PLUS,
+      TEMP T101,
+      CONST 8)),
+    CONST ~404)),
+  CONST 1),
+ L81,L88)
+LABEL L88
+MOVE(
+ MEM[4](
+  BINOP(PLUS,
+   TEMP T101,
+   CONST ~408)),
+ BINOP(PLUS,
+  MEM[4](
+   BINOP(PLUS,
+    TEMP T101,
+    CONST ~408)),
+  CONST 1))
+JUMP(
+ NAME L87)
+LABEL L84
+MOVE(
+ TEMP T975,
+ NAME L82)
+JUMP(
+ NAME L86)
+LABEL L115
+.globl L78
+.type L78, @function
+L78:
 	pushl %ebp							# save base pointer
 	movl %esp, %ebp							# base pointer <- stack pointer
 	subl $408, %esp							# allocate space for local variables
 	pushl %ebx							# push callee save
 	pushl %edi							# push callee save
 	pushl %esi							# push callee save
-L38:
+L116:
 	movl $0, -404(%ebp)							# move to memory
 	movl %ebp, %ebx							# move to register
 	movl $-404, %edi							# move constant to register
@@ -834,13 +1671,13 @@ L38:
 	movl $1, %esi							# move constant to register
 	subl %esi, %ebx							# subtract two registers
 	cmpl %edi, %ebx							# compare for jump...
-jle L12							# if true: jump to L12
-	jmp L2							# if false: jump to L2
-L2:
+jle L90							# if true: jump to L90
+	jmp L80							# if false: jump to L80
+L80:
 	pushl %eax							# save caller save
 	pushl %ecx							# save caller save
 	pushl %edx							# save caller save
-	pushl $L14							# push onto stack
+	pushl $L92							# push onto stack
 	call print
 	addl $4, %esp							# pop arguments
 	movl %eax, %ebx							# get return value
@@ -849,8 +1686,8 @@ L2:
 	popl %eax							# restore caller save
 	movl %ebx, %ebx							# move to register
 	movl %ebx, %eax							# move to register
-	jmp L37							# jump to L37
-L12:
+	jmp L115							# jump to L115
+L90:
 	movl $0, -408(%ebp)							# move to memory
 	movl %ebp, %ebx							# move to register
 	movl $-408, %edi							# move constant to register
@@ -868,13 +1705,13 @@ L12:
 	movl $1, %esi							# move constant to register
 	subl %esi, %ebx							# subtract two registers
 	cmpl %edi, %ebx							# compare for jump...
-jle L9							# if true: jump to L9
-	jmp L3							# if false: jump to L3
-L3:
+jle L87							# if true: jump to L87
+	jmp L81							# if false: jump to L81
+L81:
 	pushl %eax							# save caller save
 	pushl %ecx							# save caller save
 	pushl %edx							# save caller save
-	pushl $L11							# push onto stack
+	pushl $L89							# push onto stack
 	call print
 	addl $4, %esp							# pop arguments
 	movl %eax, %ebx							# get return value
@@ -898,13 +1735,19 @@ L3:
 	movl $1, %esi							# move constant to register
 	subl %esi, %ebx							# subtract two registers
 	cmpl %edi, %ebx							# compare for jump...
-jge L2							# if true: jump to L2
-	jmp L13							# if false: jump to L13
-L13:
-	movl -404(%ebp), -404(%ebp)							# move to register
-	addl $1, -404(%ebp)							# add two registers
-	jmp L12							# jump to L12
-L9:
+jge L80							# if true: jump to L80
+	jmp L91							# if false: jump to L91
+L91:
+	movl %ebp, %ebx							# move to register
+	movl $-404, %edi							# move constant to register
+	addl %edi, %ebx							# add two registers
+	movl (%ebx), %ebx							# fetch from memory
+	movl %ebx, %ebx							# move to register
+	movl $1, %edi							# move constant to register
+	addl %edi, %ebx							# add two registers
+	movl %ebx, -404(%ebp)							# move to memory
+	jmp L90							# jump to L90
+L87:
 	pushl %eax							# save caller save
 	pushl %ecx							# save caller save
 	pushl %edx							# save caller save
@@ -947,11 +1790,11 @@ L9:
 	addl %esi, %ebx							# add two registers
 	movl (%ebx), %ebx							# fetch from memory
 	cmpl %edi, %ebx							# compare for jump...
-je L6							# if true: jump to L6
-	jmp L7							# if false: jump to L7
-L7:
-	movl $L5, %ebx							# move to register
-L8:
+je L84							# if true: jump to L84
+	jmp L85							# if false: jump to L85
+L85:
+	movl $L83, %ebx							# move to register
+L86:
 	pushl %eax							# save caller save
 	pushl %ecx							# save caller save
 	pushl %edx							# save caller save
@@ -978,31 +1821,37 @@ L8:
 	movl $1, %esi							# move constant to register
 	subl %esi, %ebx							# subtract two registers
 	cmpl %edi, %ebx							# compare for jump...
-jge L3							# if true: jump to L3
-	jmp L10							# if false: jump to L10
-L10:
-	movl -408(%ebp), -408(%ebp)							# move to register
-	addl $1, -408(%ebp)							# add two registers
-	jmp L9							# jump to L9
-L6:
-	movl $L4, %ebx							# move to register
-	jmp L8							# jump to L8
-L37:
+jge L81							# if true: jump to L81
+	jmp L88							# if false: jump to L88
+L88:
+	movl %ebp, %ebx							# move to register
+	movl $-408, %edi							# move constant to register
+	addl %edi, %ebx							# add two registers
+	movl (%ebx), %ebx							# fetch from memory
+	movl %ebx, %ebx							# move to register
+	movl $1, %edi							# move constant to register
+	addl %edi, %ebx							# add two registers
+	movl %ebx, -408(%ebp)							# move to memory
+	jmp L87							# jump to L87
+L84:
+	movl $L82, %ebx							# move to register
+	jmp L86							# jump to L86
+L115:
 	popl %esi							# pop callee save
 	popl %edi							# pop callee save
 	popl %ebx							# pop callee save
 	movl %ebp, %esp							# deallocate frame
 	popl %ebp							# restore base pointer
 	ret
-L14:
+L92:
 	.long 1
 	.byte 10, 0
-L11:
+L89:
 	.long 1
 	.byte 10, 0
-L5:
+L83:
 	.long 2
 	.byte 32, 46, 0
-L4:
+L82:
 	.long 2
 	.byte 32, 79, 0

@@ -113,16 +113,6 @@ struct
           emitOPER(assCMP(relop, lab1, lab2),
                    [munchExp e1, munchExp e2], [R.EBX], SOME[lab1, lab2])
 
-      (* MOVE reg BINOP *)
-      | munchStm(T.MOVE(T.TEMP t, exp as T.BINOP(_))) =
-          let val pDst = evalExp(T.TEMP t, "d", 0)
-          in munchExpWithDst(exp, pDst) end
-
-      (* MOVE mem BINOP *)
-      | munchStm(T.MOVE(T.MEM(e1, _), exp as T.BINOP(_))) =
-          let val pDst = evalExp(T.MEM(e1, 4), "d", 0)
-          in munchExpWithDst(exp, pDst) end
-
       (* MOVE reg e1 *)
       | munchStm(T.MOVE(T.TEMP t, e1)) =
           let val pDst = evalExp(T.TEMP t, "d", 0)
@@ -192,18 +182,6 @@ struct
       | evalExp(exp, prefix, startIdx):preInstr =
           {assem="`" ^ prefix ^ int2str startIdx,
            reg=[munchExp exp], nextIdx=startIdx + 1}
-
-    and
-      (* Munching to a dst register for encapsulated subexpressions. *)
-      munchExpWithDst(T.BINOP(T.PLUS,e1,e2), pDst) =
-          let val pSrc1 = evalExp(e1, "s", 0)
-              val pSrc2 = evalExp(e2, "s", #nextIdx pSrc1)
-          in emitOPER(assMOVreg(#assem pSrc1, #assem pDst) ^
-                      assADD(#assem pSrc2, #assem pDst),
-                      #reg pSrc1 @ #reg pSrc2 @ #reg pDst, #reg pDst, NONE) end
-
-    | munchExpWithDst(_) = ErrorMsg.impossible "CodeGen: INVALID BINOP"
-
 
     and
       (* FETCH MEM[i] *)

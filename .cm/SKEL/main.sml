@@ -1,2 +1,2 @@
 Skeleton 5
-d3f6d"Flow"Cd"List"d"Temp"d"MakeGraph"d"Liveness"d"TextIO"Cd"LiveSet"d"Canon"d"Graph"d"Parse"ä¢Register"Naã¢MAIN"h0ad"Main"jh6ad"Semant"jçğ±ÿgp1e"SemantGen"Cad"RegAlloc"jÿ‚	gp1e"RegAllocGen"ad"A"gp1d"Assem"aä¢C"gp1d"Codegen"aä¢F"gp2ÿƒÿƒ#ad"R"ÿ‚	Ngp1ÿ*
+d3f7d"Flow"d"List"Cd"Temp"d"MakeGraph"d"Liveness"d"TextIO"d"Printtree"Cd"LiveSet"d"Canon"d"Graph"d"Parse"ä¢Register"Naã¢MAIN"h0ad"Main"jh6ad"Semant"jçğ±ÿ)gp1e"SemantGen"Cad"RegAlloc"jÿ‚gp1e"RegAllocGen"ad"A"gp1d"Assem"aä¢C"gp1d"Codegen"aä¢F"gp2ÿƒÿƒ/ad"R"ÿ‚Ngp1ÿ6
