@@ -10,15 +10,15 @@ fun printtree (outstream, s0) =
   let fun say s =  TextIO.output (outstream, s)
       fun sayln s = (say s; say "\n")
       val makestring = Int.toString
-      fun indent 0 = (say "#")
-        | indent i = (say "#"; indent (i - 1))
+      fun indent 0 = ()
+        | indent i = (say " "; indent (i - 1))
       fun stm (T.SEQ (a, b), d) = (indent d; sayln "SEQ("; stm (a, d + 1);
           sayln ","; stm (b, d + 1); say ")")
         | stm (T.LABEL lab, d) =
           (indent d; say "LABEL "; say (Symbol.name lab))
         | stm (T.JUMP (e,_), d) = (indent d; sayln "JUMP("; exp (e, d + 1);
           say ")")
-        | stm (T.CJUMP (T.TEST (r, a, b), t, f), d) = (indent d; say "CJUMP(";
+        | stm (T.CJUMP (T.TEST (r, a, b), t, f), d) = (indent d; sayln "CJUMP(";
           relop r; sayln ","; exp (a, d + 1); sayln ","; exp (b, d + 1);
           sayln ","; indent (d + 1); say (Symbol.name t); say ",";
           say (Symbol.name f); say ")")

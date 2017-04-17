@@ -5,28 +5,28 @@ signature TRANSLATE = sig
   val outermost : level
   val newLevel : level -> 'a list -> level * access list
   val allocInFrame : level -> access
-  type exp
-  val empty : exp
-  val intExp : int -> exp
-  val stringExp : string -> exp
-  val appExp : Temp.label -> exp list -> level -> level -> exp
-  val relop : Absyn.oper -> exp -> exp -> exp
-  val strCmp : Absyn.oper -> exp -> exp -> exp
-  val binop : Absyn.oper -> exp -> exp -> exp
-  val recordExp : exp list -> exp
-  val seqExp : exp list -> exp
-  val assign : exp -> exp -> exp
-  val ifThen : exp -> exp -> exp
-  val ifThenElse : exp -> exp -> exp -> exp
-  val whileLoop : exp -> exp -> Temp.label -> exp
-  val forLoop : exp -> exp -> exp -> Temp.label -> access -> exp
-  val break : Temp.label -> exp
-  val array : exp -> exp -> exp
-  val simpleVar : access -> level -> exp
-  val field : exp -> int -> exp
-  val subscript : exp -> exp -> exp
-  val addFrag : Temp.label -> level -> exp -> unit
-  val getFragList : unit -> frag list
+  val getResult : unit -> frag list
+  type gexp
+  val empty : gexp
+  val intExp : int -> gexp
+  val stringExp : string -> gexp
+  val appExp : Temp.label -> gexp list -> level -> level -> gexp
+  val relop : Absyn.oper -> gexp -> gexp -> gexp
+  val strCmp : Absyn.oper -> gexp -> gexp -> gexp
+  val binop : Absyn.oper -> gexp -> gexp -> gexp
+  val recordExp : gexp list -> gexp
+  val seqExp : gexp list -> gexp
+  val assign : gexp -> gexp -> gexp
+  val ifThen : gexp -> gexp -> gexp
+  val ifThenElse : gexp -> gexp -> gexp -> gexp
+  val whileLoop : gexp -> gexp -> Temp.label -> gexp
+  val forLoop : gexp -> gexp -> gexp -> Temp.label -> access -> gexp
+  val break : Temp.label -> gexp
+  val array : gexp -> gexp -> gexp
+  val simpleVar : access -> level -> gexp
+  val field : gexp -> int -> gexp
+  val subscript : gexp -> gexp -> gexp
+  val addFrag : Temp.label -> level -> gexp -> unit
 end
 
 functor TranslateGen (Register: REGISTER_STD) : TRANSLATE = struct
@@ -42,9 +42,10 @@ datatype level = TOP | LEVEL of {frame: F.frame,
 type access = level * F.offset
 type frag = F.frag
 val outermost = TOP
-val fragList = ref (nil : frag list)
 
-fun mem address offset = T.MEM (T.BINOP (T.PLUS, address, offset), F.wordSize)
+fun plus left right = T.BINOP (T.PLUS, left, right)
+fun mult left right = T.BINOP (T.MUL, left, right)
+fun mem exp = T.MEM (exp, F.wordSize)
 
 fun newLevel parent formals =
   let val (frame, offsets) = F.newFrame (length formals + 1) (* static link *)
@@ -59,7 +60,11 @@ fun allocInFrame level =
     of LEVEL ({frame,...}, _) => (level, F.allocInFrame frame)
      | TOP => E.impossible "cannot allocate variable inside TOP"
 
-datatype exp = Ex of T.exp (* expression *)
+val fragmentlist = ref (nil : frag list)
+
+fun getResult () = !fragmentlist before fragmentlist := nil
+
+datatype gexp = Ex of T.exp (* expression *)
               | Nx of T.stm (* no result *)
               | Cx of Temp.label * Temp.label -> T.stm (* conditional *)
 
@@ -89,7 +94,7 @@ fun unCx (Ex e) =
     (fn (t, f) =>
       (case e
          of T.CONST 0 => T.JUMP (T.NAME f, [f])
-          | T.CONST _ => T.JUMP (T.NAME t, [t])
+          | T.CONST 1 => T.JUMP (T.NAME t, [t])
           | _ => T.CJUMP (T.TEST (T.EQ, e, T.CONST 0), f, t)))
   | unCx (Nx _) = E.impossible "cannot convert from no result to conditional"
   | unCx (Cx genstm) = genstm
@@ -100,13 +105,13 @@ fun intExp i = Ex (T.CONST i)
 
 fun stringExp s =
   let val label = Temp.newlabel()
-   in fragList := F.DATA {lab = label, s = s} :: !fragList;
+   in fragmentlist := F.DATA {lab = label, s = s} :: !fragmentlist;
       Ex (T.NAME label)
   end
 
 fun followStaticLinks decRef (LEVEL ({sl_offset, parent,...}, curRef)) fp =
     if curRef = decRef then fp
-    else followStaticLinks decRef parent (mem fp (T.CONST sl_offset))
+    else followStaticLinks decRef parent (mem (plus fp (T.CONST sl_offset)))
   | followStaticLinks _ _ _ =
     E.impossible "followed chain of static links to TOP level"
 
@@ -159,7 +164,7 @@ fun recordExp fields =
       val size = T.CONST (length fields * F.wordSize)
       val allocate = T.MOVE (reg, runtimeCall "allocRecord" [size])
       fun saveField (offset, field) =
-        T.MOVE (mem reg (T.CONST (offset * F.wordSize)), unEx field)
+        T.MOVE (mem (plus reg (T.CONST (offset * F.wordSize))), unEx field)
       val saveFields = List.mapi saveField fields
    in Ex (T.ESEQ (seq (allocate :: saveFields), reg))
   end
@@ -168,7 +173,10 @@ fun seqExp nil = E.impossible "sequence must contain at least one expression"
   | seqExp [exp] = exp
   | seqExp (exp :: exps) = Ex (T.ESEQ (unNx exp, unEx (seqExp exps)))
 
-fun assign varExp valExp = Nx (T.MOVE (unEx varExp, unEx valExp))
+fun assign varExp valExp =
+  let val t = T.MOVE (unEx varExp, unEx valExp)
+   in Nx t
+  end
 
 fun ifThen test thenExp =
   let val t = Temp.newlabel() and f = Temp.newlabel()
@@ -197,17 +205,17 @@ fun whileLoop test body done =
   end
 
 fun forLoop loExp hiExp bodyExp done (_, offset) =
-  let val var = mem (T.TEMP R.FP) (T.CONST offset)
+  let val var = mem (plus (T.TEMP R.FP) (T.CONST offset))
       val limit = unEx hiExp
       val body = Temp.newlabel()
-      val incr = Temp.newlabel()
+      val incr = Temp.newlabel ()
    in Nx (seq [T.MOVE (var, unEx loExp),
                T.CJUMP (T.TEST (T.LE, var, limit), body, done),
                T.LABEL body,
                unNx bodyExp,
                T.CJUMP (T.TEST (T.LT, var, limit), incr, done),
                T.LABEL incr,
-               T.MOVE (var, T.BINOP (T.PLUS, var, T.CONST 1)),
+               T.MOVE (var, plus var (T.CONST 1)),
                T.JUMP (T.NAME body, [body]),
                T.LABEL done])
   end
@@ -218,31 +226,28 @@ fun array size init = Ex (runtimeCall "initArray" [unEx size, unEx init])
 
 fun simpleVar (LEVEL (_, decRef), offset) levelAccessed =
     let val fp = followStaticLinks decRef levelAccessed (T.TEMP R.FP)
-     in Ex (mem fp (T.CONST offset))
+     in Ex (mem (plus fp (T.CONST offset)))
     end
   | simpleVar _ _ = E.impossible "simple variable at TOP level"
 
 fun field recordStart fieldNum =
-  let val offset = T.BINOP (T.MUL, T.CONST fieldNum, T.CONST F.wordSize)
+  let val offset = mult (T.CONST fieldNum) (T.CONST F.wordSize)
       val start = unEx recordStart
    in Ex (T.ESEQ (T.EXP (runtimeCall "checkNilRecord" [start]),
-                  mem start offset))
+                  mem (plus start offset)))
   end
 
 fun subscript arrayStart idxExp =
   let val start = unEx arrayStart and idx = unEx idxExp
-      val offset = T.BINOP (T.MUL, idx, (T.CONST F.wordSize))
    in Ex (T.ESEQ (T.EXP (runtimeCall "checkArrayBounds" [start, idx]),
-                  mem start offset))
+                  mem (plus start (mult idx (T.CONST F.wordSize)))))
   end
 
 fun addFrag label (LEVEL ({frame,...}, _)) bodyExp =
     let val body = T.MOVE (T.TEMP R.RV, unEx bodyExp)
         val frag = F.PROC {name = label, body = body, frame = frame}
-     in fragList := frag :: !fragList
+     in fragmentlist := frag :: !fragmentlist
     end
   | addFrag _ TOP _ = E.impossible "function fragment at TOP level"
-
-fun getFragList () = !fragList before fragList := nil
 
 end (* functor TranslateGen *)

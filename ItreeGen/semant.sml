@@ -7,7 +7,7 @@ structure Tr = TranslateGen (Register)
 structure E = EnvGen (Tr)
 structure S = Symbol
 structure T = Types
-val e = ErrorMsg.error
+val error = ErrorMsg.error
 
 val canBreak = ref [false]
 fun enterLoop () = canBreak := true :: !canBreak
@@ -36,7 +36,7 @@ fun sameTy (T.RECORD (_, ref1)) (T.RECORD (_, ref2)) = (ref1 = ref2)
 
 fun constraintsSatisfied pos constraints =
   let fun check (true, msg) = ()
-        | check (false, msg) = e pos msg
+        | check (false, msg) = error pos msg
    in map check constraints;
       List.all #1 constraints
   end
@@ -50,18 +50,20 @@ fun transExp env tenv level expr break = let
         let fun checkArgs (formal :: formals) (arg :: args) =
                 let val (argExp, argTy) = trExp arg
                  in if sameTy (actualTy tenv formal) argTy then ()
-                    else e pos "type mismatch in function argument";
+                    else error pos "type mismatch in function argument";
                     argExp :: checkArgs formals args
                 end
               | checkArgs nil nil = nil
-              | checkArgs nil _ = nil before e pos "missing arguments"
-              | checkArgs _ nil = nil before e pos "too many arguments"
+              | checkArgs nil _ =
+                (error pos "missing arguments in function application"; nil)
+              | checkArgs _ nil =
+                (error pos "too many arguments in function application"; nil)
          in case S.look (env, func)
               of SOME (E.FUNentry {level = decLevel, label, formals, result}) =>
                  let val argExps = checkArgs formals args
                   in (Tr.appExp label argExps decLevel level, result)
                  end
-               | _ => (Tr.empty, T.INT) before e pos "unbound function name"
+               | _ => (error pos "unbound function name"; (Tr.empty, T.INT))
         end
       | trExp (A.OpExp {left, oper, right, pos}) =
         let val (leftExp, leftTy) = trExp left
@@ -82,16 +84,17 @@ fun transExp env tenv level expr break = let
                       of (T.INT, T.INT) => Tr.relop oper leftExp rightExp
                        | (T.STRING, T.STRING) => Tr.strCmp oper leftExp rightExp
                        | _ => Tr.empty before
-                        e pos "type mismatch; expected integers or strings")
+                        error pos "type mismatch; expected integers or strings")
                  | (A.PlusOp | A.MinusOp | A.TimesOp | A.DivideOp) =>
                    if leftTy = T.INT andalso rightTy = T.INT
                    then Tr.binop oper leftExp rightExp
                    else Tr.empty before
-                        e pos "type mismatch; operands must be integers"
+                        error pos "type mismatch; operands must be integers"
          in (exp, T.INT)
         end
       | trExp (A.RecordExp {typ, fields=efields, pos}) =
-        let fun checkFields (tfield :: tfields) (efield :: efields) =
+        let val errorRec = (Tr.empty, T.RECORD ([], ref ()))
+            fun checkFields (tfield :: tfields) (efield :: efields) =
                 let val (varSym : S.symbol, varTy) = tfield
                     val (expSym, exp, pos) = efield
                     val (exp, ty) = trExp exp
@@ -104,18 +107,19 @@ fun transExp env tenv level expr break = let
                 end
               | checkFields nil nil = (true, nil)
               | checkFields nil _ =
-                (false, nil) before e pos "missing record fields"
+                (false, nil) before error pos "missing record fields"
               | checkFields _ nil =
-                (false, nil) before e pos "too many record fields"
-            val eRec = (Tr.empty, T.RECORD ([], ref ()))
+                (false, nil) before error pos "too many record fields"
             fun trRecord (ty as T.RECORD (tfields, _)) =
                 let val (satisfied, fieldExps) = checkFields tfields efields
-                 in if satisfied then (Tr.recordExp fieldExps, ty) else eRec
+                 in if satisfied then (Tr.recordExp fieldExps, ty)
+                    else errorRec
                 end
-              | trRecord _ = eRec before e pos "type mismatch: expected record"
+              | trRecord _ =
+                errorRec before error pos "type mismatch; expected record type"
          in case S.look (tenv, typ)
               of SOME ty => trRecord (actualTy tenv ty)
-               | NONE => eRec before e pos "unbound record type"
+               | NONE => errorRec before error pos "unbound record type"
         end
       | trExp (A.SeqExp exps) =
         let fun trSeq nil = (Tr.empty, T.UNIT)
@@ -138,9 +142,10 @@ fun transExp env tenv level expr break = let
                          of SOME (E.VARentry {readonly,...}) =>
                             if not readonly then (true, "")
                             else (false, "assignment to read-only loop counter")
-                          | _ => (false, "assignment to unbound lval"))
+                          | _ => (false, "assignment to unbound lvalue"))
                     | _ => (true, ""),
-                 (sameTy leftTy rightTy, "type mismatch between lval and rval")]
+                 (sameTy leftTy rightTy,
+                  "type mismatch between lvalue and rvalue")]
             then (Tr.assign leftExp rightExp, T.UNIT)
             else (Tr.empty, T.UNIT)
         end
@@ -150,7 +155,7 @@ fun transExp env tenv level expr break = let
             val expRef = ref Tr.empty
             val tyRef = ref T.UNIT
          in if testTy = T.INT then ()
-            else e pos "test expression must produce an integer";
+            else error pos "test expression must produce an integer";
             case else'
               of SOME exp =>
                  let val (elseExp, elseTy) = trExp exp
@@ -158,12 +163,12 @@ fun transExp env tenv level expr break = let
                      then (if thenTy = T.NIL then tyRef := elseTy
                            else tyRef := thenTy;
                            expRef := Tr.ifThenElse testExp thenExp elseExp)
-                     else e pos "type mismatch between if and then clauses"
+                     else error pos "type mismatch between if and then clauses"
                  end
                | NONE =>
                  if thenTy = T.UNIT
                  then expRef := Tr.ifThen testExp thenExp
-                 else e pos "then clause cannot produce a value";
+                 else error pos "then clause cannot produce a value";
             (!expRef, !tyRef)
         end
       | trExp (A.WhileExp {test, body, pos}) =
@@ -197,46 +202,48 @@ fun transExp env tenv level expr break = let
         if hd (!canBreak)
         then (Tr.break break, T.UNIT)
         else (Tr.empty, T.UNIT) before
-             e pos "break expression outside for-loop or while-loop"
+             error pos "break expression outside for-loop or while-loop"
       | trExp (A.LetExp {decs, body, pos}) =
         let val (env, tenv, exps) = transDecs env tenv level decs break
             val (exp, ty) = transExp env tenv level body break
          in (Tr.seqExp (exps @ [exp]), ty)
         end
       | trExp (A.ArrayExp {typ, size, init, pos}) =
-        let val eArray = (Tr.empty, T.ARRAY (T.UNIT, ref ()))
+        let val errorArray = (Tr.empty, T.ARRAY (T.UNIT, ref ()))
             fun trArray (ty as T.ARRAY (valTy, _)) =
                 let val (sizeExp, sizeTy) = trExp size
                     val (initExp, initTy) = trExp init
                  in if constraintsSatisfied pos
                          [(sizeTy = T.INT, "array size must be an integer"),
                           (sameTy (actualTy tenv valTy) initTy,
-                           "type mismatch: expected array value")]
+                           "type mismatch; expected array value type")]
                     then (Tr.array sizeExp initExp, ty)
-                    else eArray
+                    else errorArray
                 end
-              | trArray _ = eArray before e pos "type mismatch: expected array"
+              | trArray _ = errorArray before
+                  error pos "type mismatch; expected array type"
          in case S.look (tenv, typ)
               of SOME ty => trArray (actualTy tenv ty)
-               | NONE => eArray before e pos "unbound array type"
+               | NONE => errorArray before error pos "unbound array type"
         end
       and trVar (A.SimpleVar (id, pos)) =
           (case S.look (env, id)
              of SOME (E.VARentry {access, ty, ...}) =>
                 (Tr.simpleVar access level, actualTy tenv ty)
-              | _ => (Tr.empty, T.UNIT) before e pos "unbound variable")
+              | _ => (Tr.empty, T.UNIT) before error pos "unbound variable")
         | trVar (A.FieldVar (var, fieldId, pos)) =
-          let val eField = (Tr.empty, T.UNIT)
+          let val errorField = (Tr.empty, T.UNIT)
               val (varExp, varTy) = trVar var
               fun trField ((id, ty) :: fields) fieldNum =
                   if id = fieldId
                   then (Tr.field varExp fieldNum, actualTy tenv ty)
                   else trField fields (fieldNum + 1)
                 | trField nil _ =
-                  eField before e pos "unbound record field"
+                  errorField before error pos "unbound record field"
            in case varTy
                 of T.RECORD (fields, _) => trField fields 0
-                 | _ => eField before e pos "field access of non-record type"
+                 | _ => errorField before
+                        error pos "cannot access field of non-record type"
           end
         | trVar (A.SubscriptVar (var, exp, pos)) =
           let val (varExp, varTy) = trVar var
@@ -244,9 +251,11 @@ fun transExp env tenv level expr break = let
               val tyRef = ref T.UNIT
            in if constraintsSatisfied pos
                    [(idxTy = T.INT, "array index must evaluate to an integer"),
-                    case varTy of T.ARRAY (ty, _) =>
-                                  (true, "") before tyRef := actualTy tenv ty
-                                | _ => (false, "subscript of non-array type")]
+                    case varTy
+                      of T.ARRAY (ty, _) =>
+                         (true, "") before tyRef := actualTy tenv ty
+                       | _ =>
+                         (false, "cannot access subscript of non-array type")]
               then (Tr.subscript varExp idxExp, !tyRef)
               else (Tr.empty, !tyRef)
           end
@@ -260,12 +269,12 @@ and transDec env tenv level (A.VarDec {var={name,...}, typ, init, pos}) break =
                   let val constraintTy = actualTy tenv ty
                    in if sameTy constraintTy initTy then (constraintTy, true)
                       else (T.UNIT, false) before
-                        e pos "initial value does not match type constraint"
+                        error pos "initial value does not match type constraint"
                   end
-                | NONE => (T.UNIT, false) before e pos "unbound type")
+                | NONE => (T.UNIT, false) before error pos "unbound type")
           | varTy NONE =
             if initTy <> T.NIL then (initTy, true)
-            else (T.UNIT, false) before e pos "cannot infer type of nil"
+            else (T.UNIT, false) before error pos "cannot infer type of nil"
         val (ty, valid) = varTy typ
         val access = Tr.allocInFrame level
         val binding = E.VARentry {access = access, ty = ty, readonly = false}
@@ -278,7 +287,7 @@ and transDec env tenv level (A.VarDec {var={name,...}, typ, init, pos}) break =
     let fun trTy id pos =
             case S.look (tenv, id)
               of SOME ty => actualTy tenv ty
-               | NONE => T.UNIT before e pos "unbound type"
+               | NONE => T.UNIT before error pos "unbound type"
         fun trParam {var = {name, escape=_}, typ, pos} =
             {name = name, ty = trTy typ pos}
         fun resultTy (SOME (id, pos)) = trTy id pos
@@ -296,7 +305,7 @@ and transDec env tenv level (A.VarDec {var={name,...}, typ, init, pos}) break =
             end
         fun filterDups ((fundec as {name, pos,...}) :: fundecs) ids =
             (if List.exists (fn id => name = id) ids
-             then (e pos "duplicate function name in function sequence";
+             then (error pos "duplicate function name in function sequence";
                    filterDups fundecs ids)
              else fundec :: filterDups fundecs (name :: ids))
           | filterDups (nil : A.fundec list) _ = nil
@@ -315,16 +324,17 @@ and transDec env tenv level (A.VarDec {var={name,...}, typ, init, pos}) break =
                     transExp env tenv level body break before exitFn())
              in Tr.addFrag label level bodyExp;
                 if sameTy (resultTy result) bodyTy then ()
-                else e pos "mismatch between function body and return type";
+                else error pos "mismatch between function body and return type";
                 trDefs defs levels
             end
           | trDefs _ _ = ()
-     in trDefs fundecs decs; (env, tenv, nil)
+     in trDefs fundecs decs;
+        (env, tenv, nil)
     end
   | transDec env tenv level (A.TypeDec tydecs) break =
     let fun filterDups ((tydec as {name, ty=_, pos}) :: tydecs) ids =
             (if List.exists (fn id => name = id) ids
-             then (e pos "duplicate type name in type sequence";
+             then (error pos "duplicate type name in type sequence";
                    filterDups tydecs ids)
              else tydec :: filterDups tydecs (name :: ids))
           | filterDups nil (_ : S.symbol list) = nil
@@ -337,14 +347,14 @@ and transDec env tenv level (A.VarDec {var={name,...}, typ, init, pos}) break =
             let fun trField {name, typ, pos} =
                 case S.look (tenv, typ)
                   of SOME ty => (name, ty)
-                   | _ => (name, T.UNIT) before e pos "unbound field type"
+                   | _ => (error pos "unbound field type"; (name, T.UNIT))
              in T.RECORD (map trField tfields, ref ())
             end
           | trTy tenv (A.ArrayTy (name, pos)) =
             case S.look (tenv, name)
               of SOME ty => T.ARRAY (ty, ref ())
-               | NONE => T.ARRAY (T.UNIT, ref ())
-                 before e pos "unbound array element type"
+               | NONE => (error pos "unbound array element type";
+                          T.ARRAY (T.UNIT, ref ()))
         fun enterTyDef ({name, ty, pos=_}, tenv) =
           S.enter (tenv, name, trTy tenv ty)
         val tenv = foldl enterTyDef tenv tydecs
@@ -354,14 +364,15 @@ and transDec env tenv level (A.VarDec {var={name,...}, typ, init, pos}) break =
             then let val ty = detectCycle (tyBinding tenv name) sentinel pos
                   in tyOpRef := SOME ty; ty
                  end
-            else T.UNIT before e pos "primitive cycle in type sequence"
+            else (error pos "primitive cycle in type sequence"; T.UNIT)
           | detectCycle ty _ _ = ty
         fun detectCycles ({name, ty=_, pos} :: tydecs) =
             let val binding = tyBinding tenv name
              in detectCycle binding name pos; detectCycles tydecs
             end
           | detectCycles nil = ()
-     in detectCycles tydecs; (env, tenv, nil)
+     in detectCycles tydecs;
+        (env, tenv, nil)
     end
 
 and transDecs env tenv _ nil _ = (env, tenv, nil)
@@ -375,7 +386,8 @@ fun transprog prog =
   let val (mainLevel, _) = Tr.newLevel Tr.outermost nil
       val label = Temp.namedlabel "tigermain"
       val (progExp, _) = transExp E.base_env E.base_tenv mainLevel prog label
-   in Tr.addFrag label mainLevel progExp; Tr.getFragList()
+   in Tr.addFrag label mainLevel progExp;
+      Tr.getResult()
   end
 
 end (* functor SemantGen *)
