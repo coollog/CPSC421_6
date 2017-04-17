@@ -51,7 +51,7 @@ function readint(any: any) : int =
 
 
   /* BODY OF MAIN PROGRAM */
- in printlist(list2);
+ in printlist(list1);
     1
 end
 
