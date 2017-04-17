@@ -59,7 +59,7 @@ struct
     (EDI, "%edi"),
     (ESI, "%esi")]
   val calleesaves : register list = ["%ebx", "%edi", "%esi"]
-  val truecallersaves : register list = ["%eax", "%ecx", "%edx"]
+  val truecallersaves : register list = []
   val callersaves : register list = ["%eax", "%ecx", "%edx"]
 
   val pseudoregs: register list =
