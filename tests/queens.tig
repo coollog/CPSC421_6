@@ -18,7 +18,7 @@ let
 	     print("\n"));
          print("\n"))
 
-    function try(c:int) = 0
+    function try(c:int) =
         /*(for i:= 0 to c do print("."); print("\n"); flush())*/
      if c=N
      then printboard()
