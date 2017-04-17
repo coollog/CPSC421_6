@@ -1,3 +1,65 @@
+LABEL L33
+MOVE(
+ TEMP T470,
+ BINOP(PLUS,
+  TEMP T101,
+  CONST ~404))
+MOVE(
+ TEMP T469,
+ CALL(
+  NAME initArray,
+   CONST 10,
+   CONST 0))
+MOVE(
+ MEM[4](
+  TEMP T470),
+ TEMP T469)
+EXP(
+ MEM[4](
+  BINOP(PLUS,
+   TEMP T101,
+   CONST ~404)))
+EXP(
+ CALL(
+  NAME checkArrayBounds,
+   MEM[4](
+    BINOP(PLUS,
+     TEMP T101,
+     CONST ~404)),
+   CONST 5))
+MOVE(
+ MEM[4](
+  BINOP(PLUS,
+   MEM[4](
+    BINOP(PLUS,
+     TEMP T101,
+     CONST ~404)),
+   BINOP(MUL,
+    CONST 5,
+    CONST 4))),
+ CONST 100)
+EXP(
+ CALL(
+  NAME checkArrayBounds,
+   MEM[4](
+    BINOP(PLUS,
+     TEMP T101,
+     CONST ~404)),
+   CONST 5))
+MOVE(
+ TEMP T100,
+ MEM[4](
+  BINOP(PLUS,
+   MEM[4](
+    BINOP(PLUS,
+     TEMP T101,
+     CONST ~404)),
+   BINOP(MUL,
+    CONST 5,
+    CONST 4))))
+JUMP(
+ NAME L32)
+LABEL L32
 .globl tigermain
 .type tigermain, @function
 tigermain:
@@ -7,7 +69,7 @@ tigermain:
 	pushl %ebx							# push callee save
 	pushl %edi							# push callee save
 	pushl %esi							# push callee save
-L9:
+L33:
 	movl %ebp, %ebx							# move to register
 	movl $-404, %edi							# move constant to register
 	addl %edi, %ebx							# add two registers
@@ -43,15 +105,9 @@ L9:
 	movl %ebp, %ebx							# move to register
 	movl $-404, %edi							# move constant to register
 	addl %edi, %ebx							# add two registers
-	movl (%ebx), %ebx							# fetch from memory
-	movl %ebx, %edi							# move to register
-	movl $5, %ebx							# move constant to register
-	movl %ebx, %ebx							# move to register
-	movl $4, %esi							# move constant to register
-	imull %esi, %ebx							# multiply two registers
-	addl %ebx, %edi							# add two registers
-	movl (%edi), %ebx							# fetch from memory
-	movl $100, %ebx							# move to memory
+	movl (%ebx), %edi							# fetch from memory
+	movl $4, %ebx							# move constant to register
+	movl $100, (%edi, %ebx, 5)							# move to memory
 	pushl %eax							# save caller save
 	pushl %ecx							# save caller save
 	pushl %edx							# save caller save
@@ -67,16 +123,10 @@ L9:
 	movl $-404, %ebx							# move constant to register
 	addl %ebx, %edi							# add two registers
 	movl (%edi), %ebx							# fetch from memory
-	movl %ebx, %edi							# move to register
-	movl $5, %ebx							# move constant to register
-	movl %ebx, %ebx							# move to register
-	movl $4, %esi							# move constant to register
-	imull %esi, %ebx							# multiply two registers
-	addl %ebx, %edi							# add two registers
-	movl (%edi), %ebx							# fetch from memory
-	movl %ebx, %eax							# move to register
-	jmp L8							# jump to L8
-L8:
+	movl $4, %edi							# move constant to register
+	movl (%ebx, %edi, 5), %eax							# move to register
+	jmp L32							# jump to L32
+L32:
 	popl %esi							# pop callee save
 	popl %edi							# pop callee save
 	popl %ebx							# pop callee save

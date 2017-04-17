@@ -83,7 +83,8 @@ struct
       "\tmovl " ^ pSrc ^ ", " ^ pDst ^ explain("move to register")
     and assMOVmem(pSrc, pDst) =
       "\tmovl " ^ pSrc ^ ", " ^ pDst ^ explain("move to memory")
-    and assMOVfetch() = "\tmovl (`s0), `d0" ^ explain("fetch from memory")
+    and assMOVfetch(pSrc, pDst) =
+      "\tmovl (" ^ pSrc ^ "), " ^ pDst ^ explain("fetch from memory")
     and assMOVconst(i) = "\tmovl $" ^ int2str i ^ ", `d0" ^
                          explain("move constant to register")
     and assADD(pSrc, pDst) =
@@ -116,25 +117,24 @@ struct
 
       (* MOVE reg e1 *)
       | munchStm(T.MOVE(T.TEMP t, e1)) =
-          let val pDst = evalExp(T.TEMP t, "d", 0)
-              val pSrc = evalExp(e1, "s", 0)
-              val srcs = #src pSrc @ #src pDst
+          let val pDst = patternExp(T.TEMP t, "d", 0)
+              val pSrc = patternExp(e1, "s", 0)
           in emitOPER(assMOVreg(#assem pSrc, #assem pDst),
-                      #reg pSrc @ srcs, #reg pDst, NONE) end
+                      #src pSrc, #reg pDst, NONE) end
 
       (* MOVE MEM[e1] MEM[e2] *)
       | munchStm(T.MOVE(T.MEM(e1, _),T.MEM(e2, _))) =
-          let val pDst=evalExp(T.MEM(e1, 4), "d", 0)
+          let val pDst=patternExp(T.MEM(e1, 4), "d", 0)
           in emitOPER(assMOVmem("`s0", #assem pDst),
                       [munchExp(T.MEM(e2, 4))] @ #src pDst, #reg pDst, NONE) end
 
       (* MOVE MEM[e1] e2 *)
       | munchStm(T.MOVE(T.MEM(e1, _),e2)) =
-          let val pDst=evalExp(T.MEM(e1, 4), "d", 0)
-              val pSrc=evalExp(e2, "s", 0)
+          let val pDst=patternExp(T.MEM(e1, 4), "d", 0)
+              val pSrc=patternExp(e2, "s", 0)
               val srcs = #src pSrc @ #src pDst
           in emitOPER(assMOVmem(#assem pSrc, #assem pDst),
-                      #reg pSrc @ srcs, #reg pDst, NONE) end
+                      srcs, #reg pDst, NONE) end
 
       | munchStm(T.MOVE _) = ErrorMsg.impossible "CodeGen: INVALID MOV"
 
@@ -144,50 +144,62 @@ struct
       (* Operands of assembly instructions could be registers or expressions for
        * memory addresses, so this helps to process these.
        *
+       * eval(exp):
        * assem - the inline assembly code
        * reg - any registers used
        * src - any registers to add to the src list
        * nextIdx - further inline assembly expressions should start with this
        *           index for temps
+       *
+       * patternExp: helps to pattern match for eval(exp)
        *)
-        (* like %eax *)
-        evalExp(T.TEMP t, prefix, startIdx):preInstr =
-          {assem="`" ^ prefix ^ int2str startIdx,
-           reg=[t], src=[], nextIdx=startIdx + 1}
+
+        patternExp(T.NAME lab, _, startIdx) = evalLABEL(lab, startIdx)
+      | patternExp(T.CONST k, _, startIdx) = evalCONST(k, startIdx)
+      | patternExp(T.MEM(T.BINOP(T.PLUS, e1, T.CONST k), _), prefix, startIdx) =
+          evalMEMOFFSET(e1, k, prefix, startIdx)
+      | patternExp(T.MEM(T.BINOP(T.PLUS, T.CONST k, e1), _), prefix, startIdx) =
+          evalMEMOFFSET(e1, k, prefix, startIdx)
+      | patternExp(T.MEM(T.BINOP(T.PLUS, e1, T.BINOP(T.MUL, T.CONST k, e2)), _),
+                   prefix, startIdx) = evalMEMEXP(e1, e2, k, prefix, startIdx)
+      | patternExp(T.MEM(T.BINOP(T.PLUS, e1, T.BINOP(T.MUL, e2, T.CONST k)), _),
+                   prefix, startIdx) = evalMEMEXP(e1, e2, k, prefix, startIdx)
+      | patternExp(T.MEM(T.BINOP(T.PLUS, e1, e2), _), prefix, startIdx) =
+          evalMEMEXP(e1, e2, 1, prefix, startIdx)
+      | patternExp(T.MEM(e1, _), prefix, startIdx) =
+          evalMEM(e1, prefix, startIdx)
+      | patternExp(exp, prefix, startIdx) = evalEXP(exp, prefix, startIdx)
 
         (* like $Hello *)
-      | evalExp(T.NAME lab, _, startIdx):preInstr =
+    and evalLABEL(lab, startIdx):preInstr =
           {assem="$" ^ S.name lab, reg=[], src=[], nextIdx=startIdx}
 
         (* like $4 *)
-      | evalExp(T.CONST k, _, startIdx):preInstr =
+    and evalCONST(k, startIdx):preInstr =
           {assem="$" ^ int2str k, reg=[], src=[], nextIdx=startIdx}
 
+        (* like -4(%eax) *)
+    and evalMEMOFFSET(e1, k, prefix, startIdx):preInstr =
+          let val t = munchExp e1
+          in {assem=int2str k ^ "(`" ^ prefix ^ int2str startIdx ^ ")",
+              reg=[t], src=[t], nextIdx=startIdx + 1} end
+
+        (* like (%eax, %ebx, 4) *)
+    and evalMEMEXP(e1, e2, k, prefix, startIdx):preInstr =
+          let val t1 = munchExp e1
+              val t2 = munchExp e2
+          in {assem="(`" ^ prefix ^ int2str startIdx ^ ", `" ^
+                    prefix ^ int2str(startIdx + 1) ^ ", " ^ int2str k ^ ")",
+              reg=[t1, t2], src=[t1, t2], nextIdx=startIdx + 2} end
+
         (* like (%eax) *)
-      | evalExp(T.MEM(T.TEMP t, _), prefix, startIdx):preInstr =
-          {assem="(`" ^ prefix ^ int2str startIdx ^ ")",
-           reg=[t], src=[t], nextIdx=startIdx + 1}
+    and evalMEM(e1, prefix, startIdx):preInstr =
+          let val t = munchExp e1
+          in {assem="(`" ^ prefix ^ int2str startIdx ^ ")",
+              reg=[t], src=[t], nextIdx=startIdx + 1} end
 
-        (* like -4(%eax) *)
-      | evalExp(T.MEM(T.BINOP(T.PLUS, T.TEMP t, T.CONST k), _),
-                prefix, startIdx):preInstr =
-          {assem=int2str k ^ "(`" ^ prefix ^ int2str startIdx ^ ")",
-           reg=[t], src=[t], nextIdx=startIdx + 1}
-
-        (* like -4(%eax) *)
-      | evalExp(T.MEM(T.BINOP(T.PLUS, T.CONST k, T.TEMP t), _),
-                prefix, startIdx):preInstr =
-          {assem=int2str k ^ "(`" ^ prefix ^ int2str startIdx ^ ")",
-           reg=[t], src=[t], nextIdx=startIdx + 1}
-
-        (* like (%eax, %ebx, 1) *)
-      | evalExp(T.MEM(T.BINOP(T.PLUS, T.TEMP t1, T.TEMP t2), _),
-                prefix, startIdx):preInstr =
-          {assem="(`" ^ prefix ^ int2str startIdx ^
-                 ", `" ^ prefix ^ int2str(startIdx + 1) ^ ", 1)",
-           reg=[t1, t2], src=[t1, t2], nextIdx=startIdx + 2}
-
-      | evalExp(exp, prefix, startIdx):preInstr =
+        (* like %eax *)
+    and evalEXP(exp, prefix, startIdx):preInstr =
           let val t = munchExp exp
           in {assem="`" ^ prefix ^ int2str startIdx,
               reg=[t], src=[t], nextIdx=startIdx + 1} end
@@ -195,7 +207,9 @@ struct
     and
       (* FETCH MEM[i] *)
       munchExp(T.MEM(e1, s1)) =
-          resultOPER(assMOVfetch(), [munchExp e1], [], NONE)
+          let val pSrc = patternExp(e1, "s", 0)
+          in resultOPER(assMOVfetch(#assem pSrc, "`d0"), #reg pSrc, [], NONE)
+          end
 
       (* ADD *)
       | munchExp(T.BINOP(T.PLUS,e1,e2)) =
@@ -221,8 +235,8 @@ struct
             val r = Temp.newtemp()
             val t1 = Temp.newtemp()
             val t2 = Temp.newtemp()
-            val pSrc1 = evalExp(e1, "s", 0)
-            val pSrc2 = evalExp(e2, "s", 0)
+            val pSrc1 = patternExp(e1, "s", 0)
+            val pSrc2 = patternExp(e2, "s", 0)
           in
             emitOPER("\tmovl `s0, `d0" ^ explain("save %eax"),
                      [R.RV], [t1], NONE);
@@ -279,7 +293,7 @@ struct
             (* Pushl args onto stack. *)
             val revArgs = rev(args)
             fun pushArg(arg) =
-              let val pSrc = evalExp(arg, "s", 0)
+              let val pSrc = patternExp(arg, "s", 0)
               in emitOPER(assPUSH(#assem pSrc), #reg pSrc, [], NONE) end
             fun pushArgs(args) = app pushArg revArgs
             val revTrueCallerSaves = rev(R.truecallersaves)
@@ -529,6 +543,8 @@ struct
           mapInstrInternal(insn, [src], [dst], NONE)
     and mapInstrInternal(insn, srcs, dsts, jmp) =
       let
+        (*val _ = print("#src=" ^ int2str(length srcs) ^ " | " ^ insn)*)
+
         val (loadinsns, newsrcs) = mapsrcs(srcs, [R.ECX, R.EDX]);
         val (storeinsns, newdsts) = mapdsts(dsts, srcs, newsrcs);
       in
