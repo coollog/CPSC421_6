@@ -3,11 +3,11 @@
 tigermain:
 	pushl %ebp                   # save base pointer
 	movl %esp, %ebp              # base pointer <- stack pointer
-	subl $112, %esp              # allocate space for local variables
+	subl $124, %esp              # allocate space for local variables
 	pushl %ebx                   # push callee save
 	pushl %edi                   # push callee save
 	pushl %esi                   # push callee save
-L129:
+L56:
 	movl %ebp, %ebx              # move to register
 	movl $-104, %edi             # move constant to register
 	addl %edi, %ebx              # add two registers
@@ -22,7 +22,7 @@ L129:
 	addl %edi, %ebx              # add two registers
 	movl %ebx, %ebx              # move to register
 	pushl %ebp                   # push onto stack
-	call L95
+	call L22
 	addl $4, %esp                # pop arguments
 	movl %eax, %edi              # get return value
 	movl %edi, %edi              # move to register
@@ -41,7 +41,7 @@ L129:
 	movl %esi, %esi              # move to register
 	movl %esi, (%ebx)            # move to memory
 	pushl %ebp                   # push onto stack
-	call L95
+	call L22
 	addl $4, %esp                # pop arguments
 	movl %eax, %ebx              # get return value
 	movl %ebx, %ebx              # move to register
@@ -50,43 +50,43 @@ L129:
 	pushl -112(%ebp)             # push onto stack
 	pushl -108(%ebp)             # push onto stack
 	pushl %ebp                   # push onto stack
-	call L96
+	call L23
 	addl $12, %esp               # pop arguments
 	movl %eax, %edi              # get return value
 	movl %edi, %edi              # move to register
 	pushl %edi                   # push onto stack
 	pushl %ebx                   # push onto stack
-	call L98
+	call L25
 	addl $8, %esp                # pop arguments
 	movl %eax, %ebx              # get return value
 	movl $1, %eax                # move to register
-	jmp L128                     # jump to L128
-L128:
+	jmp L55                     # jump to L55
+L55:
 	popl %esi                    # pop callee save
 	popl %edi                    # pop callee save
 	popl %ebx                    # pop callee save
 	movl %ebp, %esp              # deallocate frame
 	popl %ebp                    # restore base pointer
 	ret
-.globl L98
-.type L98, @function
-L98:
+.globl L25
+.type L25, @function
+L25:
 	pushl %ebp                   # save base pointer
 	movl %esp, %ebp              # base pointer <- stack pointer
-	subl $100, %esp              # allocate space for local variables
+	subl $112, %esp              # allocate space for local variables
 	pushl %ebx                   # push callee save
 	pushl %edi                   # push callee save
 	pushl %esi                   # push callee save
-L131:
+L58:
 	movl %ebp, %ebx              # move to register
 	movl $12, %edi               # move constant to register
 	addl %edi, %ebx              # add two registers
 	movl (%ebx), %ebx            # fetch from memory
 	movl $0, %edi                # move constant to register
 	cmpl %edi, %ebx              # compare for jump...
-	je L125                      # if true: jump to L125
-	jmp L126                     # if false: jump to L126
-L126:
+	je L52                      # if true: jump to L52
+	jmp L53                     # if false: jump to L53
+L53:
 	movl 8(%ebp), %edi           # move to register
 	pushl 12(%ebp)               # push onto stack
 	call checkNilRecord
@@ -99,10 +99,10 @@ L126:
 	movl $0, %esi                # move constant to register
 	pushl (%ebx, %esi, 4)        # push onto stack
 	pushl %edi                   # push onto stack
-	call L97
+	call L24
 	addl $8, %esp                # pop arguments
 	movl %eax, %ebx              # get return value
-	pushl $L124                  # push onto stack
+	pushl $L51                   # push onto stack
 	call print
 	addl $4, %esp                # pop arguments
 	movl %eax, %ebx              # get return value
@@ -118,74 +118,74 @@ L126:
 	movl $1, %esi                # move constant to register
 	pushl (%ebx, %esi, 4)        # push onto stack
 	pushl %edi                   # push onto stack
-	call L98
+	call L25
 	addl $8, %esp                # pop arguments
 	movl %eax, %ebx              # get return value
 	movl %ebx, %ebx              # move to register
 	movl %ebx, %ebx              # move to register
-L127:
+L54:
 	movl %ebx, %eax              # move to register
-	jmp L130                     # jump to L130
-L125:
-	pushl $L123                  # push onto stack
+	jmp L57                     # jump to L57
+L52:
+	pushl $L50                   # push onto stack
 	call print
 	addl $4, %esp                # pop arguments
 	movl %eax, %ebx              # get return value
 	movl %ebx, %ebx              # move to register
-	jmp L127                     # jump to L127
-L130:
+	jmp L54                     # jump to L54
+L57:
 	popl %esi                    # pop callee save
 	popl %edi                    # pop callee save
 	popl %ebx                    # pop callee save
 	movl %ebp, %esp              # deallocate frame
 	popl %ebp                    # restore base pointer
 	ret
-L124:
+L51:
 	.long 1
 	.byte 32, 0
-L123:
+L50:
 	.long 1
 	.byte 10, 0
-.globl L97
-.type L97, @function
-L97:
+.globl L24
+.type L24, @function
+L24:
 	pushl %ebp                   # save base pointer
 	movl %esp, %ebp              # base pointer <- stack pointer
-	subl $100, %esp              # allocate space for local variables
+	subl $112, %esp              # allocate space for local variables
 	pushl %ebx                   # push callee save
 	pushl %edi                   # push callee save
 	pushl %esi                   # push callee save
-L133:
+L60:
 	movl %ebp, %ebx              # move to register
 	movl $12, %edi               # move constant to register
 	addl %edi, %ebx              # add two registers
 	movl (%ebx), %ebx            # fetch from memory
 	movl $0, %edi                # move constant to register
 	cmpl %edi, %ebx              # compare for jump...
-	jl L120                      # if true: jump to L120
-	jmp L121                     # if false: jump to L121
-L121:
+	jl L47                      # if true: jump to L47
+	jmp L48                     # if false: jump to L48
+L48:
 	movl %ebp, %ebx              # move to register
 	movl $12, %edi               # move constant to register
 	addl %edi, %ebx              # add two registers
 	movl (%ebx), %ebx            # fetch from memory
 	movl $0, %edi                # move constant to register
 	cmpl %edi, %ebx              # compare for jump...
-	jg L117                      # if true: jump to L117
-	jmp L118                     # if false: jump to L118
-L118:
-	pushl $L116                  # push onto stack
+	jg L44                      # if true: jump to L44
+	jmp L45                     # if false: jump to L45
+L45:
+	pushl $L43                   # push onto stack
 	call print
 	addl $4, %esp                # pop arguments
 	movl %eax, %ebx              # get return value
 	movl %ebx, %ebx              # move to register
-L119:
+L46:
 	movl %ebx, %ebx              # move to register
-L122:
+L49:
 	movl %ebx, %eax              # move to register
-	jmp L132                     # jump to L132
-L120:
-	pushl $L115                  # push onto stack
+	jmp L59                     # jump to L59
+L47:
+	pushl $L42                   # push onto stack
 	call print
 	addl $4, %esp                # pop arguments
 	movl %eax, %ebx              # get return value
@@ -198,55 +198,55 @@ L120:
 	subl %ebx, %edi              # subtract two registers
 	pushl %edi                   # push onto stack
 	pushl %ebp                   # push onto stack
-	call L111
+	call L38
 	addl $8, %esp                # pop arguments
 	movl %eax, %ebx              # get return value
 	movl %ebx, %ebx              # move to register
 	movl %ebx, %ebx              # move to register
-	jmp L122                     # jump to L122
-L117:
+	jmp L49                     # jump to L49
+L44:
 	pushl 12(%ebp)               # push onto stack
 	pushl %ebp                   # push onto stack
-	call L111
+	call L38
 	addl $8, %esp                # pop arguments
 	movl %eax, %ebx              # get return value
 	movl %ebx, %ebx              # move to register
-	jmp L119                     # jump to L119
-L132:
+	jmp L46                     # jump to L46
+L59:
 	popl %esi                    # pop callee save
 	popl %edi                    # pop callee save
 	popl %ebx                    # pop callee save
 	movl %ebp, %esp              # deallocate frame
 	popl %ebp                    # restore base pointer
 	ret
-L116:
+L43:
 	.long 1
 	.byte 48, 0
-L115:
+L42:
 	.long 1
 	.byte 45, 0
-.globl L111
-.type L111, @function
-L111:
+.globl L38
+.type L38, @function
+L38:
 	pushl %ebp                   # save base pointer
 	movl %esp, %ebp              # base pointer <- stack pointer
-	subl $100, %esp              # allocate space for local variables
+	subl $112, %esp              # allocate space for local variables
 	pushl %ebx                   # push callee save
 	pushl %edi                   # push callee save
 	pushl %esi                   # push callee save
-L135:
+L62:
 	movl %ebp, %ebx              # move to register
 	movl $12, %edi               # move constant to register
 	addl %edi, %ebx              # add two registers
 	movl (%ebx), %ebx            # fetch from memory
 	movl $0, %edi                # move constant to register
 	cmpl %edi, %ebx              # compare for jump...
-	jg L113                      # if true: jump to L113
-	jmp L114                     # if false: jump to L114
-L114:
+	jg L40                      # if true: jump to L40
+	jmp L41                     # if false: jump to L41
+L41:
 	movl $0, %eax                # move to register
-	jmp L134                     # jump to L134
-L113:
+	jmp L61                     # jump to L61
+L40:
 	movl $0, %edx                # put 0 in %edx
 
 	movl 12(%ebp), %eax          # put divisor in %eax
@@ -255,7 +255,7 @@ L113:
 	movl %eax, %ebx              # put quotient in result register
 	pushl %ebx                   # push onto stack
 	pushl 8(%ebp)                # push onto stack
-	call L111
+	call L38
 	addl $8, %esp                # pop arguments
 	movl %eax, %ebx              # get return value
 	movl %ebp, %ebx              # move to register
@@ -274,7 +274,7 @@ L113:
 	imull %esi, %ebx             # multiply two registers
 	subl %ebx, %edi              # subtract two registers
 	movl %edi, %ebx              # move to register
-	pushl $L112                  # push onto stack
+	pushl $L39                   # push onto stack
 	call ord
 	addl $4, %esp                # pop arguments
 	movl %eax, %edi              # get return value
@@ -291,45 +291,45 @@ L113:
 	addl $4, %esp                # pop arguments
 	movl %eax, %ebx              # get return value
 	movl %ebx, %ebx              # move to register
-	jmp L114                     # jump to L114
-L134:
+	jmp L41                     # jump to L41
+L61:
 	popl %esi                    # pop callee save
 	popl %edi                    # pop callee save
 	popl %ebx                    # pop callee save
 	movl %ebp, %esp              # deallocate frame
 	popl %ebp                    # restore base pointer
 	ret
-L112:
+L39:
 	.long 1
 	.byte 48, 0
-.globl L96
-.type L96, @function
-L96:
+.globl L23
+.type L23, @function
+L23:
 	pushl %ebp                   # save base pointer
 	movl %esp, %ebp              # base pointer <- stack pointer
-	subl $100, %esp              # allocate space for local variables
+	subl $112, %esp              # allocate space for local variables
 	pushl %ebx                   # push callee save
 	pushl %edi                   # push callee save
 	pushl %esi                   # push callee save
-L137:
+L64:
 	movl %ebp, %ebx              # move to register
 	movl $12, %edi               # move constant to register
 	addl %edi, %ebx              # add two registers
 	movl (%ebx), %ebx            # fetch from memory
 	movl $0, %edi                # move constant to register
 	cmpl %edi, %ebx              # compare for jump...
-	je L108                      # if true: jump to L108
-	jmp L109                     # if false: jump to L109
-L109:
+	je L35                      # if true: jump to L35
+	jmp L36                     # if false: jump to L36
+L36:
 	movl %ebp, %ebx              # move to register
 	movl $16, %edi               # move constant to register
 	addl %edi, %ebx              # add two registers
 	movl (%ebx), %ebx            # fetch from memory
 	movl $0, %edi                # move constant to register
 	cmpl %edi, %ebx              # compare for jump...
-	je L105                      # if true: jump to L105
-	jmp L106                     # if false: jump to L106
-L106:
+	je L32                      # if true: jump to L32
+	jmp L33                     # if false: jump to L33
+L33:
 	pushl 12(%ebp)               # push onto stack
 	call checkNilRecord
 	addl $4, %esp                # pop arguments
@@ -359,9 +359,9 @@ L106:
 	addl %ebx, %edi              # add two registers
 	movl (%edi), %ebx            # fetch from memory
 	cmpl %ebx, %esi              # compare for jump...
-	jl L102                      # if true: jump to L102
-	jmp L103                     # if false: jump to L103
-L103:
+	jl L29                      # if true: jump to L29
+	jmp L30                     # if false: jump to L30
+L30:
 	pushl $8                     # push onto stack
 	call allocRecord
 	addl $4, %esp                # pop arguments
@@ -421,27 +421,27 @@ L103:
 	pushl %esi                   # push onto stack
 	movl	-8(%ebp), %ecx          # load pseudo-register
 	pushl %ecx                   # push onto stack
-	call L96
+	call L23
 	addl $12, %esp               # pop arguments
 	movl %eax, %ebx              # get return value
 	movl %ebx, %ebx              # move to register
 	movl %ebx, (%edi)            # move to memory
 	movl	-4(%ebp), %ecx          # load pseudo-register
 	movl %ecx, %ebx              # move to register
-L104:
+L31:
 	movl %ebx, %ebx              # move to register
-L107:
+L34:
 	movl %ebx, %ebx              # move to register
-L110:
+L37:
 	movl %ebx, %eax              # move to register
-	jmp L136                     # jump to L136
-L108:
+	jmp L63                     # jump to L63
+L35:
 	movl 16(%ebp), %ebx          # move to register
-	jmp L110                     # jump to L110
-L105:
+	jmp L37                     # jump to L37
+L32:
 	movl 12(%ebp), %ebx          # move to register
-	jmp L107                     # jump to L107
-L102:
+	jmp L34                     # jump to L34
+L29:
 	pushl $8                     # push onto stack
 	call allocRecord
 	addl $4, %esp                # pop arguments
@@ -497,31 +497,31 @@ L102:
 	movl	-8(%ebp), %edx          # load pseudo-register
 	pushl (%ebx, %edx, 4)        # push onto stack
 	pushl %esi                   # push onto stack
-	call L96
+	call L23
 	addl $12, %esp               # pop arguments
 	movl %eax, %ebx              # get return value
 	movl %ebx, %ebx              # move to register
 	movl %ebx, (%edi)            # move to memory
 	movl	-4(%ebp), %ecx          # load pseudo-register
 	movl %ecx, %ebx              # move to register
-	jmp L104                     # jump to L104
-L136:
+	jmp L31                     # jump to L31
+L63:
 	popl %esi                    # pop callee save
 	popl %edi                    # pop callee save
 	popl %ebx                    # pop callee save
 	movl %ebp, %esp              # deallocate frame
 	popl %ebp                    # restore base pointer
 	ret
-.globl L95
-.type L95, @function
-L95:
+.globl L22
+.type L22, @function
+L22:
 	pushl %ebp                   # save base pointer
 	movl %esp, %ebp              # base pointer <- stack pointer
-	subl $108, %esp              # allocate space for local variables
+	subl $120, %esp              # allocate space for local variables
 	pushl %ebx                   # push callee save
 	pushl %edi                   # push callee save
 	pushl %esi                   # push callee save
-L139:
+L66:
 	movl %ebp, %ebx              # move to register
 	movl $-104, %edi             # move constant to register
 	addl %edi, %ebx              # add two registers
@@ -539,7 +539,7 @@ L139:
 	movl %ebx, %ebx              # move to register
 	pushl -104(%ebp)             # push onto stack
 	pushl 8(%ebp)                # push onto stack
-	call L73
+	call L0
 	addl $8, %esp                # pop arguments
 	movl %eax, %edi              # get return value
 	movl %edi, %edi              # move to register
@@ -561,9 +561,9 @@ L139:
 	movl (%edi), %ebx            # fetch from memory
 	movl $0, %edi                # move constant to register
 	cmpl %edi, %ebx              # compare for jump...
-	je L100                      # if true: jump to L100
-	jmp L99                     # if false: jump to L99
-L99:
+	je L27                      # if true: jump to L27
+	jmp L26                     # if false: jump to L26
+L26:
 	pushl $8                     # push onto stack
 	call allocRecord
 	addl $4, %esp                # pop arguments
@@ -579,38 +579,38 @@ L99:
 	addl %esi, %ebx              # add two registers
 	movl %ebx, %ebx              # move to register
 	pushl 8(%ebp)                # push onto stack
-	call L95
+	call L22
 	addl $4, %esp                # pop arguments
 	movl %eax, %esi              # get return value
 	movl %esi, %esi              # move to register
 	movl %esi, (%ebx)            # move to memory
 	movl %edi, %ebx              # move to register
-L101:
+L28:
 	movl %ebx, %eax              # move to register
-	jmp L138                     # jump to L138
-L100:
+	jmp L65                     # jump to L65
+L27:
 	movl $0, %ebx                # move to register
-	jmp L101                     # jump to L101
-L138:
+	jmp L28                     # jump to L28
+L65:
 	popl %esi                    # pop callee save
 	popl %edi                    # pop callee save
 	popl %ebx                    # pop callee save
 	movl %ebp, %esp              # deallocate frame
 	popl %ebp                    # restore base pointer
 	ret
-.globl L73
-.type L73, @function
-L73:
+.globl L0
+.type L0, @function
+L0:
 	pushl %ebp                   # save base pointer
 	movl %esp, %ebp              # base pointer <- stack pointer
-	subl $104, %esp              # allocate space for local variables
+	subl $116, %esp              # allocate space for local variables
 	pushl %ebx                   # push callee save
 	pushl %edi                   # push callee save
 	pushl %esi                   # push callee save
-L141:
+L68:
 	movl $0, -104(%ebp)          # move to memory
 	pushl %ebp                   # push onto stack
-	call L75
+	call L2
 	addl $4, %esp                # pop arguments
 	movl %eax, %ebx              # get return value
 	pushl 12(%ebp)               # push onto stack
@@ -634,7 +634,7 @@ L141:
 	movl (%ebx), %ebx            # fetch from memory
 	pushl -104(%ebx)             # push onto stack
 	pushl %ebp                   # push onto stack
-	call L74
+	call L1
 	addl $8, %esp                # pop arguments
 	movl %eax, %ebx              # get return value
 	movl %ebx, %ebx              # move to register
@@ -645,15 +645,15 @@ L141:
 	movl (%ebx), %ebx            # fetch from memory
 	pushl -104(%ebx)             # push onto stack
 	pushl %ebp                   # push onto stack
-	call L74
+	call L1
 	addl $8, %esp                # pop arguments
 	movl %eax, %ebx              # get return value
 	movl %ebx, %ebx              # move to register
 	movl $0, %edi                # move constant to register
 	cmpl %edi, %ebx              # compare for jump...
-	je L92                      # if true: jump to L92
-	jmp L94                     # if false: jump to L94
-L94:
+	je L19                      # if true: jump to L19
+	jmp L21                     # if false: jump to L21
+L21:
 	movl %ebp, %ebx              # move to register
 	movl $-104, %edi             # move constant to register
 	addl %edi, %ebx              # add two registers
@@ -684,7 +684,7 @@ L94:
 	movl	-4(%ebp), %ecx          # load pseudo-register
 	addl %ecx, %ebx              # add two registers
 	movl %ebx, %ebx              # move to register
-	pushl $L93                   # push onto stack
+	pushl $L20                   # push onto stack
 	call ord
 	addl $4, %esp                # pop arguments
 	movl %eax, %esi              # get return value
@@ -711,38 +711,38 @@ L94:
 	movl (%ebx), %ebx            # fetch from memory
 	pushl -104(%ebx)             # push onto stack
 	pushl %ebp                   # push onto stack
-	call L74
+	call L1
 	addl $8, %esp                # pop arguments
 	movl %eax, %ebx              # get return value
 	movl %ebx, %ebx              # move to register
 	movl $0, %edi                # move constant to register
 	cmpl %edi, %ebx              # compare for jump...
-	jne L94                     # if true: jump to L94
-	jmp L92                     # if false: jump to L92
-L92:
+	jne L21                     # if true: jump to L21
+	jmp L19                     # if false: jump to L19
+L19:
 	movl -104(%ebp), %eax        # move to register
-	jmp L140                     # jump to L140
-L140:
+	jmp L67                     # jump to L67
+L67:
 	popl %esi                    # pop callee save
 	popl %edi                    # pop callee save
 	popl %ebx                    # pop callee save
 	movl %ebp, %esp              # deallocate frame
 	popl %ebp                    # restore base pointer
 	ret
-L93:
+L20:
 	.long 1
 	.byte 48, 0
-.globl L75
-.type L75, @function
-L75:
+.globl L2
+.type L2, @function
+L2:
 	pushl %ebp                   # save base pointer
 	movl %esp, %ebp              # base pointer <- stack pointer
-	subl $100, %esp              # allocate space for local variables
+	subl $112, %esp              # allocate space for local variables
 	pushl %ebx                   # push callee save
 	pushl %edi                   # push callee save
 	pushl %esi                   # push callee save
-L143:
-	pushl $L83                   # push onto stack
+L70:
+	pushl $L10                   # push onto stack
 	movl %ebp, %ebx              # move to register
 	movl $8, %edi                # move constant to register
 	addl %edi, %ebx              # add two registers
@@ -758,16 +758,16 @@ L143:
 	movl %ebx, %ebx              # move to register
 	movl $0, %edi                # move constant to register
 	cmpl %edi, %ebx              # compare for jump...
-	je L86                      # if true: jump to L86
-	jmp L85                     # if false: jump to L85
-L85:
+	je L13                      # if true: jump to L13
+	jmp L12                     # if false: jump to L12
+L12:
 	movl $1, %ebx                # move to register
-L87:
+L14:
 	movl $0, %edi                # move constant to register
 	cmpl %edi, %ebx              # compare for jump...
-	je L90                      # if true: jump to L90
-	jmp L91                     # if false: jump to L91
-L91:
+	je L17                      # if true: jump to L17
+	jmp L18                     # if false: jump to L18
+L18:
 	movl %ebp, %ebx              # move to register
 	movl $8, %edi                # move constant to register
 	addl %edi, %ebx              # add two registers
@@ -785,7 +785,7 @@ L91:
 	movl %eax, %edi              # get return value
 	movl %edi, %edi              # move to register
 	movl %edi, (%ebx)            # move to memory
-	pushl $L83                   # push onto stack
+	pushl $L10                   # push onto stack
 	movl %ebp, %ebx              # move to register
 	movl $8, %edi                # move constant to register
 	addl %edi, %ebx              # add two registers
@@ -801,11 +801,11 @@ L91:
 	movl %ebx, %ebx              # move to register
 	movl $0, %edi                # move constant to register
 	cmpl %edi, %ebx              # compare for jump...
-	jne L85                     # if true: jump to L85
-	jmp L86                     # if false: jump to L86
-L86:
+	jne L12                     # if true: jump to L12
+	jmp L13                     # if false: jump to L13
+L13:
 	movl $1, %edi                # move to register
-	pushl $L84                   # push onto stack
+	pushl $L11                   # push onto stack
 	movl %ebp, %ebx              # move to register
 	movl $8, %esi                # move constant to register
 	addl %esi, %ebx              # add two registers
@@ -821,40 +821,40 @@ L86:
 	movl %ebx, %ebx              # move to register
 	movl $0, %esi                # move constant to register
 	cmpl %esi, %ebx              # compare for jump...
-	je L89                      # if true: jump to L89
-	jmp L88                     # if false: jump to L88
-L88:
+	je L16                      # if true: jump to L16
+	jmp L15                     # if false: jump to L15
+L15:
 	movl %edi, %ebx              # move to register
-	jmp L87                     # jump to L87
-L89:
+	jmp L14                     # jump to L14
+L16:
 	movl $0, %edi                # move to register
-	jmp L88                     # jump to L88
-L90:
+	jmp L15                     # jump to L15
+L17:
 	movl $0, %eax                # move to register
-	jmp L142                     # jump to L142
-L142:
+	jmp L69                     # jump to L69
+L69:
 	popl %esi                    # pop callee save
 	popl %edi                    # pop callee save
 	popl %ebx                    # pop callee save
 	movl %ebp, %esp              # deallocate frame
 	popl %ebp                    # restore base pointer
 	ret
-L84:
+L11:
 	.long 1
 	.byte 10, 0
-L83:
+L10:
 	.long 1
 	.byte 32, 0
-.globl L74
-.type L74, @function
-L74:
+.globl L1
+.type L1, @function
+L1:
 	pushl %ebp                   # save base pointer
 	movl %esp, %ebp              # base pointer <- stack pointer
-	subl $100, %esp              # allocate space for local variables
+	subl $112, %esp              # allocate space for local variables
 	pushl %ebx                   # push callee save
 	pushl %edi                   # push callee save
 	pushl %esi                   # push callee save
-L145:
+L72:
 	movl %ebp, %ebx              # move to register
 	movl $8, %edi                # move constant to register
 	addl %edi, %ebx              # add two registers
@@ -869,20 +869,20 @@ L145:
 	movl %eax, %ebx              # get return value
 	movl %ebx, %ebx              # move to register
 	movl %ebx, %edi              # move to register
-	pushl $L76                   # push onto stack
+	pushl $L3                    # push onto stack
 	call ord
 	addl $4, %esp                # pop arguments
 	movl %eax, %ebx              # get return value
 	movl %ebx, %ebx              # move to register
 	cmpl %ebx, %edi              # compare for jump...
-	jge L78                     # if true: jump to L78
-	jmp L79                     # if false: jump to L79
-L79:
+	jge L5                     # if true: jump to L5
+	jmp L6                     # if false: jump to L6
+L6:
 	movl $0, %ebx                # move to register
-L80:
+L7:
 	movl %ebx, %eax              # move to register
-	jmp L144                     # jump to L144
-L78:
+	jmp L71                     # jump to L71
+L5:
 	movl $1, %edi                # move to register
 	movl %ebp, %ebx              # move to register
 	movl $8, %esi                # move constant to register
@@ -898,29 +898,29 @@ L78:
 	movl %eax, %ebx              # get return value
 	movl %ebx, %ebx              # move to register
 	movl %ebx, %ebx              # move to register
-	pushl $L77                   # push onto stack
+	pushl $L4                    # push onto stack
 	call ord
 	addl $4, %esp                # pop arguments
 	movl %eax, %esi              # get return value
 	movl %esi, %esi              # move to register
 	cmpl %esi, %ebx              # compare for jump...
-	jle L81                     # if true: jump to L81
-	jmp L82                     # if false: jump to L82
-L82:
+	jle L8                     # if true: jump to L8
+	jmp L9                     # if false: jump to L9
+L9:
 	movl $0, %edi                # move to register
-L81:
+L8:
 	movl %edi, %ebx              # move to register
-	jmp L80                     # jump to L80
-L144:
+	jmp L7                     # jump to L7
+L71:
 	popl %esi                    # pop callee save
 	popl %edi                    # pop callee save
 	popl %ebx                    # pop callee save
 	movl %ebp, %esp              # deallocate frame
 	popl %ebp                    # restore base pointer
 	ret
-L77:
+L4:
 	.long 1
 	.byte 57, 0
-L76:
+L3:
 	.long 1
 	.byte 48, 0
