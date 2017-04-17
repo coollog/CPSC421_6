@@ -30,9 +30,10 @@ function readint(any: any) : int =
  function merge(a: list, b: list) : list =
    if a=nil then b
    else if b=nil then a
-   else if a.first < b.first
+   else (printNum(a.first);printNum(b.first);
+     if a.first < b.first
       then list{first=a.first,rest=merge(a.rest,b)}
-      else list{first=b.first,rest=merge(a,b.rest)}
+      else list{first=b.first,rest=merge(a,b.rest)})
 
  function printint(i: int) =
   let function f(i:int) = if i>0
