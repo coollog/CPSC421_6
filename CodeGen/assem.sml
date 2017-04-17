@@ -45,7 +45,7 @@ structure Assem : ASSEM = struct
                     (explode(saylab(List.nth(jump,ord i - ord #"0"))) @ f rest)
                 | f(c :: rest) = (c :: f rest)
                 | f nil = nil
-           in implode(f(explode assem))
+           in (*print(assem);*) implode(f(explode assem))
             handle e => raise e
           end
      in fn OPER{assem,dst,src,jump=NONE} => speak(assem,dst,src,nil)

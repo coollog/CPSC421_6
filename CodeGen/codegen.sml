@@ -37,7 +37,9 @@ struct
 
   (* Appends an assembly comment. *)
   fun explain(assem, comment) =
-    implode tabulate(30 - size assem, fn _ => " ") ^ "# " ^ comment ^ "\n"
+    let val len = length(List.filter (fn x => x = #"`") (explode assem))
+    in assem ^ implode(List.tabulate(30 - size assem - len, fn _ => #" ")) ^
+       "# " ^ comment ^ "\n" end
 
   (* Converts an int to a string with negative "-" *)
   fun int2str(i) = if i < 0 then "-" ^ Int.toString (~i) else Int.toString i
@@ -86,8 +88,8 @@ struct
       explain("\tmovl " ^ pSrc ^ ", " ^ pDst, "move to memory")
     and assMOVfetch(pSrc, pDst) =
       explain("\tmovl (" ^ pSrc ^ "), " ^ pDst, "fetch from memory")
-    and assMOVconst(i) = "\tmovl $" ^ int2str i ^ ", `d0" ^
-                         explain("move constant to register")
+    and assMOVconst(i) = explain("\tmovl $" ^ int2str i ^ ", `d0",
+                                 "move constant to register")
     and assADD(pSrc, pDst) =
       explain("\taddl " ^ pSrc ^ ", " ^ pDst, "add two registers")
     and assSUB(pSrc, pDst) =
@@ -245,25 +247,25 @@ struct
             val t1 = Temp.newtemp()
             val t2 = Temp.newtemp()
             val pSrc1 = patternExp(e1, "s", 0)
-            val pSrc2 = patternExp(e2, "s", 0)
           in
-            emitOPER(explain("\tmovl `s0, `d0", "save %eax"),
-                     [R.RV], [t1], NONE);
-            emitOPER(explain("\tmovl `s0, `d0", "save %edx"),
-                     [R.EDX], [t2], NONE);
-            emitOPER(explain("\tmovl $0, `s1", "put 0 in %edx\n"),
-                     [R.EDX], [t2], NONE);
-            emitOPER(explain("\tmovl `s0, `d0", "put divisor in %eax"),
-                     #reg pSrc1, [R.RV], NONE);
+            emitOPER(explain("\tmovl %eax, `d0", "save %eax"),
+                     [], [t1], NONE);
+            emitOPER(explain("\tmovl %edx, `d0", "save %edx"),
+                     [], [t2], NONE);
+            emitOPER(explain("\tmovl $0, %edx", "put 0 in %edx\n"),
+                     [], [], NONE);
+            emitOPER(explain("\tmovl " ^ #assem pSrc1 ^ ", %eax",
+                             "put divisor in %eax"),
+                     #src pSrc1, [], NONE);
             emitOPER(explain("\tidiv `s0", "divide by register"),
-                     #reg pSrc2, [R.RV], NONE);
-            emitOPER(explain("\tmovl `s0, `d0",
+                     [munchExp e2], [], NONE);
+            emitOPER(explain("\tmovl %eax, `d0",
                              "put quotient in result register"),
-                     [R.RV], [r], NONE);
-            emitOPER(explain("\tmovl `s0, `d0", "restore %eax"),
-                     [t1], [R.RV], NONE);
-            emitOPER(explain("\tmovl `s0, `d0", "restore %edx"),
-                     [t2], [R.EDX], NONE);
+                     [], [r], NONE);
+            emitOPER(explain("\tmovl `s0, %eax", "restore %eax"),
+                     [t1], [], NONE);
+            emitOPER(explain("\tmovl `s0, %edx", "restore %edx"),
+                     [t2], [], NONE);
             r
           end
 
