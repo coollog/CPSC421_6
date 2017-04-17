@@ -1,21 +1,24 @@
+MODULES USED:
+IG2, CG4, RA6
+
 <i> what you have done so far
 
-I have written all the parts of CodeGen and tested minimally.
-Hopefully, it does what it should do. The code has been documented thoroughly.
+I have written all the parts of CodeGen and successfully tested against all the
+provided tests. The code has been documented thoroughly.
 
 <ii> how other groups would use your code (i.e., the bin files) ?
 
 Just plug the code into 'sources.cm', or copy it into your CodeGen folder.
-In main.sml, you will need to call procEntryExit using the RegAlloc part. I am
-not completely sure how this works yet either.
+In main.sml, you will need to call procEntryExit using the RegAlloc part.
 
 <iii> what assumptions you have made about your current implementations ?
 
-None, or I do not know which are assumptions.
+- All memory used as 4-bytes.
+- Itreegen does not push arguments for CALL, Codegen does.
 
 <iv> what desirable features you would like other groups to work on ?
 
-Just make it work?
+All done, no more features needed.
 
 <v> if you have changed more files than required, explain it here.
 
