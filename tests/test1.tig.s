@@ -1,65 +1,3 @@
-LABEL L33
-MOVE(
- TEMP T470,
- BINOP(PLUS,
-  TEMP T101,
-  CONST ~404))
-MOVE(
- TEMP T469,
- CALL(
-  NAME initArray,
-   CONST 10,
-   CONST 0))
-MOVE(
- MEM[4](
-  TEMP T470),
- TEMP T469)
-EXP(
- MEM[4](
-  BINOP(PLUS,
-   TEMP T101,
-   CONST ~404)))
-EXP(
- CALL(
-  NAME checkArrayBounds,
-   MEM[4](
-    BINOP(PLUS,
-     TEMP T101,
-     CONST ~404)),
-   CONST 5))
-MOVE(
- MEM[4](
-  BINOP(PLUS,
-   MEM[4](
-    BINOP(PLUS,
-     TEMP T101,
-     CONST ~404)),
-   BINOP(MUL,
-    CONST 5,
-    CONST 4))),
- CONST 100)
-EXP(
- CALL(
-  NAME checkArrayBounds,
-   MEM[4](
-    BINOP(PLUS,
-     TEMP T101,
-     CONST ~404)),
-   CONST 5))
-MOVE(
- TEMP T100,
- MEM[4](
-  BINOP(PLUS,
-   MEM[4](
-    BINOP(PLUS,
-     TEMP T101,
-     CONST ~404)),
-   BINOP(MUL,
-    CONST 5,
-    CONST 4))))
-JUMP(
- NAME L32)
-LABEL L32
 .globl tigermain
 .type tigermain, @function
 tigermain:
@@ -69,7 +7,7 @@ tigermain:
 	pushl %ebx							# push callee save
 	pushl %edi							# push callee save
 	pushl %esi							# push callee save
-L33:
+L1:
 	movl %ebp, %ebx							# move to register
 	movl $-404, %edi							# move constant to register
 	addl %edi, %ebx							# add two registers
@@ -125,8 +63,8 @@ L33:
 	movl (%edi), %ebx							# fetch from memory
 	movl $4, %edi							# move constant to register
 	movl (%ebx, %edi, 5), %eax							# move to register
-	jmp L32							# jump to L32
-L32:
+	jmp L0							# jump to L0
+L0:
 	popl %esi							# pop callee save
 	popl %edi							# pop callee save
 	popl %ebx							# pop callee save
