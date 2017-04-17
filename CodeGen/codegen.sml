@@ -160,10 +160,18 @@ struct
           evalMEMOFFSET(e1, k, prefix, startIdx)
       | patternExp(T.MEM(T.BINOP(T.PLUS, T.CONST k, e1), _), prefix, startIdx) =
           evalMEMOFFSET(e1, k, prefix, startIdx)
-      | patternExp(T.MEM(T.BINOP(T.PLUS, e1, T.BINOP(T.MUL, T.CONST k, e2)), _),
-                   prefix, startIdx) = evalMEMEXP(e1, e2, k, prefix, startIdx)
-      | patternExp(T.MEM(T.BINOP(T.PLUS, e1, T.BINOP(T.MUL, e2, T.CONST k)), _),
-                   prefix, startIdx) = evalMEMEXP(e1, e2, k, prefix, startIdx)
+      | patternExp(T.MEM(T.BINOP(T.PLUS, e1, T.BINOP(T.MUL, T.CONST 2, e2)), _),
+                   prefix, startIdx) = evalMEMEXP(e1, e2, 2, prefix, startIdx)
+      | patternExp(T.MEM(T.BINOP(T.PLUS, e1, T.BINOP(T.MUL, e2, T.CONST 2)), _),
+                   prefix, startIdx) = evalMEMEXP(e1, e2, 2, prefix, startIdx)
+      | patternExp(T.MEM(T.BINOP(T.PLUS, e1, T.BINOP(T.MUL, T.CONST 4, e2)), _),
+                   prefix, startIdx) = evalMEMEXP(e1, e2, 4, prefix, startIdx)
+      | patternExp(T.MEM(T.BINOP(T.PLUS, e1, T.BINOP(T.MUL, e2, T.CONST 4)), _),
+                   prefix, startIdx) = evalMEMEXP(e1, e2, 4, prefix, startIdx)
+      | patternExp(T.MEM(T.BINOP(T.PLUS, e1, T.BINOP(T.MUL, T.CONST 8, e2)), _),
+                   prefix, startIdx) = evalMEMEXP(e1, e2, 8, prefix, startIdx)
+      | patternExp(T.MEM(T.BINOP(T.PLUS, e1, T.BINOP(T.MUL, e2, T.CONST 8)), _),
+                   prefix, startIdx) = evalMEMEXP(e1, e2, 8, prefix, startIdx)
       | patternExp(T.MEM(T.BINOP(T.PLUS, e1, e2), _), prefix, startIdx) =
           evalMEMEXP(e1, e2, 1, prefix, startIdx)
       | patternExp(T.MEM(e1, _), prefix, startIdx) =

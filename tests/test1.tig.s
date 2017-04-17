@@ -7,7 +7,7 @@ tigermain:
 	pushl %ebx							# push callee save
 	pushl %edi							# push callee save
 	pushl %esi							# push callee save
-L1:
+L7:
 	movl %ebp, %ebx							# move to register
 	movl $-404, %edi							# move constant to register
 	addl %edi, %ebx							# add two registers
@@ -44,8 +44,8 @@ L1:
 	movl $-404, %edi							# move constant to register
 	addl %edi, %ebx							# add two registers
 	movl (%ebx), %edi							# fetch from memory
-	movl $4, %ebx							# move constant to register
-	movl $100, (%edi, %ebx, 5)							# move to memory
+	movl $5, %ebx							# move constant to register
+	movl $100, (%edi, %ebx, 4)							# move to memory
 	pushl %eax							# save caller save
 	pushl %ecx							# save caller save
 	pushl %edx							# save caller save
@@ -61,10 +61,10 @@ L1:
 	movl $-404, %ebx							# move constant to register
 	addl %ebx, %edi							# add two registers
 	movl (%edi), %ebx							# fetch from memory
-	movl $4, %edi							# move constant to register
-	movl (%ebx, %edi, 5), %eax							# move to register
-	jmp L0							# jump to L0
-L0:
+	movl $5, %edi							# move constant to register
+	movl (%ebx, %edi, 4), %eax							# move to register
+	jmp L6							# jump to L6
+L6:
 	popl %esi							# pop callee save
 	popl %edi							# pop callee save
 	popl %ebx							# pop callee save
