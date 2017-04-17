@@ -37,6 +37,7 @@ functor EnvGen (Translate: TRANSLATE) : ENV = struct
      ("getchar", mkFn (Temp.namedlabel "getch") [] T.STRING),
      ("ord", mkFn (Temp.namedlabel "ord") [("s", T.STRING)] T.INT),
      ("chr", mkFn (Temp.namedlabel "chr") [("i", T.INT)] T.STRING),
+     ("printNum", mkFn (Temp.namedlabel "printNum") [("i", T.INT)] T.UNIT),
      ("size", mkFn (Temp.namedlabel "size") [("s", T.STRING)] T.INT),
      ("substring", mkFn (Temp.namedlabel "substring")
                    [("s", T.STRING), ("first", T.INT), ("n", T.INT)] T.STRING),

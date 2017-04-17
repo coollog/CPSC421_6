@@ -5,6 +5,7 @@ let
 in
   print(rec1.name);
 	rec1.name := "Somebody";
+  print(rec1.age);
 	rec1;
   print(rec1.name)
 end

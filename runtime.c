@@ -72,6 +72,10 @@ void print (struct string *s) {
     putchar(*p);
 }
 
+void printNum(int x) {
+  printf("%d\n", x);
+}
+
 void flush () {
   fflush(stdout);
 }
