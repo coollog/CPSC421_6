@@ -11,6 +11,9 @@ provided tests. The code has been documented thoroughly.
 Just plug the code into 'sources.cm', or copy it into your CodeGen folder.
 In main.sml, you will need to call procEntryExit using the RegAlloc part.
 
+To compile:
+  gcc -m32 -o <executable> runtime.c <assembly code>
+
 <iii> what assumptions you have made about your current implementations ?
 
 - All memory used as 4-bytes.
