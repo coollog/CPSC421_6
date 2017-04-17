@@ -248,6 +248,10 @@ struct
             val t2 = Temp.newtemp()
             val pSrc1 = patternExp(e1, "s", 0)
           in
+            emitOPER(explain("\tmovl %eax, `d0", "save %eax"),
+                     [], [t1], NONE);
+            emitOPER(explain("\tmovl %edx, `d0", "save %edx"),
+                     [], [t2], NONE);
             emitOPER(explain("\tmovl $0, %edx", "put 0 in %edx\n"),
                      [], [], NONE);
             emitOPER(explain("\tmovl " ^ #assem pSrc1 ^ ", %eax",
@@ -258,6 +262,10 @@ struct
             emitOPER(explain("\tmovl %eax, `d0",
                              "put quotient in result register"),
                      [], [r], NONE);
+            emitOPER(explain("\tmovl `s0, %eax", "restore %eax"),
+                     [t1], [], NONE);
+            emitOPER(explain("\tmovl `s0, %edx", "restore %edx"),
+                     [t2], [], NONE);
             r
           end
 
