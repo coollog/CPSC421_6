@@ -317,16 +317,6 @@ struct
    * This is a post-pass, to be done after register allocation.
    *)
 
-  (*fun procEntryExit2(frame, body) =
-    body @
-    [A.OPER{assem="",
-            src=[R.ZERO,R.RA,R.SP]@R.calleesaves,
-            dst=[],jump=SOME[]}]*)
-  (*fun procEntryExit3(FRAME(name, params, locals), body) =
-    (prolog = "PROCEDURE " ^ Symbol.name name ^ "\n",
-     body = body,
-     epilog = "END " ^ Symbol.name name ^ "\n")*)
-
   fun procEntryExit({name : Temp.label,
                      body : (Assem.instr * Temp.temp list) list,
                      allocation : R.register Temp.Table.table,
