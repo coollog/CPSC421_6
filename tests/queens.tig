@@ -31,8 +31,8 @@ let
                 diag1[r+c]:=0;
                 diag2[r+7-c]:=0)
 
- in printboard();
-    try(10);
+ in
+    try(0);
     1
 end
 
