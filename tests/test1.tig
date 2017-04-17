@@ -3,5 +3,7 @@ let
 	type  arrtype = array of int
 	var arr1:arrtype := arrtype [10] of 0
 in
-	arr1; 1
+	arr1;
+  arr1[5]:= 100;
+  arr1[5]
 end

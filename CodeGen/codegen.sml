@@ -46,7 +46,8 @@ struct
     fun emit x = ilist := x :: !ilist
     fun result(gen) = let val t = Temp.newtemp() in gen t; t end
 
-    type preInstr = {assem: string, reg: Temp.temp list, nextIdx: int}
+    type preInstr =
+      {assem: string, reg: Temp.temp list, src: Temp.temp list, nextIdx: int}
 
     (* Some functions to make munch code more organized. *)
     fun emitLABEL(lab) = emit(A.LABEL{assem=assLABEL(lab), lab=lab})
@@ -117,22 +118,23 @@ struct
       | munchStm(T.MOVE(T.TEMP t, e1)) =
           let val pDst = evalExp(T.TEMP t, "d", 0)
               val pSrc = evalExp(e1, "s", 0)
+              val srcs = #src pSrc @ #src pDst
           in emitOPER(assMOVreg(#assem pSrc, #assem pDst),
-                      #reg pSrc, #reg pDst, NONE) end
+                      #reg pSrc @ srcs, #reg pDst, NONE) end
 
       (* MOVE MEM[e1] MEM[e2] *)
       | munchStm(T.MOVE(T.MEM(e1, _),T.MEM(e2, _))) =
-          let val d0 = munchExp(T.MEM(e2, 4))
-              val pDst=evalExp(T.MEM(e1, 4), "d", 0)
+          let val pDst=evalExp(T.MEM(e1, 4), "d", 0)
           in emitOPER(assMOVmem("`s0", #assem pDst),
-                      [d0], #reg pDst, NONE) end
+                      [munchExp(T.MEM(e2, 4))] @ #src pDst, #reg pDst, NONE) end
 
       (* MOVE MEM[e1] e2 *)
       | munchStm(T.MOVE(T.MEM(e1, _),e2)) =
           let val pDst=evalExp(T.MEM(e1, 4), "d", 0)
               val pSrc=evalExp(e2, "s", 0)
+              val srcs = #src pSrc @ #src pDst
           in emitOPER(assMOVmem(#assem pSrc, #assem pDst),
-                      #reg pSrc, #reg pDst, NONE) end
+                      #reg pSrc @ srcs, #reg pDst, NONE) end
 
       | munchStm(T.MOVE _) = ErrorMsg.impossible "CodeGen: INVALID MOV"
 
@@ -141,47 +143,54 @@ struct
     and
       (* Operands of assembly instructions could be registers or expressions for
        * memory addresses, so this helps to process these.
+       *
+       * assem - the inline assembly code
+       * reg - any registers used
+       * src - any registers to add to the src list
+       * nextIdx - further inline assembly expressions should start with this
+       *           index for temps
        *)
         (* like %eax *)
         evalExp(T.TEMP t, prefix, startIdx):preInstr =
           {assem="`" ^ prefix ^ int2str startIdx,
-           reg=[t], nextIdx=startIdx + 1}
+           reg=[t], src=[], nextIdx=startIdx + 1}
 
         (* like $Hello *)
       | evalExp(T.NAME lab, _, startIdx):preInstr =
-          {assem="$" ^ S.name lab, reg=[], nextIdx=startIdx}
+          {assem="$" ^ S.name lab, reg=[], src=[], nextIdx=startIdx}
 
         (* like $4 *)
       | evalExp(T.CONST k, _, startIdx):preInstr =
-          {assem="$" ^ int2str k, reg=[], nextIdx=startIdx}
+          {assem="$" ^ int2str k, reg=[], src=[], nextIdx=startIdx}
 
         (* like (%eax) *)
       | evalExp(T.MEM(T.TEMP t, _), prefix, startIdx):preInstr =
           {assem="(`" ^ prefix ^ int2str startIdx ^ ")",
-           reg=[t], nextIdx=startIdx + 1}
+           reg=[t], src=[t], nextIdx=startIdx + 1}
 
         (* like -4(%eax) *)
       | evalExp(T.MEM(T.BINOP(T.PLUS, T.TEMP t, T.CONST k), _),
                 prefix, startIdx):preInstr =
           {assem=int2str k ^ "(`" ^ prefix ^ int2str startIdx ^ ")",
-           reg=[t], nextIdx=startIdx + 1}
+           reg=[t], src=[t], nextIdx=startIdx + 1}
 
         (* like -4(%eax) *)
       | evalExp(T.MEM(T.BINOP(T.PLUS, T.CONST k, T.TEMP t), _),
                 prefix, startIdx):preInstr =
           {assem=int2str k ^ "(`" ^ prefix ^ int2str startIdx ^ ")",
-           reg=[t], nextIdx=startIdx + 1}
+           reg=[t], src=[t], nextIdx=startIdx + 1}
 
         (* like (%eax, %ebx, 1) *)
       | evalExp(T.MEM(T.BINOP(T.PLUS, T.TEMP t1, T.TEMP t2), _),
                 prefix, startIdx):preInstr =
           {assem="(`" ^ prefix ^ int2str startIdx ^
                  ", `" ^ prefix ^ int2str(startIdx + 1) ^ ", 1)",
-           reg=[t1, t2], nextIdx=startIdx + 2}
+           reg=[t1, t2], src=[t1, t2], nextIdx=startIdx + 2}
 
       | evalExp(exp, prefix, startIdx):preInstr =
-          {assem="`" ^ prefix ^ int2str startIdx,
-           reg=[munchExp exp], nextIdx=startIdx + 1}
+          let val t = munchExp exp
+          in {assem="`" ^ prefix ^ int2str startIdx,
+              reg=[t], src=[t], nextIdx=startIdx + 1} end
 
     and
       (* FETCH MEM[i] *)
