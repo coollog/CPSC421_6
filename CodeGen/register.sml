@@ -59,13 +59,13 @@ struct
     (EDI, "%edi"),
     (ESI, "%esi")]
   val calleesaves : register list = ["%ebx", "%edi", "%esi"]
-  val truecallersaves : register list = ["%eax", "%ecx", "%edx"]
+  val truecallersaves : register list = []
   val callersaves : register list = ["%eax", "%ecx", "%edx"]
 
   val pseudoregs: register list =
     List.tabulate(NPSEUDOREGS, fn i => "f" ^ Int.toString i)
 
-  val registers: register list = calleesaves @ callersaves @ pseudoregs
+  val registers: register list = calleesaves @ pseudoregs
 
 end (* structure Register *)
 

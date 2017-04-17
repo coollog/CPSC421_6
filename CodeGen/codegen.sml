@@ -248,10 +248,6 @@ struct
             val t2 = Temp.newtemp()
             val pSrc1 = patternExp(e1, "s", 0)
           in
-            emitOPER(explain("\tmovl %eax, `d0", "save %eax"),
-                     [], [t1], NONE);
-            emitOPER(explain("\tmovl %edx, `d0", "save %edx"),
-                     [], [t2], NONE);
             emitOPER(explain("\tmovl $0, %edx", "put 0 in %edx\n"),
                      [], [], NONE);
             emitOPER(explain("\tmovl " ^ #assem pSrc1 ^ ", %eax",
@@ -262,10 +258,6 @@ struct
             emitOPER(explain("\tmovl %eax, `d0",
                              "put quotient in result register"),
                      [], [r], NONE);
-            emitOPER(explain("\tmovl `s0, %eax", "restore %eax"),
-                     [t1], [], NONE);
-            emitOPER(explain("\tmovl `s0, %edx", "restore %edx"),
-                     [t2], [], NONE);
             r
           end
 
@@ -357,7 +349,10 @@ struct
                      formals : Temp.temp list,
                      frame : Frame.frame}) =
     let
-      val localVarSize = 4 * (!(#locals frame) + R.NPSEUDOREGS)
+      (* Room for the frame, the pseudoregs and the callee saves. *)
+      val localVarSize =
+        4 * (!(#locals frame) + R.NPSEUDOREGS + length R.calleesaves)
+
       (*
         /* Subroutine Prologue */
         pushl %ebp      /* Save the old base pointer value. */
@@ -402,7 +397,19 @@ struct
                         "\tret\n", src=[],dst=[],jump=NONE})
         ]
 
-      val newBody = prologue @ map (#1) body @ epilogue
+      val cleanBody =
+        let
+          val instrs = map (#1) body
+          fun useful(i) = case i of
+            A.MOVE{src,dst,...} =>
+              Temp.Table.look(allocation, src) =
+              Temp.Table.look(allocation, dst)
+          | _ => true
+        in
+          List.filter useful instrs
+        end
+
+      val newBody = prologue @ cleanBody @ epilogue
     in
       genSpills(newBody, fn t => valOf(Temp.Table.look(allocation, t)))
     end
