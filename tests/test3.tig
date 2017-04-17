@@ -5,5 +5,5 @@ let
 in
 	rec1.name := "Somebody";
 	rec1;
-        1
+  print(rec1.name)
 end
