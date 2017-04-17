@@ -11,6 +11,6 @@ var lis:intlist := intlist { hd=0, tl= nil }
 
 in
 	lis;
-  print(lis.hd);
+  printNum(lis.hd);
         1
 end
