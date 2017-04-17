@@ -20,7 +20,7 @@ let
 
     function try(c:int) = 0
         /*(for i:= 0 to c do print("."); print("\n"); flush())*/
-     /*if c=N
+     if c=N
      then printboard()
      else for r := 0 to N-1
 	   do if row[r]=0 & diag1[r+c]=0 & diag2[r+7-c]=0 then (
@@ -29,7 +29,7 @@ let
 	            try(c+1);
 			    row[r]:=0;
                 diag1[r+c]:=0;
-                diag2[r+7-c]:=0)*/
+                diag2[r+7-c]:=0)
 
  in printboard();
     try(10);
