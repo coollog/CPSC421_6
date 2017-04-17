@@ -75,7 +75,7 @@ struct
         | T.LE => "\tjle"
         | _ => ErrorMsg.impossible "CodeGen: INVALID CJUMP"
       in
-        "\tcmpl `s0, `s1" ^ explain("compare for jump...") ^
+        "\tcmpl `s1, `s0" ^ explain("compare for jump...") ^
         jumpInstr ^ " `j0" ^ explain("if true: jump to " ^ S.name lab1) ^
         "\tjmp `j1" ^ explain("if false: jump to " ^ S.name lab2)
       end
