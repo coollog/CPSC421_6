@@ -76,7 +76,6 @@ struct
         | T.GE => "\tjge"
         | T.LT => "\tjl"
         | T.LE => "\tjle"
-        | _ => ErrorMsg.impossible "CodeGen: INVALID CJUMP"
       in
         explain("\tcmpl `s1, `s0", "compare for jump...") ^
         explain(jumpInstr ^ " `j0", "if true: jump to " ^ S.name lab1) ^
@@ -261,24 +260,8 @@ struct
             r
           end
 
-      (* AND *)
-      | munchExp(T.BINOP(T.AND,e1,e2)) =
-          result(fn r => (
-            emitOPER(assMOVreg("`s0", "`d0"), [munchExp e1], [r], NONE);
-            emitOPER(assAND("`s0", "`s1"), [munchExp e2, r], [r], NONE)))
-
-      (* OR *)
-      | munchExp(T.BINOP(T.OR,e1,e2)) =
-          result(fn r => (
-            emitOPER(assMOVreg("`s0", "`d0"), [munchExp e1], [r], NONE);
-            emitOPER(assOR("`s0", "`s1"), [munchExp e2, r], [r], NONE)))
-
-      | munchExp(T.BINOP(_)) = ErrorMsg.impossible "CodeGen: INVALID BINOP"
-
       (* CONST *)
       | munchExp(T.CONST k) = resultOPER(assMOVconst(k), [], [], NONE)
-
-      | munchExp(T.CONSTF _) = ErrorMsg.impossible "CodeGen: INVALID CONSTF"
 
       | munchExp(T.TEMP t) = t
 
@@ -316,7 +299,7 @@ struct
             emitOPER(popTrueCallerSaves, [], [], NONE)
           end)
 
-      | munchExp(T.ESEQ _ | T.CVTOP _ | T.CALL _) =
+      | munchExp(T.ESEQ _ | T.CALL _) =
           ErrorMsg.impossible "CodeGen: INVALID ITREE EXP"
 
   in munchStm stm;
