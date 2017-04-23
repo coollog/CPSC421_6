@@ -19,7 +19,8 @@ struct
 
     | emitproc out (F.PROC{name, body, frame}) =
         let (*val _ = print ("Emit " ^ Symbol.name name ^ "\n\n")*)
-            (*val _ = Printtree.printtree(out,body);*)
+            val _ = Printtree.printtree(TextIO.stdOut,body)
+            val _ = ErrorMsg.impossible("asdf")
 
             val stms = Canon.linearize body
             val stms' = Canon.traceSchedule(Canon.basicBlocks stms)

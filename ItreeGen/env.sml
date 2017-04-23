@@ -1,47 +1,111 @@
-signature ENV = sig
+(* env.sml *)
+signature ENV =
+sig
   type access
   type level
   type label
   type ty
+
   datatype enventry
-    = VARentry of {access: access, ty: ty, readonly: bool}
+    = VARentry of {access: access, ty: ty}
     | FUNentry of {level: level, label: label, formals: ty list, result: ty}
+
   type tenv = ty Symbol.table
   type env = enventry Symbol.table
+
   val base_tenv : tenv
   val base_env : env
 end
 
-functor EnvGen (Translate: TRANSLATE) : ENV = struct
+functor EnvGen(Translate: TRANSLATE) : ENV =
+
+struct
+
   structure S = Symbol
   structure T = Types
+
   type access = Translate.access
   type level = Translate.level
   type label = Temp.label
   type ty = T.ty
+
   datatype enventry
-    = VARentry of {access: access, ty: ty, readonly: bool}
+    = VARentry of {access: access, ty: ty}
     | FUNentry of {level: level, label: label, formals: ty list, result: ty}
+
   type tenv = ty Symbol.table
+
   type env = enventry Symbol.table
-  fun enter ((name, binding), env) = S.enter (env, S.symbol name, binding)
-  fun mkFn label formals result =
-    let fun mkFml (name, ty) = T.NAME (S.symbol name, ref (SOME ty))
-     in FUNentry {level = Translate.outermost, label = label,
-                  formals = map mkFml formals, result = result}
+
+  val base_tenv =
+    let
+      val myTable = ref Symbol.empty
+    in
+    (
+      myTable := Symbol.enter(!myTable,Symbol.symbol("string"),T.STRING);
+      myTable := Symbol.enter(!myTable,Symbol.symbol("int"),T.INT);
+      !myTable
+    )
     end
-  val base_tenv = foldl enter S.empty [("int", T.INT), ("string", T.STRING)]
-  val base_env = foldl enter S.empty
-    [("print", mkFn (Temp.namedlabel "print") [("s", T.STRING)] T.UNIT),
-     ("flush", mkFn (Temp.namedlabel "flush") [] T.UNIT),
-     ("getchar", mkFn (Temp.namedlabel "getch") [] T.STRING),
-     ("ord", mkFn (Temp.namedlabel "ord") [("s", T.STRING)] T.INT),
-     ("chr", mkFn (Temp.namedlabel "chr") [("i", T.INT)] T.STRING),
-     ("size", mkFn (Temp.namedlabel "size") [("s", T.STRING)] T.INT),
-     ("substring", mkFn (Temp.namedlabel "substring")
-                   [("s", T.STRING), ("first", T.INT), ("n", T.INT)] T.STRING),
-     ("concat", mkFn (Temp.namedlabel "concat")
-                [("s1", T.STRING), ("s2", T.STRING)] T.STRING),
-     ("not", mkFn (Temp.namedlabel "not") [("i", T.INT)] T.INT),
-     ("exit", mkFn (Temp.namedlabel "exit") [("i", T.INT)] T.INT)]
-end
+
+  val base_env =
+    let
+      val myTable = ref Symbol.empty
+    in
+    (
+      myTable := Symbol.enter(!myTable,Symbol.symbol("print"),
+                              FUNentry{level=Translate.outermost,
+                                       label=Temp.namedlabel "print",
+                                       formals=[T.STRING],
+                                       result=T.UNIT});
+      myTable := Symbol.enter(!myTable,Symbol.symbol("flush"),
+                              FUNentry{level=Translate.outermost,
+                                       label=Temp.namedlabel "flush",
+                                       formals=nil,
+                                       result=T.UNIT});
+      myTable := Symbol.enter(!myTable,Symbol.symbol("getchar"),
+                              FUNentry{level=Translate.outermost,
+                                       label=Temp.namedlabel "getchar",
+                                       formals=nil,
+                                       result=T.STRING});
+      myTable := Symbol.enter(!myTable,Symbol.symbol("ord"),
+                              FUNentry{level=Translate.outermost,
+                                       label=Temp.namedlabel "ord",
+                                       formals=[T.STRING],
+                                       result=T.INT});
+      myTable := Symbol.enter(!myTable,Symbol.symbol("chr"),
+                              FUNentry{level=Translate.outermost,
+                                       label=Temp.namedlabel "chr",
+                                       formals=[T.INT],
+                                       result=T.STRING});
+      myTable := Symbol.enter(!myTable,Symbol.symbol("size"),
+                              FUNentry{level=Translate.outermost,
+                                       label=Temp.namedlabel "size",
+                                       formals=[T.STRING],
+                                       result=T.INT});
+      myTable := Symbol.enter(!myTable,Symbol.symbol("substring"),
+                              FUNentry{level=Translate.outermost,
+                                       label=Temp.namedlabel "substring",
+                                       formals=[T.STRING,T.INT,T.INT],
+                                       result=T.STRING});
+      myTable := Symbol.enter(!myTable,Symbol.symbol("concat"),
+                              FUNentry{level=Translate.outermost,
+                                       label=Temp.namedlabel "concat",
+                                       formals=[T.STRING,T.STRING],
+                                       result=T.STRING});
+      myTable := Symbol.enter(!myTable,Symbol.symbol("not"),
+                              FUNentry{level=Translate.outermost,
+                                       label=Temp.namedlabel "not",
+                                       formals=[T.INT],
+                                       result=T.INT});
+      myTable := Symbol.enter(!myTable,Symbol.symbol("exit"),
+                              FUNentry{level=Translate.outermost,
+                                       label=Temp.namedlabel "exit",
+                                       formals=[T.INT],
+                                       result=T.UNIT});
+      !myTable
+    )
+    end
+
+end  (* structure Env *)
+
