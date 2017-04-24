@@ -654,7 +654,6 @@ struct
       end
     )
     | h (A.FieldVar (v,id,pos)) =
-    (
       let
         val leftPiece = nameFollow(tenv,#ty(h v),pos)
       in
@@ -662,12 +661,19 @@ struct
           SOME(T.RECORD(st,_)) =>
           (
             case isField(st,id) of
-              SOME(t) => {exp=Tr.unit,ty=t}
+              SOME(t) =>
+                let
+                  val {exp=varExp,...} = h(v)
+                  fun fieldIdx((symbol, _)::sts, id, curIdx) =
+                        if symbol = id then curIdx
+                        else fieldIdx(sts, id, curIdx + 1)
+                    | fieldIdx(_) = ErrorMsg.impossible "nonexistent field"
+                  val gexp = Tr.fieldVar(varExp, fieldIdx(st, id, 0))
+                in {exp=gexp,ty=t} end
             | NONE => (error pos (msgH02^S.name(id)^")."); {exp=Tr.unit,ty=T.INT})
           )
         | _ => (error pos msgH03; {exp=Tr.unit,ty=T.INT})
       end
-    )
     | h (A.SubscriptVar (v,exp,pos)) =
         let
           val leftPiece = nameFollow(tenv,#ty(h v),pos)

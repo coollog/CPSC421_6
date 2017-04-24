@@ -24,6 +24,7 @@ sig
   val unit : gexp
   val simpleVar : access * level -> gexp
   val subscriptVar : gexp * gexp -> gexp
+  val fieldVar : gexp * int -> gexp
   val arrayExp : gexp * gexp -> gexp
   val recordExp : gexp list -> gexp
 
@@ -126,11 +127,12 @@ struct
     in findVariableSL(access, level, Tr.TEMP R.FP) end
 
   fun subscriptVar(varExp, idxExp) =
-    let val varTree = unEx varExp
-        val idxTree = unEx idxExp
-    in Ex(Tr.MEM(
-        Tr.BINOP(Tr.PLUS, varTree,
-                          Tr.BINOP(Tr.MUL, idxTree, Tr.CONST 4)), 4)) end
+    Ex(Tr.MEM(
+      Tr.BINOP(Tr.PLUS, unEx varExp,
+                        Tr.BINOP(Tr.MUL, unEx idxExp, Tr.CONST 4)), 4))
+
+  fun fieldVar(varExp, fieldIdx) =
+    Ex(Tr.MEM(Tr.BINOP(Tr.PLUS, unEx varExp, Tr.CONST(fieldIdx * 4)), 4))
 
   fun arrayExp(sizeExp, initExp) =
     Ex(Tr.CALL(
