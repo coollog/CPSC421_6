@@ -372,8 +372,8 @@ struct
   **************************************************************************)
   fun transexp (env:E.env, tenv:E.tenv, level:Tr.level) expr =
     let fun g (A.NilExp) = {exp=Tr.unit,ty=T.NIL}
-    | g (A.IntExp _) = {exp=Tr.unit,ty=T.INT}
-    | g (A.StringExp (_,_)) = {exp=Tr.unit,ty=T.STRING}
+    | g (A.IntExp i) = {exp=Tr.intExp i,ty=T.INT}
+    | g (A.StringExp (str,_)) = {exp=Tr.stringExp str,ty=T.STRING}
     | g (A.AppExp {func,args,pos}) =
     {exp=Tr.unit,ty=
       case S.look(env,func) of
@@ -445,13 +445,16 @@ struct
                {exp=Tr.unit, ty=T.RECORD(map chkField fields, ref())}
                )
         end
-    | g (A.SeqExp exprs) = let
+    | g (A.SeqExp exprs) =
+        let
           val lastTy = ref T.UNIT;
           fun checkSeq(nil) = !lastTy
           | checkSeq((exp,_)::exps) = (lastTy:= #ty(g exp);checkSeq(exps);!lastTy)
-         in
-          {exp=Tr.unit,ty=checkSeq(exprs)}
-         end
+
+          val seqExps = map (fn expr => #exp(g(#1 expr))) exprs
+        in
+          {exp=Tr.seqExp seqExps,ty=checkSeq(exprs)}
+        end
     | g (A.IfExp {test,then',else'=NONE,pos}) =     (* IF..THEN *)
     (
       checkInt(g test,pos,msgIfExp01);

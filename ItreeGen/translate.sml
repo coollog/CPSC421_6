@@ -22,11 +22,17 @@ sig
   val unCx : gexp -> (Temp.label * Temp.label -> Tree.stm)
 
   val unit : gexp
+
   val simpleVar : access * level -> gexp
   val subscriptVar : gexp * gexp -> gexp
   val fieldVar : gexp * int -> gexp
+
+  val intExp : int -> gexp
+  val stringExp : string -> gexp
+  val seqExp : gexp list -> gexp
   val arrayExp : gexp * gexp -> gexp
   val recordExp : gexp list -> gexp
+
 
 end (* signature TRANSLATE *)
 
@@ -121,7 +127,7 @@ struct
             Tr.MEM(Tr.BINOP(Tr.PLUS, curTree, Tr.CONST sl_offset), 4)
           in findVariableSL(access, parent, curTree') end
 
-        | findVariableSL(_, TOP, _) =
+        | findVariableSL(_) =
             ErrorMsg.impossible "cannot find variable"
 
     in findVariableSL(access, level, Tr.TEMP R.FP) end
@@ -133,6 +139,24 @@ struct
 
   fun fieldVar(varExp, fieldIdx) =
     Ex(Tr.MEM(Tr.BINOP(Tr.PLUS, unEx varExp, Tr.CONST(fieldIdx * 4)), 4))
+
+  fun intExp i = Ex(Tr.CONST i)
+
+  fun stringExp str =
+    let val label = T.newlabel()
+    in
+      fragmentlist := F.DATA{lab=label,s=str} :: !fragmentlist;
+      Ex(Tr.NAME label)
+    end
+
+  fun seqExp exprs =
+    let
+      fun genESEQ([expr]) = unEx expr
+        | genESEQ(expr::exprs) = Tr.ESEQ(unNx expr, genESEQ exprs)
+        | genESEQ(nil) = ErrorMsg.impossible "sequence expression empty?"
+    in
+      Ex(genESEQ exprs)
+    end
 
   fun arrayExp(sizeExp, initExp) =
     Ex(Tr.CALL(
