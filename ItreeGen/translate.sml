@@ -29,6 +29,7 @@ sig
 
   val intExp : int -> gexp
   val stringExp : string -> gexp
+  val appExp : Symbol.symbol * gexp list * level * level -> gexp
   val seqExp : gexp list -> gexp
   val ifExp : gexp * gexp * gexp option -> gexp
   val whileExp : gexp * gexp * Temp.label -> gexp
@@ -122,22 +123,21 @@ struct
 
   val unit = Ex(Tr.CONST 0)
 
-  fun simpleVar(access, level) =
-    let
-      fun findVariableSL(access as (LEVEL(_, accessLevel), offset),
-                         LEVEL({frame,sl_offset,parent}, curLevel),
-                         curTree) =
+  fun findStaticLink(decLevel as LEVEL(_, accessLevel),
+                     LEVEL({frame,sl_offset,parent}, curLevel),
+                     curTree) =
         if accessLevel = curLevel then
-          Ex(Tr.MEM(Tr.BINOP(Tr.PLUS, curTree, Tr.CONST offset), 4))
+          curTree
         else
           let val curTree' =
             Tr.MEM(Tr.BINOP(Tr.PLUS, curTree, Tr.CONST sl_offset), 4)
-          in findVariableSL(access, parent, curTree') end
+          in findStaticLink(decLevel, parent, curTree') end
+    | findStaticLink(_) =
+        ErrorMsg.impossible "cannot find static link"
 
-        | findVariableSL(_) =
-            ErrorMsg.impossible "cannot find variable"
-
-    in findVariableSL(access, level, Tr.TEMP R.FP) end
+  fun simpleVar(access:access, level) =
+    let val sl = findStaticLink(#1 access, level, Tr.TEMP R.FP)
+    in Ex(Tr.MEM(Tr.BINOP(Tr.PLUS, sl, Tr.CONST(#2 access)), 4)) end
 
   fun subscriptVar(varExp, idxExp) =
     Ex(Tr.MEM(
@@ -155,6 +155,11 @@ struct
       fragmentlist := F.DATA{lab=label,s=str} :: !fragmentlist;
       Ex(Tr.NAME label)
     end
+
+  fun appExp(func, argsExps, calleeLevel, callerLevel) =
+    let val argList = map (fn argExp => unEx argExp) argsExps
+        val sl = findStaticLink(calleeLevel, callerLevel, Tr.TEMP R.FP)
+    in Ex(Tr.CALL(Tr.NAME func, sl::argList)) end
 
   fun seqExp exprs =
     let

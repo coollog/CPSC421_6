@@ -375,10 +375,8 @@ struct
     | g (A.IntExp i) = {exp=Tr.intExp i,ty=T.INT}
     | g (A.StringExp (str,_)) = {exp=Tr.stringExp str,ty=T.STRING}
     | g (A.AppExp {func,args,pos}) =
-    {exp=Tr.unit,ty=
-      case S.look(env,func) of
-          SOME(E.FUNentry{level,label,formals,result}) =>
-          (
+        (case S.look(env,func) of
+          SOME(E.FUNentry{level=decLevel,label,formals,result}) =>
             let
               fun checkArgs(A::As,f::fs,n) =
               (
@@ -390,12 +388,13 @@ struct
               | checkArgs(_,_,_) = error pos msgAppExp02
             in
               checkArgs(args,formals,1);
-              result
+              let val argsExps = map (fn arg => #exp(g arg)) args
+                  val gexp = Tr.appExp(func, argsExps, decLevel, level)
+              in {exp=gexp,ty=result} end
             end
-          )
-        | SOME(E.VARentry{access,ty}) => (error pos msgAppExp03; T.INT)
-        | NONE => (error pos msgAppExp04; T.INT)
-    }
+        | SOME(E.VARentry{access,ty}) =>
+            (error pos msgAppExp03; {exp=Tr.unit,ty=T.INT})
+        | NONE => (error pos msgAppExp04; {exp=Tr.unit,ty=T.INT}))
 
     | g (A.RecordExp{fields,typ,pos}) = let
           fun chkField (symbol,exp,pos) = (symbol, #ty(g exp))
