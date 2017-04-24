@@ -504,7 +504,29 @@ struct
         incBreakCnt();
         checkUnit(transexp(env',tenv,level,break)body,pos,msgForExp03);
         decBreakCnt();
-        {exp=Tr.unit,ty=T.UNIT}
+        let val varI = Symbol.symbol "i"
+            val varLimit = Symbol.symbol "limit"
+            val decs = [
+              A.VarDec{var={name=varI, escape=ref false},
+                       typ=NONE,init=lo,pos=pos},
+              A.VarDec{var={name=varLimit, escape=ref false},
+                       typ=NONE,init=hi,pos=pos}]
+            val whileBody = A.SeqExp[
+              (body,pos),
+              (A.AssignExp{var=A.SimpleVar(varI,pos),
+                           exp=A.OpExp{left=A.VarExp(A.SimpleVar(varI,pos)),
+                                       oper=A.PlusOp,
+                                       right=A.IntExp 1,
+                                       pos=pos},
+                           pos=pos},pos)]
+            val body = A.WhileExp{
+              test=A.OpExp{left=A.VarExp(A.SimpleVar(varI,pos)),
+                           oper=A.LeOp,
+                           right=A.VarExp(A.SimpleVar(varLimit,pos)),
+                           pos=pos},
+              body=whileBody,pos=pos}
+            val absyn = A.LetExp{decs=decs,body=body,pos=pos}
+        in transexp(env',tenv,level,break) absyn end
       end
     )
     | g (A.BreakExp(pos)) =
