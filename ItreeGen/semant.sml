@@ -371,11 +371,11 @@ struct
   *             (A.exp -> {exp : ir_code, ty : T.ty})                      *
   **************************************************************************)
   fun transexp (env:E.env, tenv:E.tenv, level:Tr.level) expr =
-    let fun g (A.NilExp) = {exp=(),ty=T.NIL}
-    | g (A.IntExp _) = {exp=(),ty=T.INT}
-    | g (A.StringExp (_,_)) = {exp=(),ty=T.STRING}
+    let fun g (A.NilExp) = {exp=Tr.unit,ty=T.NIL}
+    | g (A.IntExp _) = {exp=Tr.unit,ty=T.INT}
+    | g (A.StringExp (_,_)) = {exp=Tr.unit,ty=T.STRING}
     | g (A.AppExp {func,args,pos}) =
-    {exp=(),ty=
+    {exp=Tr.unit,ty=
       case S.look(env,func) of
           SOME(E.FUNentry{level,label,formals,result}) =>
           (
@@ -430,13 +430,19 @@ struct
       in
           case ty of
             SOME(t as T.RECORD(symTyList,uniq)) =>
-              (cmpField (symTyList, fields);
-               {exp=(), ty=t})
+              let
+                fun getFieldExp(_,exp,_) = #exp(g exp)
+                val fieldExps = map getFieldExp fields
+                val gexp = Tr.recordExp fieldExps
+              in
+                cmpField (symTyList, fields);
+                {exp=gexp, ty=t}
+              end
           | x =>
               (error pos (if isSome x
                           then msgRecordExp02
                           else msgRecordExp01);
-               {exp=(), ty=T.RECORD(map chkField fields, ref())}
+               {exp=Tr.unit, ty=T.RECORD(map chkField fields, ref())}
                )
         end
     | g (A.SeqExp exprs) = let
@@ -444,20 +450,20 @@ struct
           fun checkSeq(nil) = !lastTy
           | checkSeq((exp,_)::exps) = (lastTy:= #ty(g exp);checkSeq(exps);!lastTy)
          in
-          {exp=(),ty=checkSeq(exprs)}
+          {exp=Tr.unit,ty=checkSeq(exprs)}
          end
     | g (A.IfExp {test,then',else'=NONE,pos}) =     (* IF..THEN *)
     (
       checkInt(g test,pos,msgIfExp01);
       checkUnit(g then',pos,msgIfExp02);
-      {exp=(),ty=T.UNIT}
+      {exp=Tr.unit,ty=T.UNIT}
     )
     | g (A.IfExp {test,then',else'=SOME(elseexp),pos}) =    (* IF..THEN..ELSE *)
     (
       checkInt(g test,pos,msgIfExp01);
       case expCmp(then',elseexp,pos) of
-        SOME(t) => {exp=(),ty=t}
-      | NONE => (error pos msgIfExp03; {exp=(),ty=T.INT})
+        SOME(t) => {exp=Tr.unit,ty=t}
+      | NONE => (error pos msgIfExp03; {exp=Tr.unit,ty=T.INT})
     )
 
     | g (A.WhileExp {test,body,pos}) =
@@ -466,7 +472,7 @@ struct
       incBreakCnt();
       checkUnit(g body,pos,msgWhileExp02);
       decBreakCnt();
-      {exp=(),ty=T.UNIT}
+      {exp=Tr.unit,ty=T.UNIT}
     )
 
 (* MEGA HACK *)
@@ -483,13 +489,13 @@ struct
         incBreakCnt();
         checkUnit(transexp(env',tenv,level)body,pos,msgForExp03);
         decBreakCnt();
-        {exp=(),ty=T.UNIT}
+        {exp=Tr.unit,ty=T.UNIT}
       end
     )
     | g (A.BreakExp(pos)) =
       if (hd(!breakCnt)=0)
-      then (error pos msgBreakExp; {exp=(),ty=T.UNIT})
-      else {exp=(),ty=T.UNIT}
+      then (error pos msgBreakExp; {exp=Tr.unit,ty=T.UNIT})
+      else {exp=Tr.unit,ty=T.UNIT}
 
     | g (A.LetExp{decs,body,pos}) =
       let
@@ -513,13 +519,17 @@ struct
           SOME(T.ARRAY(ty,u)) =>
             let
               val initTy = (g init)
+
+              val {exp=sizeExp,...} = g(size)
+              val {exp=initExp,...} = g(init)
+              val gexp = Tr.arrayExp(sizeExp, initExp)
             in
               case tyCmp(tenv,ty,#ty(initTy),pos) of
-                SOME(_) => {exp=(),ty=T.ARRAY(#ty(initTy),u)}
-              | NONE => (error pos msgArrayExp02; {exp=(),ty=T.ARRAY(T.INT,ref ())})
+                SOME(_) => {exp=gexp,ty=T.ARRAY(#ty(initTy),u)}
+              | NONE => (error pos msgArrayExp02; {exp=Tr.unit,ty=T.ARRAY(T.INT,ref ())})
             end
-        | SOME(t) => (error pos msgArrayExp03; {exp=(),ty=T.ARRAY(T.INT,ref())})
-        | NONE => (error pos msgArrayExp04; {exp=(),ty=T.ARRAY(T.INT,ref())})
+        | SOME(t) => (error pos msgArrayExp03; {exp=Tr.unit,ty=T.ARRAY(T.INT,ref())})
+        | NONE => (error pos msgArrayExp04; {exp=Tr.unit,ty=T.ARRAY(T.INT,ref())})
       end
     )
 
@@ -534,8 +544,8 @@ struct
           (T.NIL,T.NIL) => error pos msgOpNeqExp01
         | (_,_) => ();
         case expCmp(left,right,pos) of
-          SOME(t) => {exp=(),ty=T.INT}
-        | NONE => (error pos msgOpNeqExp02; {exp=(),ty=T.INT})
+          SOME(t) => {exp=Tr.unit,ty=T.INT}
+        | NONE => (error pos msgOpNeqExp02; {exp=Tr.unit,ty=T.INT})
       end
     )
       | g (A.OpExp {left,oper=A.EqOp,right,pos}) =
@@ -548,8 +558,8 @@ struct
           (T.NIL,T.NIL) => error pos msgOpEqExp01
         | (_,_) => ();
         case expCmp(left,right,pos) of
-          SOME(t) => {exp=(),ty=T.INT}
-        | NONE => (error pos msgOpEqExp02; {exp=(),ty=T.INT})
+          SOME(t) => {exp=Tr.unit,ty=T.INT}
+        | NONE => (error pos msgOpEqExp02; {exp=Tr.unit,ty=T.INT})
       end
     )
 (* Order comparison operators <, >, <=, <= apply to INTs and STRINGs only *)
@@ -559,11 +569,11 @@ struct
         SOME(t) =>
         (
           case t of
-            T.INT => {exp=(),ty=T.INT}
-          | T.STRING => {exp=(),ty=T.INT}
-          | _ => (error pos (msgCmpExp01^"\">=\"."); {exp=(),ty=T.INT})
+            T.INT => {exp=Tr.unit,ty=T.INT}
+          | T.STRING => {exp=Tr.unit,ty=T.INT}
+          | _ => (error pos (msgCmpExp01^"\">=\"."); {exp=Tr.unit,ty=T.INT})
         )
-      | NONE => (error pos (msgCmpExp02^"\">=\"."); {exp=(),ty=T.INT})
+      | NONE => (error pos (msgCmpExp02^"\">=\"."); {exp=Tr.unit,ty=T.INT})
     )
     | g (A.OpExp {left,oper=A.GtOp,right,pos}) =
     (
@@ -571,11 +581,11 @@ struct
         SOME(t) =>
         (
           case t of
-            T.INT => {exp=(),ty=T.INT}
-          | T.STRING => {exp=(),ty=T.INT}
-          | _ => (error pos (msgCmpExp01^"\">\"."); {exp=(),ty=T.INT})
+            T.INT => {exp=Tr.unit,ty=T.INT}
+          | T.STRING => {exp=Tr.unit,ty=T.INT}
+          | _ => (error pos (msgCmpExp01^"\">\"."); {exp=Tr.unit,ty=T.INT})
         )
-      | NONE => (error pos (msgCmpExp02^"\">\"."); {exp=(),ty=T.INT})
+      | NONE => (error pos (msgCmpExp02^"\">\"."); {exp=Tr.unit,ty=T.INT})
     )
     | g (A.OpExp {left,oper=A.LeOp,right,pos}) =
     (
@@ -583,11 +593,11 @@ struct
         SOME(t) =>
         (
           case t of
-            T.INT => {exp=(),ty=T.INT}
-          | T.STRING => {exp=(),ty=T.INT}
-          | _ => (error pos (msgCmpExp01^"\"<=\"."); {exp=(),ty=T.INT})
+            T.INT => {exp=Tr.unit,ty=T.INT}
+          | T.STRING => {exp=Tr.unit,ty=T.INT}
+          | _ => (error pos (msgCmpExp01^"\"<=\"."); {exp=Tr.unit,ty=T.INT})
         )
-      | NONE => (error pos (msgCmpExp02^"\"<=\"."); {exp=(),ty=T.INT})
+      | NONE => (error pos (msgCmpExp02^"\"<=\"."); {exp=Tr.unit,ty=T.INT})
     )
     | g (A.OpExp {left,oper=A.LtOp,right,pos}) =
     (
@@ -595,18 +605,18 @@ struct
         SOME(t) =>
         (
           case t of
-            T.INT => {exp=(),ty=T.INT}
-          | T.STRING => {exp=(),ty=T.INT}
-          | _ => (error pos (msgCmpExp01^"\"<\"."); {exp=(),ty=T.INT})
+            T.INT => {exp=Tr.unit,ty=T.INT}
+          | T.STRING => {exp=Tr.unit,ty=T.INT}
+          | _ => (error pos (msgCmpExp01^"\"<\"."); {exp=Tr.unit,ty=T.INT})
         )
-      | NONE => (error pos (msgCmpExp02^"\"<\"."); {exp=(),ty=T.INT})
+      | NONE => (error pos (msgCmpExp02^"\"<\"."); {exp=Tr.unit,ty=T.INT})
     )
 (* ADD,SUB,TIMES,DIVIDE apply only to INTs *)
     | g (A.OpExp {left,oper,right,pos}) =
       (
         checkInt (g left, pos, msgArithExp01);
         checkInt (g right, pos, msgArithExp02);
-        {exp=(), ty=T.INT}
+        {exp=Tr.unit, ty=T.INT}
     )
     | g (A.VarExp var) = h(var)
     | g (A.AssignExp {var,exp,pos}) =
@@ -619,8 +629,8 @@ struct
           T.RECORD(s,u) => if u=HACK then (error pos msgAssignExp01) else ()
         | _ => ();
         case tyCmp(tenv,t1,t2,pos) of
-          SOME(_) => {exp=(),ty=T.UNIT}
-        | NONE => (error pos msgAssignExp02; {exp=(),ty=T.UNIT})
+          SOME(_) => {exp=Tr.unit,ty=T.UNIT}
+        | NONE => (error pos msgAssignExp02; {exp=Tr.unit,ty=T.UNIT})
       end
     )
 
@@ -634,13 +644,13 @@ struct
       in
         case envEnt of
           SOME(E.VARentry{access,ty}) =>
-          (
-            case nameFollow(tenv,ty,pos) of
-              SOME(t) => {exp=(),ty=t}
-            | NONE => (error pos msgH0x; {exp=(),ty=T.INT})
-          )
-        | SOME(E.FUNentry{level,label,formals,result}) => (error pos (msgH00^S.name(id)^")."); {exp=(),ty=T.INT})
-        | NONE => (error pos (msgH01^S.name(id)^msgH01b); {exp=(),ty=T.INT})
+            let val gexp = Tr.simpleVar(access, level) in
+              case nameFollow(tenv,ty,pos) of
+                SOME(t) => {exp=gexp,ty=t}
+              | NONE => (error pos msgH0x; {exp=Tr.unit,ty=T.INT})
+            end
+        | SOME(E.FUNentry{level,label,formals,result}) => (error pos (msgH00^S.name(id)^")."); {exp=Tr.unit,ty=T.INT})
+        | NONE => (error pos (msgH01^S.name(id)^msgH01b); {exp=Tr.unit,ty=T.INT})
       end
     )
     | h (A.FieldVar (v,id,pos)) =
@@ -652,25 +662,25 @@ struct
           SOME(T.RECORD(st,_)) =>
           (
             case isField(st,id) of
-              SOME(t) => {exp=(),ty=t}
-            | NONE => (error pos (msgH02^S.name(id)^")."); {exp=(),ty=T.INT})
+              SOME(t) => {exp=Tr.unit,ty=t}
+            | NONE => (error pos (msgH02^S.name(id)^")."); {exp=Tr.unit,ty=T.INT})
           )
-        | _ => (error pos msgH03; {exp=(),ty=T.INT})
+        | _ => (error pos msgH03; {exp=Tr.unit,ty=T.INT})
       end
     )
     | h (A.SubscriptVar (v,exp,pos)) =
-    (
-      let
-        val leftPiece = nameFollow(tenv,#ty(h v),pos)
-      in
-      (
+        let
+          val leftPiece = nameFollow(tenv,#ty(h v),pos)
+
+          val {exp=varExp,...} = h(v)
+          val {exp=idxExp,...} = g(exp)
+          val gexp = Tr.subscriptVar(varExp, idxExp)
+        in
           checkInt (g exp, pos, msgH04);
-        case leftPiece of
-          SOME(T.ARRAY(t,_)) => {exp=(),ty=t}
-        | _ => (error pos msgH05; {exp=(),ty=T.INT})
-      )
-      end
-    )
+          case leftPiece of
+            SOME(T.ARRAY(t,_)) => {exp=gexp,ty=t}
+          | _ => (error pos msgH05; {exp=gexp,ty=T.INT})
+        end
 
 (**
   * Compare two expressions for type equality, and return the type (as an option).

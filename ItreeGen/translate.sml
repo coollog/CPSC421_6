@@ -21,6 +21,12 @@ sig
   val unNx : gexp -> Tree.stm
   val unCx : gexp -> (Temp.label * Temp.label -> Tree.stm)
 
+  val unit : gexp
+  val simpleVar : access * level -> gexp
+  val subscriptVar : gexp * gexp -> gexp
+  val arrayExp : gexp * gexp -> gexp
+  val recordExp : gexp list -> gexp
+
 end (* signature TRANSLATE *)
 
 
@@ -98,6 +104,53 @@ struct
       | _ => Tr.CJUMP(Tr.TEST(Tr.NE, e, Tr.CONST 0), t, f))
     | unCx(Cx genstm) = genstm
     | unCx(Nx s) = ErrorMsg.impossible "turning statement into conditional jump"
+
+
+  val unit = Ex(Tr.CONST 0)
+
+  fun simpleVar(access, level) =
+    let
+      fun findVariableSL(access as (LEVEL(_, accessLevel), offset),
+                         LEVEL({frame,sl_offset,parent}, curLevel),
+                         curTree) =
+        if accessLevel = curLevel then
+          Ex(Tr.MEM(Tr.BINOP(Tr.PLUS, curTree, Tr.CONST offset), 4))
+        else
+          let val curTree' =
+            Tr.MEM(Tr.BINOP(Tr.PLUS, curTree, Tr.CONST sl_offset), 4)
+          in findVariableSL(access, parent, curTree') end
+
+        | findVariableSL(_, TOP, _) =
+            ErrorMsg.impossible "cannot find variable"
+
+    in findVariableSL(access, level, Tr.TEMP R.FP) end
+
+  fun subscriptVar(varExp, idxExp) =
+    let val varTree = unEx varExp
+        val idxTree = unEx idxExp
+    in Ex(Tr.MEM(
+        Tr.BINOP(Tr.PLUS, varTree,
+                          Tr.BINOP(Tr.MUL, idxTree, Tr.CONST 4)), 4)) end
+
+  fun arrayExp(sizeExp, initExp) =
+    Ex(Tr.CALL(
+      Tr.NAME(T.namedlabel "initArray"), [unEx sizeExp, unEx initExp]))
+
+  fun recordExp(fieldExps) =
+    let
+      val t = T.newtemp()
+      val allocation = Tr.MOVE(Tr.TEMP t, Tr.CALL(
+        Tr.NAME(T.namedlabel "allocRecord"), [Tr.CONST(4 * length fieldExps)]))
+      fun moveFields(field::fields, curIdx, curMoves) =
+            moveFields(fields, curIdx + 1,
+              curMoves@[Tr.MOVE(
+                Tr.MEM(Tr.BINOP(Tr.PLUS, Tr.TEMP t, Tr.CONST(curIdx * 4)), 4),
+                unEx field)])
+        | moveFields(nil, _, curMoves) = curMoves
+      val sequence = allocation::moveFields(fieldExps, 0, [])
+    in
+      Ex(Tr.ESEQ(seq(sequence), Tr.TEMP t))
+    end
 
 end (* functor TranslateGen *)
 
