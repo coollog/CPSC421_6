@@ -370,7 +370,7 @@ struct
   *  transexp : (E.env * E.tenv * Tr.level) ->                             *
   *             (A.exp -> {exp : ir_code, ty : T.ty})                      *
   **************************************************************************)
-  fun transexp (env:E.env, tenv:E.tenv, level:Tr.level) expr =
+  fun transexp (env:E.env, tenv:E.tenv, level:Tr.level, break:Temp.label) expr =
     let fun g (A.NilExp) = {exp=Tr.unit,ty=T.NIL}
     | g (A.IntExp i) = {exp=Tr.intExp i,ty=T.INT}
     | g (A.StringExp (str,_)) = {exp=Tr.stringExp str,ty=T.STRING}
@@ -459,8 +459,8 @@ struct
     (
       checkInt(g test,pos,msgIfExp01);
       checkUnit(g then',pos,msgIfExp02);
-      let val testExp = #exp(g test)
-          val thenExp = #exp(g then')
+      let val {exp=testExp,...} = g test
+          val {exp=thenExp,...} = g then'
           val gexp = Tr.ifExp(testExp, thenExp, NONE)
       in {exp=gexp,ty=T.UNIT} end
     )
@@ -469,9 +469,9 @@ struct
       checkInt(g test,pos,msgIfExp01);
       case expCmp(then',elseexp,pos) of
         SOME(t) =>
-        let val testExp = #exp(g test)
-            val thenExp = #exp(g then')
-            val elseExp = #exp(g elseexp)
+        let val {exp=testExp,...} = g test
+            val {exp=thenExp,...} = g then'
+            val {exp=elseExp,...} = g elseexp
             val gexp = Tr.ifExp(testExp, thenExp, SOME(elseExp))
         in {exp=gexp,ty=t} end
       | NONE => (error pos msgIfExp03; {exp=Tr.unit,ty=T.INT})
@@ -483,7 +483,11 @@ struct
       incBreakCnt();
       checkUnit(g body,pos,msgWhileExp02);
       decBreakCnt();
-      {exp=Tr.unit,ty=T.UNIT}
+      let val doneLabel = Temp.newlabel()
+          val {exp=testExp,...} = g test
+          val {exp=bodyExp,...} = transexp(env, tenv, level, doneLabel) body
+          val gexp = Tr.whileExp(testExp, bodyExp, doneLabel)
+      in {exp=gexp,ty=T.UNIT} end
     )
 
 (* MEGA HACK *)
@@ -498,7 +502,7 @@ struct
         checkInt(g lo,pos,msgForExp01);
         checkInt(g hi,pos,msgForExp02);
         incBreakCnt();
-        checkUnit(transexp(env',tenv,level)body,pos,msgForExp03);
+        checkUnit(transexp(env',tenv,level,break)body,pos,msgForExp03);
         decBreakCnt();
         {exp=Tr.unit,ty=T.UNIT}
       end
@@ -506,13 +510,13 @@ struct
     | g (A.BreakExp(pos)) =
       if (hd(!breakCnt)=0)
       then (error pos msgBreakExp; {exp=Tr.unit,ty=T.UNIT})
-      else {exp=Tr.unit,ty=T.UNIT}
+      else {exp=Tr.breakExp(break),ty=T.UNIT}
 
     | g (A.LetExp{decs,body,pos}) =
       let
-        val (env',tenv') = transdecs(env,tenv,decs,level)
+        val (env',tenv') = transdecs(env,tenv,decs,level,break)
       in
-        transexp(env',tenv',level)body
+        transexp(env',tenv',level,break)body
       end
 
     | g (A.ArrayExp{typ,size,init,pos}) =   (* need to check size is int, and typeof(init) = typ *)
@@ -555,7 +559,12 @@ struct
           (T.NIL,T.NIL) => error pos msgOpNeqExp01
         | (_,_) => ();
         case expCmp(left,right,pos) of
-          SOME(t) => {exp=Tr.relopExp(A.NeqOp, #exp(g left), #exp(g right)),ty=T.INT}
+          SOME(T.STRING) =>
+            let val gexp = Tr.strEq(true, #exp(g left), #exp(g right))
+            in {exp=gexp,ty=T.INT} end
+        | SOME(t) =>
+            let val gexp = Tr.relopExp(A.NeqOp, #exp(g left), #exp(g right))
+            in {exp=gexp,ty=T.INT} end
         | NONE => (error pos msgOpNeqExp02; {exp=Tr.unit,ty=T.INT})
       end
     )
@@ -569,7 +578,12 @@ struct
           (T.NIL,T.NIL) => error pos msgOpEqExp01
         | (_,_) => ();
         case expCmp(left,right,pos) of
-          SOME(t) => {exp=Tr.relopExp(A.EqOp, #exp(g left), #exp(g right)),ty=T.INT}
+          SOME(T.STRING) =>
+            let val gexp = Tr.strEq(false, #exp(g left), #exp(g right))
+            in {exp=gexp,ty=T.INT} end
+        | SOME(_) =>
+            let val gexp = Tr.relopExp(A.EqOp, #exp(g left), #exp(g right))
+            in {exp=gexp,ty=T.INT} end
         | NONE => (error pos msgOpEqExp02; {exp=Tr.unit,ty=T.INT})
       end
     )
@@ -722,7 +736,7 @@ struct
   * appropriately `prepped' (see addFuncNames), adds the params to the
   * environment and type checks the function bodies.
   *)
-  and checkFuncs(env,tenv,({name,params,result,body,pos}:A.fundec)::decs,level) =
+  and checkFuncs(env,tenv,({name,params,result,body,pos}:A.fundec)::decs,level,break) =
     let
       val env' =
       (
@@ -758,12 +772,12 @@ struct
           )
       )
     in
-      case tyCmp(tenv,#ty(transexp(env',tenv,level)body),resultTy,pos) of
+      case tyCmp(tenv,#ty(transexp(env',tenv,level,break)body),resultTy,pos) of
         NONE => error pos checkFuncs03
       | SOME(t) => ();
-      checkFuncs(env,tenv,decs,level)
+      checkFuncs(env,tenv,decs,level,break)
     end
-  |   checkFuncs(_,_,nil,_) = ()
+  |   checkFuncs(_,_,nil,_,_) = ()
 
 
  (**************************************************************************
@@ -772,9 +786,9 @@ struct
   *  transdec : (E.env * E.tenv * A.dec * Tr.level) ->                     *
   *             (E.env * E.tenv)                                           *
   **************************************************************************)
-  and transdec (env, tenv, A.VarDec{var,typ,init,pos}, level) =
+  and transdec (env, tenv, A.VarDec{var,typ,init,pos}, level, break) =
     let
-      val initTy = transexp(env,tenv,level) init
+      val initTy = transexp(env,tenv,level,break) init
       val initTy' =
       (
         case typ of
@@ -806,17 +820,17 @@ struct
     )
     end
 
-    | transdec (env, tenv, A.FunctionDec(declist), level) =
+    | transdec (env, tenv, A.FunctionDec(declist), level, break) =
     let
       (* gotta re-init loop depth counter *)
       val env' = (pushBreakCnt(); addFuncNames(env,tenv,declist,nil,level))
     in
-      checkFuncs(env',tenv,declist,level);
+      checkFuncs(env',tenv,declist,level,break);
       popBreakCnt();    (* restore the loop depth counter *)
       (env', tenv)
     end
 
-    | transdec (env, tenv, A.TypeDec(declist), level) =
+    | transdec (env, tenv, A.TypeDec(declist), level, break) =
     let
       val tenv' = addTypeNames(env,tenv,declist,nil)
       val tenv'' = checkTypes(tenv',declist)
@@ -827,15 +841,15 @@ struct
 
 
   (*** transdecs : (E.env * E.tenv * A.dec list) -> (E.env * E.tenv) ***)
-  and transdecs (env,tenv,nil,level) = (env, tenv)
-    | transdecs (env,tenv,dec::decs,level) =
-      let val (env',tenv') = transdec (env,tenv,dec,level)
-       in transdecs (env',tenv',decs,level)
+  and transdecs (env,tenv,nil,level,break) = (env, tenv)
+    | transdecs (env,tenv,dec::decs,level,break) =
+      let val (env',tenv') = transdec (env,tenv,dec,level,break)
+       in transdecs (env',tenv',decs,level,break)
       end
 
   (*** transprog : A.exp -> Frame.frag list ***)
   fun transprog prog =
-     (transexp (E.base_env, E.base_tenv, Tr.outermost) prog;
+     (transexp (E.base_env, E.base_tenv, Tr.outermost, Temp.newlabel()) prog;
       Tr.getResult ())
 
 end  (* structure Semant *)

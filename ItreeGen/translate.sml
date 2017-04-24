@@ -31,10 +31,13 @@ sig
   val stringExp : string -> gexp
   val seqExp : gexp list -> gexp
   val ifExp : gexp * gexp * gexp option -> gexp
+  val whileExp : gexp * gexp * Temp.label -> gexp
+  val breakExp : Temp.label -> gexp
   val arrayExp : gexp * gexp -> gexp
   val recordExp : gexp list -> gexp
   val binopExp : Absyn.oper * gexp * gexp -> gexp
   val relopExp : Absyn.oper * gexp * gexp -> gexp
+  val strEq : bool * gexp * gexp -> gexp
 
 
 end (* signature TRANSLATE *)
@@ -191,6 +194,22 @@ struct
         in Ex(Tr.ESEQ(seq(sequence), Tr.TEMP r)) end
     end
 
+  fun whileExp(testExp, bodyExp, doneLabel) =
+    let val testLabel = T.newlabel()
+        val bodyLabel = T.newlabel()
+
+        val test = unCx testExp (bodyLabel, doneLabel)
+
+        val sequence = [Tr.LABEL testLabel,
+                        test,
+                        Tr.LABEL bodyLabel,
+                        unNx bodyExp,
+                        Tr.JUMP(Tr.NAME testLabel, [testLabel]),
+                        Tr.LABEL doneLabel]
+    in Nx(seq(sequence)) end
+
+  fun breakExp(breakLabel) = Nx(Tr.JUMP(Tr.NAME breakLabel, [breakLabel]))
+
   fun arrayExp(sizeExp, initExp) =
     Ex(Tr.CALL(
       Tr.NAME(T.namedlabel "initArray"), [unEx sizeExp, unEx initExp]))
@@ -233,6 +252,13 @@ struct
     in Cx(fn (t, f) =>
             Tr.CJUMP(Tr.TEST(relop, unEx leftExp, unEx rightExp), t, f))
     end
+
+  fun strEq(isNeq, leftExp, rightExp) =
+    let val stringEqual = Tr.CALL(
+          Tr.NAME(T.namedlabel "stringEqual"), [unEx leftExp, unEx rightExp])
+        val res = if isNeq then 0 else 1
+    in Cx(fn (t, f) =>
+        Tr.CJUMP(Tr.TEST(Tr.EQ, stringEqual, Tr.CONST res), t, f)) end
 
 end (* functor TranslateGen *)
 
