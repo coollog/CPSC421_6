@@ -32,6 +32,8 @@ sig
   val seqExp : gexp list -> gexp
   val arrayExp : gexp * gexp -> gexp
   val recordExp : gexp list -> gexp
+  val binopExp : Absyn.oper * gexp * gexp -> gexp
+  val relopExp : Absyn.oper * gexp * gexp -> gexp
 
 
 end (* signature TRANSLATE *)
@@ -40,6 +42,7 @@ end (* signature TRANSLATE *)
 functor TranslateGen(Register : REGISTER_STD) : TRANSLATE =
 struct
 
+  structure A = Absyn
   structure F = Frame
   structure R = Register
   structure Tr = Tree
@@ -176,6 +179,29 @@ struct
       val sequence = allocation::moveFields(fieldExps, 0, [])
     in
       Ex(Tr.ESEQ(seq(sequence), Tr.TEMP t))
+    end
+
+  fun binopExp(oper, leftExp, rightExp) =
+    let val binop = case oper of
+          A.PlusOp => Tr.PLUS
+        | A.MinusOp => Tr.MINUS
+        | A.TimesOp => Tr.MUL
+        | A.DivideOp => Tr.DIV
+        | _ => ErrorMsg.impossible "invalid binop"
+    in Ex(Tr.BINOP(binop, unEx leftExp, unEx rightExp))
+    end
+
+  fun relopExp(oper, leftExp, rightExp) =
+    let val relop = case oper of
+          A.EqOp => Tr.EQ
+        | A.NeqOp => Tr.NE
+        | A.LtOp => Tr.LT
+        | A.GtOp => Tr.GT
+        | A.LeOp => Tr.LE
+        | A.GeOp => Tr.GE
+        | _ => ErrorMsg.impossible "invalid relop"
+    in Cx(fn (t, f) =>
+            Tr.CJUMP(Tr.TEST(relop, unEx leftExp, unEx rightExp), t, f))
     end
 
 end (* functor TranslateGen *)

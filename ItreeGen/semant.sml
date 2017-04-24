@@ -547,7 +547,7 @@ struct
           (T.NIL,T.NIL) => error pos msgOpNeqExp01
         | (_,_) => ();
         case expCmp(left,right,pos) of
-          SOME(t) => {exp=Tr.unit,ty=T.INT}
+          SOME(t) => {exp=Tr.relopExp(A.NeqOp, #exp(g left), #exp(g right)),ty=T.INT}
         | NONE => (error pos msgOpNeqExp02; {exp=Tr.unit,ty=T.INT})
       end
     )
@@ -561,7 +561,7 @@ struct
           (T.NIL,T.NIL) => error pos msgOpEqExp01
         | (_,_) => ();
         case expCmp(left,right,pos) of
-          SOME(t) => {exp=Tr.unit,ty=T.INT}
+          SOME(t) => {exp=Tr.relopExp(A.EqOp, #exp(g left), #exp(g right)),ty=T.INT}
         | NONE => (error pos msgOpEqExp02; {exp=Tr.unit,ty=T.INT})
       end
     )
@@ -570,48 +570,48 @@ struct
     (
       case expCmp(left,right,pos) of
         SOME(t) =>
-        (
-          case t of
-            T.INT => {exp=Tr.unit,ty=T.INT}
-          | T.STRING => {exp=Tr.unit,ty=T.INT}
-          | _ => (error pos (msgCmpExp01^"\">=\"."); {exp=Tr.unit,ty=T.INT})
-        )
+          let val gexp = Tr.relopExp(A.GeOp, #exp(g left), #exp(g right))
+          in case t of
+              T.INT => {exp=gexp,ty=T.INT}
+            | T.STRING => {exp=gexp,ty=T.INT}
+            | _ => (error pos (msgCmpExp01^"\">=\"."); {exp=Tr.unit,ty=T.INT})
+          end
       | NONE => (error pos (msgCmpExp02^"\">=\"."); {exp=Tr.unit,ty=T.INT})
     )
     | g (A.OpExp {left,oper=A.GtOp,right,pos}) =
     (
       case expCmp(left,right,pos) of
         SOME(t) =>
-        (
-          case t of
-            T.INT => {exp=Tr.unit,ty=T.INT}
-          | T.STRING => {exp=Tr.unit,ty=T.INT}
-          | _ => (error pos (msgCmpExp01^"\">\"."); {exp=Tr.unit,ty=T.INT})
-        )
+          let val gexp = Tr.relopExp(A.GtOp, #exp(g left), #exp(g right))
+          in case t of
+              T.INT => {exp=gexp,ty=T.INT}
+            | T.STRING => {exp=gexp,ty=T.INT}
+            | _ => (error pos (msgCmpExp01^"\">\"."); {exp=Tr.unit,ty=T.INT})
+          end
       | NONE => (error pos (msgCmpExp02^"\">\"."); {exp=Tr.unit,ty=T.INT})
     )
     | g (A.OpExp {left,oper=A.LeOp,right,pos}) =
     (
       case expCmp(left,right,pos) of
         SOME(t) =>
-        (
-          case t of
-            T.INT => {exp=Tr.unit,ty=T.INT}
-          | T.STRING => {exp=Tr.unit,ty=T.INT}
-          | _ => (error pos (msgCmpExp01^"\"<=\"."); {exp=Tr.unit,ty=T.INT})
-        )
+          let val gexp = Tr.relopExp(A.LeOp, #exp(g left), #exp(g right))
+          in case t of
+              T.INT => {exp=gexp,ty=T.INT}
+            | T.STRING => {exp=gexp,ty=T.INT}
+            | _ => (error pos (msgCmpExp01^"\"<=\"."); {exp=Tr.unit,ty=T.INT})
+          end
       | NONE => (error pos (msgCmpExp02^"\"<=\"."); {exp=Tr.unit,ty=T.INT})
     )
     | g (A.OpExp {left,oper=A.LtOp,right,pos}) =
     (
       case expCmp(left,right,pos) of
         SOME(t) =>
-        (
-          case t of
-            T.INT => {exp=Tr.unit,ty=T.INT}
-          | T.STRING => {exp=Tr.unit,ty=T.INT}
-          | _ => (error pos (msgCmpExp01^"\"<\"."); {exp=Tr.unit,ty=T.INT})
-        )
+          let val gexp = Tr.relopExp(A.LtOp, #exp(g left), #exp(g right))
+          in case t of
+              T.INT => {exp=gexp,ty=T.INT}
+            | T.STRING => {exp=gexp,ty=T.INT}
+            | _ => (error pos (msgCmpExp01^"\"<\"."); {exp=Tr.unit,ty=T.INT})
+          end
       | NONE => (error pos (msgCmpExp02^"\"<\"."); {exp=Tr.unit,ty=T.INT})
     )
 (* ADD,SUB,TIMES,DIVIDE apply only to INTs *)
@@ -619,7 +619,7 @@ struct
       (
         checkInt (g left, pos, msgArithExp01);
         checkInt (g right, pos, msgArithExp02);
-        {exp=Tr.unit, ty=T.INT}
+        {exp=Tr.binopExp(oper, #exp(g left), #exp(g right)), ty=T.INT}
     )
     | g (A.VarExp var) = h(var)
     | g (A.AssignExp {var,exp,pos}) =
