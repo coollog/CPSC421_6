@@ -30,6 +30,7 @@ sig
   val intExp : int -> gexp
   val stringExp : string -> gexp
   val seqExp : gexp list -> gexp
+  val ifExp : gexp * gexp * gexp option -> gexp
   val arrayExp : gexp * gexp -> gexp
   val recordExp : gexp list -> gexp
   val binopExp : Absyn.oper * gexp * gexp -> gexp
@@ -159,6 +160,35 @@ struct
         | genESEQ(nil) = ErrorMsg.impossible "sequence expression empty?"
     in
       Ex(genESEQ exprs)
+    end
+
+  fun ifExp(testExp, thenExp, elseExp) =
+    let
+      val r = T.newtemp()
+      val t = T.newlabel() and f = T.newlabel()
+
+      val test = unCx testExp (t, f)
+
+    in case elseExp of
+
+      SOME(elseExp) =>
+        let val join = T.newlabel()
+            val sequence = [test,
+                            Tr.LABEL t,
+                            Tr.MOVE(Tr.TEMP r, unEx thenExp),
+                            Tr.JUMP(Tr.NAME join, [join]),
+                            Tr.LABEL f,
+                            Tr.MOVE(Tr.TEMP r, unEx elseExp),
+                            Tr.JUMP(Tr.NAME join, [join]),
+                            Tr.LABEL join]
+        in Ex(Tr.ESEQ(seq(sequence), Tr.TEMP r)) end
+
+      | NONE =>
+        let val sequence = [test,
+                            Tr.LABEL t,
+                            Tr.MOVE(Tr.TEMP r, unEx thenExp),
+                            Tr.LABEL f]
+        in Ex(Tr.ESEQ(seq(sequence), Tr.TEMP r)) end
     end
 
   fun arrayExp(sizeExp, initExp) =

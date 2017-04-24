@@ -459,13 +459,21 @@ struct
     (
       checkInt(g test,pos,msgIfExp01);
       checkUnit(g then',pos,msgIfExp02);
-      {exp=Tr.unit,ty=T.UNIT}
+      let val testExp = #exp(g test)
+          val thenExp = #exp(g then')
+          val gexp = Tr.ifExp(testExp, thenExp, NONE)
+      in {exp=gexp,ty=T.UNIT} end
     )
     | g (A.IfExp {test,then',else'=SOME(elseexp),pos}) =    (* IF..THEN..ELSE *)
     (
       checkInt(g test,pos,msgIfExp01);
       case expCmp(then',elseexp,pos) of
-        SOME(t) => {exp=Tr.unit,ty=t}
+        SOME(t) =>
+        let val testExp = #exp(g test)
+            val thenExp = #exp(g then')
+            val elseExp = #exp(g elseexp)
+            val gexp = Tr.ifExp(testExp, thenExp, SOME(elseExp))
+        in {exp=gexp,ty=t} end
       | NONE => (error pos msgIfExp03; {exp=Tr.unit,ty=T.INT})
     )
 
