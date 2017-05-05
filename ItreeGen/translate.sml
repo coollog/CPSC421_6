@@ -39,6 +39,9 @@ sig
   val binopExp : Absyn.oper * gexp * gexp -> gexp
   val relopExp : Absyn.oper * gexp * gexp -> gexp
   val strEq : bool * gexp * gexp -> gexp
+  val assignExp : gexp * gexp -> gexp
+
+  val fundec : Temp.label * level * gexp -> unit
 
 
 end (* signature TRANSLATE *)
@@ -264,6 +267,14 @@ struct
         val res = if isNeq then 0 else 1
     in Cx(fn (t, f) =>
         Tr.CJUMP(Tr.TEST(Tr.EQ, stringEqual, Tr.CONST res), t, f)) end
+
+  fun assignExp(varExp, valExp) = Nx(Tr.MOVE(unEx varExp, unEx valExp))
+
+  fun fundec(label, LEVEL({frame,...},_), bodyExp) =
+    let val body = Tr.MOVE(Tr.TEMP R.RV, unEx bodyExp)
+        val proc = F.PROC{name=label, body=body, frame=frame}
+    in fragmentlist := proc :: !fragmentlist end
+    | fundec(_, TOP, _) = ErrorMsg.impossible "top-level function declaration"
 
 end (* functor TranslateGen *)
 

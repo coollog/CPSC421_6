@@ -668,14 +668,14 @@ struct
     | g (A.AssignExp {var,exp,pos}) =
     (
       let
-        val t1 = #ty(h var)
-        val t2 = #ty(g exp)
+        val {exp=varExp, ty=t1} = h var
+        val {exp=valExp, ty=t2} = g exp
       in
         case t1 of
           T.RECORD(s,u) => if u=HACK then (error pos msgAssignExp01) else ()
         | _ => ();
         case tyCmp(tenv,t1,t2,pos) of
-          SOME(_) => {exp=Tr.unit,ty=T.UNIT}
+          SOME(_) => {exp=Tr.assignExp(varExp, valExp),ty=T.UNIT}
         | NONE => (error pos msgAssignExp02; {exp=Tr.unit,ty=T.UNIT})
       end
     )
@@ -792,10 +792,14 @@ struct
             | SOME(t) => t
           )
       )
+
+      val {exp=bodyExp, ty=bodyTy} = transexp(env',tenv,level,break)body
     in
-      case tyCmp(tenv,#ty(transexp(env',tenv,level,break)body),resultTy,pos) of
+      case tyCmp(tenv,bodyTy,resultTy,pos) of
         NONE => error pos checkFuncs03
-      | SOME(t) => ();
+      | SOME(t) => (case S.look(env', name) of
+          SOME(E.FUNentry{level,label,...}) => Tr.fundec(label, level, bodyExp)
+        | _ => ErrorMsg.impossible "function declared as variable?");
       checkFuncs(env,tenv,decs,level,break)
     end
   |   checkFuncs(_,_,nil,_,_) = ()
@@ -809,7 +813,7 @@ struct
   **************************************************************************)
   and transdec (env, tenv, A.VarDec{var,typ,init,pos}, level, break) =
     let
-      val initTy = transexp(env,tenv,level,break) init
+      val {exp=initExp,ty=initTy} = transexp(env,tenv,level,break) init
       val initTy' =
       (
         case typ of
@@ -817,9 +821,9 @@ struct
           (
             case S.look(tenv,ty) of
               SOME(t) => t
-            | NONE => #ty(initTy)
+            | NONE => initTy
           )
-        | NONE => #ty(initTy)
+        | NONE => initTy
       )
     in
     (
@@ -829,15 +833,20 @@ struct
           case S.look(tenv,ty) of
             SOME(t) =>
             (
-              case tyCmp(tenv,#ty(initTy),t,pos) of
+              case tyCmp(tenv,initTy,t,pos) of
                 SOME(t') => ()
               | NONE => error pos transdec01
             )
           | NONE => error pos transdec02
         )
-      | NONE => case #ty(initTy) of T.NIL => (error pos transdec03) | _ => ();
-      (S.enter(env,#name(var),
-               E.VARentry{access=Tr.allocInFrame level,ty=initTy'}), tenv)
+      | NONE => case initTy of T.NIL => (error pos transdec03) | _ => ();
+
+      let
+        val access = Tr.allocInFrame level
+      in
+        Tr.assignExp(Tr.simpleVar(access, level), initExp);
+        (S.enter(env,#name(var), E.VARentry{access=access,ty=initTy'}), tenv)
+      end
     )
     end
 
@@ -870,8 +879,15 @@ struct
 
   (*** transprog : A.exp -> Frame.frag list ***)
   fun transprog prog =
-     (transexp (E.base_env, E.base_tenv, Tr.outermost, Temp.newlabel()) prog;
-      Tr.getResult ())
+    let
+      val (levelMain, _) = Tr.newLevel{parent=Tr.outermost, formals=[]}
+      val label = Temp.namedlabel "tigermain"
+      val {exp=translated, ...} =
+        transexp (E.base_env, E.base_tenv, levelMain, label) prog
+    in
+      Tr.fundec(label, levelMain, translated);
+      Tr.getResult()
+    end
 
 end  (* structure Semant *)
 
