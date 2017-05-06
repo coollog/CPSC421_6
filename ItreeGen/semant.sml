@@ -792,14 +792,18 @@ struct
             | SOME(t) => t
           )
       )
-
-      val {exp=bodyExp, ty=bodyTy} = transexp(env',tenv,level,break)body
     in
-      case tyCmp(tenv,bodyTy,resultTy,pos) of
-        NONE => error pos checkFuncs03
-      | SOME(t) => (case S.look(env', name) of
-          SOME(E.FUNentry{level,label,...}) => Tr.fundec(label, level, bodyExp)
-        | _ => ErrorMsg.impossible "function declared as variable?");
+      case S.look(env', name) of
+        SOME(E.FUNentry{level,label,...}) =>
+          let
+            val {exp=bodyExp, ty=bodyTy} = transexp(env',tenv,level,break)body
+          in
+            case tyCmp(tenv,bodyTy,resultTy,pos) of
+              NONE => error pos checkFuncs03
+            | SOME(t) => Tr.fundec(label, level, bodyExp)
+          end
+      | _ => ErrorMsg.impossible "function declared as variable?";
+
       checkFuncs(env,tenv,decs,level,break)
     end
   |   checkFuncs(_,_,nil,_,_) = ()

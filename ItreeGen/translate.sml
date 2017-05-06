@@ -126,10 +126,10 @@ struct
 
   val unit = Ex(Tr.CONST 0)
 
-  fun findStaticLink(decLevel as LEVEL(_, accessLevel),
-                     LEVEL({frame,sl_offset,parent}, curLevel),
+  fun findStaticLink(decLevel as LEVEL(_, decAccess),
+                     LEVEL({sl_offset,parent,...}, curAccess),
                      curTree) =
-        if accessLevel = curLevel then
+        if decAccess = curAccess then
           curTree
         else
           let val curTree' =
@@ -160,11 +160,10 @@ struct
     end
 
   fun appExp(func, argsExps, TOP, _) =
-      let val argList = map (fn argExp => unEx argExp) argsExps
+      let val argList = map unEx argsExps
       in Ex(Tr.CALL(Tr.NAME func, argList)) end
-    | appExp(func, argsExps, LEVEL({parent=calleeLevel,...},_),
-             callerLevel) =
-      let val argList = map (fn argExp => unEx argExp) argsExps
+    | appExp(func, argsExps, LEVEL({parent=calleeLevel,...},_), callerLevel) =
+      let val argList = map unEx argsExps
           val sl = findStaticLink(calleeLevel, callerLevel, Tr.TEMP R.FP)
       in Ex(Tr.CALL(Tr.NAME func, sl::argList)) end
 
