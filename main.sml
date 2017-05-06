@@ -24,14 +24,14 @@ struct
             val stms = Canon.linearize body
             val stms' = Canon.traceSchedule(Canon.basicBlocks stms)
 
-            val _ =
+            (*val _ =
               let
                 fun printstms(stm::stms) =
                       (Printtree.printtree(out, stm); printstms(stms))
                   | printstms([]) = ()
               in
                 printstms(stms')
-              end
+              end*)
 
             val instrs = List.concat(map C.codegen stms')
 
@@ -115,7 +115,7 @@ struct
             val format0 = A.format (fn t => "t" ^ Temp.makestring t)
             val format1 = A.format(fn t => (valOf(Temp.Table.look(allocation, t))))
 
-         in app (fn i => TextIO.output(out,format0 i)) instrs
+         in app (fn i => TextIO.output(out,format1 i)) instrs'
         end
 
   fun withOpenFile fname f =
