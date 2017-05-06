@@ -1,20 +1,9 @@
-LABEL L1
+LABEL L3
 EXP(
  MEM[4](
   BINOP(PLUS,
    TEMP T101,
    CONST ~208)))
-MOVE(
- MEM[4](
-  BINOP(PLUS,
-   MEM[4](
-    BINOP(PLUS,
-     TEMP T101,
-     CONST ~208)),
-   BINOP(MUL,
-    CONST 5,
-    CONST 4))),
- CONST 100)
 MOVE(
  TEMP T100,
  MEM[4](
@@ -24,11 +13,11 @@ MOVE(
      TEMP T101,
      CONST ~208)),
    BINOP(MUL,
-    CONST 5,
+    CONST 9,
     CONST 4))))
 JUMP(
- NAME L0)
-LABEL L0
+ NAME L2)
+LABEL L2
 .globl tigermain
 .type tigermain, @function
 tigermain:
@@ -38,25 +27,19 @@ tigermain:
 	pushl %ebx                   # push callee save
 	pushl %edi                   # push callee save
 	pushl %esi                   # push callee save
-L1:
+L3:
 	movl %ebp, %ebx              # move to register
 	movl $-208, %edi             # move constant to register
 	addl %edi, %ebx              # add two registers
 	movl (%ebx), %ebx            # fetch from memory
-	movl %ebp, %ebx              # move to register
-	movl $-208, %edi             # move constant to register
-	addl %edi, %ebx              # add two registers
-	movl (%ebx), %edi            # fetch from memory
-	movl $5, %ebx                # move constant to register
-	movl $100, (%edi, %ebx, 4)   # move to memory
 	movl %ebp, %edi              # move to register
 	movl $-208, %ebx             # move constant to register
 	addl %ebx, %edi              # add two registers
 	movl (%edi), %ebx            # fetch from memory
-	movl $5, %edi                # move constant to register
+	movl $9, %edi                # move constant to register
 	movl (%ebx, %edi, 4), %eax   # move to register
-	jmp L0                     # jump to L0
-L0:
+	jmp L2                     # jump to L2
+L2:
 	popl %esi                    # pop callee save
 	popl %edi                    # pop callee save
 	popl %ebx                    # pop callee save

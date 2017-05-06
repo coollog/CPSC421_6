@@ -817,6 +817,7 @@ struct
   **************************************************************************)
   and transdec (env, tenv, A.VarDec{var,typ,init,pos}, level, break) =
     let
+      val _ = PP.pp(init)
       val {exp=initExp,ty=initTy} = transexp(env,tenv,level,break) init
       val initTy' =
       (

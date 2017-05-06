@@ -6,7 +6,7 @@
  *)
 
 signature PPSIG =
-sig 
+sig
   val pp : Absyn.exp -> string
   val TS : string -> unit
   val TN : int -> unit
@@ -17,17 +17,17 @@ structure PP : PPSIG = struct
 local open Absyn
       fun decode s = "\"" ^ s ^ "\""   (* later decode \n et al *)
       fun N s = Symbol.name s
-      fun LF r = ListFormat.formatList r
+      fun LF r = ListFormat.fmt r
 in
    fun pp e =
-     case e 
+     case e
       of VarExp v                    => ppv v
        | NilExp                      => "Nil"
-       | IntExp i                    => makestring i
+       | IntExp i                    => Int.toString i
        | StringExp (s,_)             => decode s
        | AppExp{func,args,pos}       => LF{init= N func ^ "(",
                                            sep= ", ",final= ")",fmt= pp} args
-       | OpExp{left,oper,right,pos}  => ("(" ^ pp left ^ ppo oper ^ 
+       | OpExp{left,oper,right,pos}  => ("(" ^ pp left ^ ppo oper ^
                                          pp  right ^ ")")
        | RecordExp {typ,fields,pos}  => LF{init= N typ ^ "{",sep= ", ",
                                            final= "}",
@@ -47,15 +47,15 @@ in
        | BreakExp _                  => "break"
        | LetExp {decs,body,pos}      => "let\n" ^ ppds decs
                                         ^ "\nin " ^ pp body ^ " end"
-       | ArrayExp{typ,size,init,pos} => N typ ^ "[" ^ pp size ^ "] of " 
+       | ArrayExp{typ,size,init,pos} => N typ ^ "[" ^ pp size ^ "] of "
                                         ^ pp init
    and ppv v =
-     case v 
+     case v
       of SimpleVar (s,p)     => N s
        | FieldVar (v,s,p)    => ppv v ^ "." ^ N s
        | SubscriptVar(v,e,p) => ppv v ^ "[" ^ pp e ^ "]"
 
-   and ppfd {name,params,result,body,pos} = 
+   and ppfd {name,params,result,body,pos} =
            "function " ^ N name ^ LF{init="(",sep=", ",
                                      final=")",fmt= ppfms} params
            ^ (case result of NONE        => ""
@@ -68,8 +68,8 @@ in
      | ppd (FunctionDec [])        = ""
      | ppd (TypeDec (td::tds))     = pptd td ^ ppd (TypeDec tds)
      | ppd (TypeDec [])            = ""
-     | ppd (VarDec{var,typ,init,pos}) = 
-           "var " ^ N (#name var) ^ (case typ 
+     | ppd (VarDec{var,typ,init,pos}) =
+           "var " ^ N (#name var) ^ (case typ
                                       of NONE      => ""
                                        | SOME(n,_) => " : " ^ N n)
            ^ " := " ^ pp init
@@ -82,7 +82,7 @@ in
      | ppt (ArrayTy(s,_)) = "array of " ^ N s
 
    and ppo oper =
-     case oper 
+     case oper
       of PlusOp  => "+"
        | MinusOp => "-"
        | TimesOp => "*"
@@ -105,7 +105,7 @@ fun TS(s) =
      ("/homes/classes/cs421/as/testcases/" ^ s ^ ".toy");
    print "\n")
 
-fun TN(n :int) = TS("test" ^ makestring n)
+fun TN(n :int) = TS("test" ^ Int.toString n)
 
 end
 
