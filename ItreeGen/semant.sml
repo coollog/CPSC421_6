@@ -389,7 +389,7 @@ struct
             in
               checkArgs(args,formals,1);
               let val argsExps = map (fn arg => #exp(g arg)) args
-                  val gexp = Tr.appExp(func, argsExps, decLevel, level)
+                  val gexp = Tr.appExp(label, argsExps, decLevel, level)
               in {exp=gexp,ty=result} end
             end
         | SOME(E.VARentry{access,ty}) =>
