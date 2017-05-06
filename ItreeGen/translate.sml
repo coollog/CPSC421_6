@@ -119,9 +119,9 @@ struct
       (fn (t, f) => case e of
         Tr.CONST 1 => Tr.JUMP(Tr.NAME t, [t])
       | Tr.CONST 0 => Tr.JUMP(Tr.NAME f, [f])
-      | _ => Tr.CJUMP(Tr.TEST(Tr.NE, e, Tr.CONST 0), t, f))
+      | _ => Tr.CJUMP(Tr.TEST(Tr.EQ, e, Tr.CONST 0), f, t))
     | unCx(Cx genstm) = genstm
-    | unCx(Nx s) = ErrorMsg.impossible "turning statement into conditional jump"
+    | unCx(Nx _) = ErrorMsg.impossible "turning statement into conditional jump"
 
 
   val unit = Ex(Tr.CONST 0)
@@ -193,7 +193,6 @@ struct
                             Tr.JUMP(Tr.NAME join, [join]),
                             Tr.LABEL f,
                             Tr.MOVE(Tr.TEMP r, unEx elseExp),
-                            Tr.JUMP(Tr.NAME join, [join]),
                             Tr.LABEL join]
         in Ex(Tr.ESEQ(seq(sequence), Tr.TEMP r)) end
 
