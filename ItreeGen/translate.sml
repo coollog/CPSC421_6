@@ -68,7 +68,7 @@ struct
   type frag = F.frag
 
   val fragmentlist = ref ([] : frag list)
-  fun getResult () = !fragmentlist
+  fun getResult() = !fragmentlist
 
   datatype gexp = Ex of Tr.exp
                 | Nx of Tr.stm
@@ -159,10 +159,14 @@ struct
       Ex(Tr.NAME label)
     end
 
-  fun appExp(func, argsExps, calleeLevel, callerLevel) =
-    let val argList = map (fn argExp => unEx argExp) argsExps
-        val sl = findStaticLink(calleeLevel, callerLevel, Tr.TEMP R.FP)
-    in Ex(Tr.CALL(Tr.NAME func, sl::argList)) end
+  fun appExp(func, argsExps, TOP, _) =
+      let val argList = map (fn argExp => unEx argExp) argsExps
+      in Ex(Tr.CALL(Tr.NAME func, argList)) end
+    | appExp(func, argsExps, LEVEL({parent=calleeLevel,...},_),
+             callerLevel) =
+      let val argList = map (fn argExp => unEx argExp) argsExps
+          val sl = findStaticLink(calleeLevel, callerLevel, Tr.TEMP R.FP)
+      in Ex(Tr.CALL(Tr.NAME func, sl::argList)) end
 
   fun seqExp exprs =
     let
