@@ -249,7 +249,7 @@ struct
         )
 
         val label = Temp.newlabel()
-        val (level', accesses) = Tr.newLevel({parent=level, formals=params})
+        val level' = Tr.newLevel({parent=level, formals=params})
         val env' = S.enter(env,name,E.FUNentry
           {level=level',
            label=label,
@@ -665,7 +665,7 @@ struct
         checkInt (g right, pos, msgArithExp02);
         {exp=Tr.binopExp(oper, #exp(g left), #exp(g right)), ty=T.INT}
     )
-    | g (A.VarExp var) = h(var)
+    | g (A.VarExp var) = h var
     | g (A.AssignExp {var,exp,pos}) =
     (
       let
@@ -763,7 +763,7 @@ struct
       val env' =
       (
         let
-          fun addParams(penv,{var,typ,pos}::params) =
+          fun addParams(penv,{var,typ,pos}::params,paramIndex) =
             let
               val t =
               (
@@ -771,15 +771,15 @@ struct
                   NONE => (error pos checkFuncs01; T.UNIT)
                 | SOME(ty) => ty
               )
-              val access = Tr.allocInFrame level
+              val access = (level, Tr.paramOffset paramIndex)
               val penv' = S.enter(penv,#name(var:A.vardec),
                                   E.VARentry{access=access,ty=t})
             in
-              addParams(penv',params)
+              addParams(penv',params,paramIndex+1)
             end
-          | addParams(penv,nil) = penv
+          | addParams(penv,nil,_) = penv
         in
-          addParams(env,params)
+          addParams(env,params,1)
         end
       )
       val resultTy =
@@ -794,7 +794,7 @@ struct
           )
       )
     in
-      case S.look(env', name) of
+      case S.look(env, name) of
         SOME(E.FUNentry{level,label,...}) =>
           let
             val {exp=bodyExp, ty=bodyTy} = transexp(env',tenv,level,break)body
@@ -883,7 +883,7 @@ struct
   (*** transprog : A.exp -> Frame.frag list ***)
   fun transprog prog =
     let
-      val (levelMain, _) = Tr.newLevel{parent=Tr.outermost, formals=[]}
+      val levelMain = Tr.newLevel{parent=Tr.outermost, formals=[]}
       val label = Temp.namedlabel "tigermain"
       val {exp=translated, ...} =
         transexp (E.base_env, E.base_tenv, levelMain, label) prog

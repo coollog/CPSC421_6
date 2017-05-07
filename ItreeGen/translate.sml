@@ -8,8 +8,8 @@ sig
 
   val outermost : level
 
-  val newLevel : {parent: level, formals: 'a list} ->
-                 level * ('a * access) list
+  val newLevel : {parent: level, formals: 'a list} -> level
+  val paramOffset : int -> int
 
   val allocInFrame : level -> access
 
@@ -77,17 +77,14 @@ struct
   fun newLevel({parent, formals}) =
     let
       val numParams = length formals + 1 (* +1 for static link *)
-      val (frame, offsets) = F.newFrame numParams
+      val (frame, _) = F.newFrame numParams
 
       val level = LEVEL({frame=frame,
                          sl_offset=R.paramBaseOffset,
                          parent=parent}, ref())
+    in level end
 
-      val formalsOffsets = ListPair.zip(formals, tl offsets)
-      val accesses = map (fn fo => (#1 fo, (level, #2 fo))) formalsOffsets
-    in
-      (level, accesses)
-    end
+  fun paramOffset(paramIndex) = R.paramBaseOffset + paramIndex * 4
 
   fun allocInFrame(level as LEVEL({frame,...}, _)) =
         (level, F.allocInFrame frame)
@@ -140,6 +137,8 @@ struct
 
   fun simpleVar(access:access, level) =
     let val sl = findStaticLink(#1 access, level, Tr.TEMP R.FP)
+
+      val _ = print("ACCESS " ^ Int.toString(#2 access) ^ " ACCESS")
     in Ex(Tr.MEM(Tr.BINOP(Tr.PLUS, sl, Tr.CONST(#2 access)), 4)) end
 
   fun subscriptVar(varExp, idxExp) =
