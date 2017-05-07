@@ -760,28 +760,6 @@ struct
   *)
   and checkFuncs(env,tenv,({name,params,result,body,pos}:A.fundec)::decs,level,break) =
     let
-      val env' =
-      (
-        let
-          fun addParams(penv,{var,typ,pos}::params,paramIndex) =
-            let
-              val t =
-              (
-                case S.look(tenv,typ) of
-                  NONE => (error pos checkFuncs01; T.UNIT)
-                | SOME(ty) => ty
-              )
-              val access = (level, Tr.paramOffset paramIndex)
-              val penv' = S.enter(penv,#name(var:A.vardec),
-                                  E.VARentry{access=access,ty=t})
-            in
-              addParams(penv',params,paramIndex+1)
-            end
-          | addParams(penv,nil,_) = penv
-        in
-          addParams(env,params,1)
-        end
-      )
       val resultTy =
       (
         case result of
@@ -797,6 +775,26 @@ struct
       case S.look(env, name) of
         SOME(E.FUNentry{level,label,...}) =>
           let
+            val env' =
+              let
+                fun addParams(penv,{var,typ,pos}::params,paramIndex) =
+                  let
+                    val t =
+                    (
+                      case S.look(tenv,typ) of
+                        NONE => (error pos checkFuncs01; T.UNIT)
+                      | SOME(ty) => ty
+                    )
+                    val access = (level, Tr.paramOffset paramIndex)
+                    val penv' = S.enter(penv,#name(var:A.vardec),
+                                        E.VARentry{access=access,ty=t})
+                  in
+                    addParams(penv',params,paramIndex+1)
+                  end
+                | addParams(penv,nil,_) = penv
+              in
+                addParams(env,params,1)
+              end
             val {exp=bodyExp, ty=bodyTy} = transexp(env',tenv,level,break)body
           in
             case tyCmp(tenv,bodyTy,resultTy,pos) of
