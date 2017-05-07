@@ -58,6 +58,11 @@ struct
                                        label=Temp.namedlabel "print",
                                        formals=[T.STRING],
                                        result=T.UNIT});
+      myTable := Symbol.enter(!myTable,Symbol.symbol("printNum"),
+                              FUNentry{level=Translate.outermost,
+                                       label=Temp.namedlabel "printNum",
+                                       formals=[T.INT],
+                                       result=T.UNIT});
       myTable := Symbol.enter(!myTable,Symbol.symbol("flush"),
                               FUNentry{level=Translate.outermost,
                                        label=Temp.namedlabel "flush",

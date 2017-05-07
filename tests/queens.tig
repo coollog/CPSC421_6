@@ -32,7 +32,6 @@ let
                 diag2[r+7-c]:=0)
 
  in
-    printboard();
     try(0);
     1
 end
