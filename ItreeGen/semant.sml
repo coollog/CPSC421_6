@@ -535,9 +535,10 @@ struct
 
     | g (A.LetExp{decs,body,pos}) =
       let
-        val (env',tenv') = transdecs(env,tenv,decs,level,break)
+        val (env',tenv',decsExps) = transdecs(env,tenv,decs,level,break)
+        val {exp=bodyExp,ty} = transexp(env',tenv',level,break)body
       in
-        transexp(env',tenv',level,break)body
+        {exp=Tr.seqExp(decsExps@[bodyExp]),ty=ty}
       end
 
     | g (A.ArrayExp{typ,size,init,pos}) =   (* need to check size is int, and typeof(init) = typ *)
@@ -817,10 +818,8 @@ struct
   **************************************************************************)
   and transdec (env, tenv, A.VarDec{var,typ,init,pos}, level, break) =
     let
-      val _ = PP.pp(init)
       val {exp=initExp,ty=initTy} = transexp(env,tenv,level,break) init
       val initTy' =
-      (
         case typ of
           SOME(ty,pos) =>
           (
@@ -829,9 +828,7 @@ struct
             | NONE => initTy
           )
         | NONE => initTy
-      )
     in
-    (
       case typ of
         SOME(ty,pos) =>
         (
@@ -848,11 +845,10 @@ struct
 
       let
         val access = Tr.allocInFrame level
+        val exp = Tr.assignExp(Tr.simpleVar(access, level), initExp)
       in
-        Tr.assignExp(Tr.simpleVar(access, level), initExp);
-        (S.enter(env,#name(var), E.VARentry{access=access,ty=initTy'}), tenv)
+        (S.enter(env,#name(var), E.VARentry{access=access,ty=initTy'}), tenv, [exp])
       end
-    )
     end
 
     | transdec (env, tenv, A.FunctionDec(declist), level, break) =
@@ -862,7 +858,7 @@ struct
     in
       checkFuncs(env',tenv,declist,level,break);
       popBreakCnt();    (* restore the loop depth counter *)
-      (env', tenv)
+      (env', tenv, nil)
     end
 
     | transdec (env, tenv, A.TypeDec(declist), level, break) =
@@ -871,15 +867,17 @@ struct
       val tenv'' = checkTypes(tenv',declist)
     in
       checkCycles(tenv'',declist);
-      (env, tenv'')
+      (env, tenv'', nil)
     end
 
 
-  (*** transdecs : (E.env * E.tenv * A.dec list) -> (E.env * E.tenv) ***)
-  and transdecs (env,tenv,nil,level,break) = (env, tenv)
+  (*** transdecs : (E.env * E.tenv * A.dec list) ->
+   ***             (E.env * E.tenv * Tr.gexp list) ***)
+  and transdecs (env,tenv,nil,level,break) = (env, tenv, nil)
     | transdecs (env,tenv,dec::decs,level,break) =
-      let val (env',tenv') = transdec (env,tenv,dec,level,break)
-       in transdecs (env',tenv',decs,level,break)
+      let val (env',tenv',exp) = transdec(env,tenv,dec,level,break)
+          val (env'',tenv'',exps) = transdecs(env',tenv',decs,level,break)
+      in (env'', tenv'', exp @ exps)
       end
 
   (*** transprog : A.exp -> Frame.frag list ***)

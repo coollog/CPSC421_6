@@ -1,4 +1,19 @@
 LABEL L1
+MOVE(
+ TEMP T110,
+ BINOP(PLUS,
+  TEMP T101,
+  CONST ~208))
+MOVE(
+ TEMP T109,
+ CALL(
+  NAME initArray,
+   CONST 10,
+   CONST 0))
+MOVE(
+ MEM[4](
+  TEMP T110),
+ TEMP T109)
 EXP(
  MEM[4](
   BINOP(PLUS,
@@ -39,6 +54,17 @@ tigermain:
 	pushl %edi                   # push callee save
 	pushl %esi                   # push callee save
 L1:
+	movl %ebp, %ebx              # move to register
+	movl $-208, %edi             # move constant to register
+	addl %edi, %ebx              # add two registers
+	movl %ebx, %ebx              # move to register
+	pushl $0                     # push onto stack
+	pushl $10                    # push onto stack
+	call initArray
+	addl $8, %esp                # pop arguments
+	movl %eax, %edi              # get return value
+	movl %edi, %edi              # move to register
+	movl %edi, (%ebx)            # move to memory
 	movl %ebp, %ebx              # move to register
 	movl $-208, %edi             # move constant to register
 	addl %edi, %ebx              # add two registers
