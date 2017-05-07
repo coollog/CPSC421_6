@@ -24,14 +24,14 @@ struct
             val stms = Canon.linearize body
             val stms' = Canon.traceSchedule(Canon.basicBlocks stms)
 
-            val _ =
+            (*val _ =
               let
                 fun printstms(stm::stms) =
                       (Printtree.printtree(out, stm); printstms(stms))
                   | printstms([]) = ()
               in
                 printstms(stms')
-              end
+              end*)
 
             val instrs = List.concat(map C.codegen stms')
 

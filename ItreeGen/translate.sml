@@ -137,8 +137,6 @@ struct
 
   fun simpleVar(access:access, level) =
     let val sl = findStaticLink(#1 access, level, Tr.TEMP R.FP)
-
-      val _ = print("ACCESS " ^ Int.toString(#2 access) ^ " ACCESS")
     in Ex(Tr.MEM(Tr.BINOP(Tr.PLUS, sl, Tr.CONST(#2 access)), 4)) end
 
   fun subscriptVar(varExp, idxExp) =
